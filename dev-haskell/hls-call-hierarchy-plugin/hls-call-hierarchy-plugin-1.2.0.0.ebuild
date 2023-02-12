@@ -18,9 +18,9 @@ KEYWORDS="~amd64 ~x86"
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
-	>=dev-haskell/ghcide-1.8:=[profile?] <dev-haskell/ghcide-1.9:=[profile?]
+	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-2.0:=[profile?]
 	dev-haskell/hiedb:=[profile?]
-	>=dev-haskell/hls-plugin-api-1.5:=[profile?] <dev-haskell/hls-plugin-api-1.6:=[profile?]
+	>=dev-haskell/hls-plugin-api-1.6:=[profile?] <dev-haskell/hls-plugin-api-1.7:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-1.2.0.1:=[profile?]
 	dev-haskell/sqlite-simple:=[profile?]
