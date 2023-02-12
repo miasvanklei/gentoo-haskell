@@ -17,17 +17,18 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
 IUSE="ghc-lib"
 
-RDEPEND=">=dev-haskell/aeson-0.6:=[profile?] <dev-haskell/aeson-2.1:=[profile?]
-	>=dev-haskell/cabal-3.4:=[profile?] <dev-haskell/cabal-3.7:=[profile?]
+RDEPEND=">=dev-haskell/aeson-0.6:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
+	>=dev-haskell/cabal-3.4:=[profile?] <dev-haskell/cabal-4.0:=[profile?]
 	>=dev-haskell/file-embed-0.0.10:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
-	>=dev-haskell/ghc-lib-parser-9.2:=[profile?] <dev-haskell/ghc-lib-parser-9.3:=[profile?]
-	>=dev-haskell/ghc-lib-parser-ex-9.2.0.3:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.3:=[profile?]
+	>=dev-haskell/ghc-lib-parser-ex-9.4.0.0:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.5:=[profile?]
 	>=dev-haskell/hsyaml-0.2.0:=[profile?] <dev-haskell/hsyaml-0.3:=[profile?]
 	>=dev-haskell/hsyaml-aeson-0.2.0:=[profile?] <dev-haskell/hsyaml-aeson-0.3:=[profile?]
 	>=dev-haskell/optparse-applicative-0.12:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?]
 	>=dev-haskell/strict-0.3:=[profile?] <dev-haskell/strict-0.5:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-lang/ghc-8.4.3:=
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
+	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.5:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4
