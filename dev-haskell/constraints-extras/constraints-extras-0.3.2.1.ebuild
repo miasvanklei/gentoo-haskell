@@ -7,11 +7,12 @@ EAPI=8
 #hackport: flags: -build-readme
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
+CABAL_HACKAGE_REVISION=1
+
 inherit haskell-cabal
 
 DESCRIPTION="Utility package for constraints"
 HOMEPAGE="https://github.com/obsidiansystems/constraints-extras"
-SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
