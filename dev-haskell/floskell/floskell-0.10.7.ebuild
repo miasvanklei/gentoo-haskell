@@ -18,11 +18,6 @@ IUSE="executable"
 
 PATCHES=( "${FILESDIR}/${PN}-0.10.5-add-executable-flag.patch" )
 
-CABAL_CHDEPS=(
-	'optparse-applicative >=0.12.1.0 && <0.17' 'optparse-applicative >=0.12.1.0'
-	'hspec >=2.2.4 && <2.8' 'hspec >=2.2.4'
-)
-
 RDEPEND="
 	>=dev-haskell/aeson-0.11.3.0:=[profile?] <dev-haskell/aeson-2.1:=[profile?]
 	>=dev-haskell/attoparsec-0.13.1.0:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
