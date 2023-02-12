@@ -54,6 +54,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}/support-ghc-9.4.patch"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag ghc-lib ghc-lib) \
