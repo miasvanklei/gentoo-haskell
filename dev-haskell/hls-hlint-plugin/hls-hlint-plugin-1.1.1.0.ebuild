@@ -19,16 +19,16 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
+IUSE="ghc-lib"
 KEYWORDS="~amd64 ~x86"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
-	>=dev-haskell/apply-refact-0.9.0.0:=[profile?] <dev-haskell/apply-refact-0.10:=[profile?]
+	>=dev-haskell/apply-refact-0.9.0.0:=[profile?] <dev-haskell/apply-refact-0.12:=[profile?]
 	dev-haskell/data-default:=[profile?]
 	>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
 	dev-haskell/extra:=[profile?]
 	>=dev-haskell/ghc-exactprint-0.6.3.4:=[profile?]
-	dev-haskell/ghc-lib-parser:=[profile?]
 	dev-haskell/ghc-lib-parser-ex:=[profile?]
 	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
 	dev-haskell/hashable:=[profile?]
@@ -43,6 +43,8 @@ RDEPEND="
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-lang/ghc-8.6.3:=
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
+	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.5:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1
@@ -54,6 +56,7 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	haskell-cabal_src_configure \
+		$(cabal_flag ghc-lib ghc-lib) \
 		--flag=-pedantic
 }
 
