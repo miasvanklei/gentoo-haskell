@@ -23,10 +23,10 @@ KEYWORDS="~amd64 ~x86"
 # Disabled:
 # - hls_plugins_stan: Requires ghc < 9
 # - hls_plugins_cabal-fmt: Requires cabal >= 3.8
-# - hls_plugins_call-hierarchy: Still depending on ghcide < 1.9
 IUSE_HLS_PLUGINS="
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
+	+hls_plugins_call-hierarchy
 	+hls_plugins_change-type-signature
 	+hls_plugins_class
 	+hls_plugins_code-range
@@ -68,7 +68,6 @@ CABAL_TEST_REQUIRED_BINS=(
 # Disabled:
 # hls_plugins_cabal-fmt? ( >=dev-haskell/hls-cabal-fmt-plugin-0.1.0.0:=[profile?] <dev-haskell/hls-cabal-fmt-plugin-0.2:=[profile?] )
 # hls_plugins_stan? ( >=dev-haskell/hls-stan-plugin-1.0:=[profile?] <dev-haskell/hls-stan-plugin-1.1:=[profile?] )
-# hls_plugins_call-hierarchy? ( >=dev-haskell/hls-call-hierarchy-plugin-1.1:=[profile?] <dev-haskell/hls-call-hierarchy-plugin-1.2:=[profile?] )
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/aeson-pretty:=[profile?]
@@ -108,6 +107,7 @@ RDEPEND="
 	hls_formatters_stylish-haskell? ( >=dev-haskell/hls-stylish-haskell-plugin-1.0:=[profile?] <dev-haskell/hls-stylish-haskell-plugin-1.1:=[profile?] )
 	hls_plugins_alternate-number-format? ( >=dev-haskell/hls-alternate-number-format-plugin-1.3:=[profile?] <dev-haskell/hls-alternate-number-format-plugin-1.4:=[profile?] )
 	hls_plugins_cabal? ( >=dev-haskell/hls-cabal-plugin-0.1:=[profile?] <dev-haskell/hls-cabal-plugin-0.2:=[profile?] )
+        hls_plugins_call-hierarchy? ( >=dev-haskell/hls-call-hierarchy-plugin-1.1:=[profile?] <dev-haskell/hls-call-hierarchy-plugin-1.3:=[profile?] )
 	hls_plugins_change-type-signature? ( >dev-haskell/hls-change-type-signature-plugin-1.1 <dev-haskell/hls-change-type-signature-plugin-1.2 )
 	hls_plugins_class? ( >=dev-haskell/hls-class-plugin-1.1:=[profile?] <dev-haskell/hls-class-plugin-1.2:=[profile?] )
 	hls_plugins_code-range? ( >=dev-haskell/hls-code-range-plugin-1.1:=[profile?] <dev-haskell/hls-code-range-plugin-1.2:=[profile?] )
@@ -152,7 +152,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_alternate-number-format alternateNumberFormat) \
 		$(cabal_flag hls_plugins_cabal cabal) \
 		--flag=-cabalfmt \
-		--flag=-callHierarchy \
+		$(cabal_flag hls_plugins_call-hierarchy callHierarchy) \
 		$(cabal_flag hls_plugins_change-type-signature changeTypeSignature) \
 		$(cabal_flag hls_plugins_class class) \
 		$(cabal_flag hls_plugins_code-range codeRange) \
