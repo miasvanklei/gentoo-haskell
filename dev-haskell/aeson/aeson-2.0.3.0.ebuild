@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/haskell/aeson"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 IUSE="cffi +ordered-keymap"
 
 RDEPEND=">=dev-haskell/attoparsec-0.14.2:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
@@ -57,6 +57,11 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-hunit
 		dev-haskell/tasty-quickcheck )
 "
+
+CABAL_CHDEPS=(
+	"template-haskell  >=2.11.0.0 && <2.19" "template-haskell  >=2.11.0.0 && <2.20"
+	"ghc-prim          >=0.5.0.0  && <0.9" "ghc-prim          >=0.5.0.0  && <0.10"
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
