@@ -15,10 +15,6 @@ LICENSE="MPL-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-0.3.1.0-cabal-doctest.patch"
-)
-
 GHC_BOOTSTRAP_PACKAGES=(
 	cabal-doctest
 )
