@@ -1,0 +1,17 @@
+name: Sync Haskell Overlay
+
+on:
+  schedule:
+    - cron: '0 11 */7 * *' # every 7 days, 11 AM
+  workflow_dispatch: # on button click
+
+jobs:
+  sync:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: tgymnich/fork-sync@v1.6.3
+        with:
+          base: master
+          head: master
