@@ -7,15 +7,13 @@ EAPI=8
 #hackport: flags: -warp-tests,-mtl1,-warn-as-error,-old-base,-network23,+network-uri,-conduit10
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-inherit haskell-cabal
+CABAL_HACKAGE_REVISION=1
+CABAL_PN="HTTP"
 
-MY_PN="HTTP"
-MY_P="${MY_PN}-${PV}"
-S="${WORKDIR}/${MY_P}"
+inherit haskell-cabal
 
 DESCRIPTION="A library for client-side HTTP"
 HOMEPAGE="https://github.com/haskell/HTTP"
-SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
