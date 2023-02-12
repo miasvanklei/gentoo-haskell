@@ -15,16 +15,19 @@ HOMEPAGE="https://github.com/tweag/ormolu"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
-IUSE="examples executable +fixity-th"
+IUSE="examples executable ghc-lib +fixity-th"
 
-PATCHES=( "${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch" )
+PATCHES=(
+	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
+	"${FILESDIR}/${PV}-use-system-ghc.patch"
+)
 
 RDEPEND=">=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-3.0:=[profile?]
 	>=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-1.0:=[profile?]
-	>=dev-haskell/cabal-3.6:=[profile?] <dev-haskell/cabal-3.7:=[profile?]
+	>=dev-haskell/cabal-3.8:=[profile?] <dev-haskell/cabal-3.9:=[profile?]
 	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-1.0:=[profile?]
 	>=dev-haskell/dlist-0.8:=[profile?] <dev-haskell/dlist-2.0:=[profile?]
-	>=dev-haskell/ghc-lib-parser-9.2:=[profile?] <dev-haskell/ghc-lib-parser-9.3:=[profile?]
+	>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
 	>=dev-haskell/megaparsec-9.0:=[profile?]
 	>=dev-haskell/memotrie-0.6:=[profile?] <dev-haskell/memotrie-0.7:=[profile?]
 	>=dev-haskell/syb-0.7:=[profile?] <dev-haskell/syb-0.8:=[profile?]
@@ -32,7 +35,8 @@ RDEPEND=">=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-3.0:=[profile?]
 	>=dev-lang/ghc-8.10.1:=
 	executable? ( >=dev-haskell/gitrev-1.3:=[profile?] <dev-haskell/gitrev-1.4:=[profile?]
 		>=dev-haskell/optparse-applicative-0.14:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?] )
-	!fixity-th? ( >=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?] )
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
+	!ghc-lib? ( =dev-lang/ghc-9.4*:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0
@@ -47,8 +51,9 @@ DEPEND="${RDEPEND}
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-dev \
+		$(cabal_flag ghc-lib ghc-lib) \
 		$(cabal_flag executable executable) \
-		$(cabal_flag fixity-th fixity-th)
+		$(cabal_flag fixity-th internal-bundle-fixities)
 }
 
 src_install() {
