@@ -7,24 +7,17 @@ EAPI=8
 #hackport: flags: -wall
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-CABAL_HACKAGE_REVISION="1"
-inherit haskell-cabal
+CABAL_HACKAGE_REVISION="2"
 
-CABAL_FILE="${S}/${PN}.cabal"
-CABAL_DISTFILE="${P}-rev${CABAL_HACKAGE_REVISION}.cabal"
+inherit haskell-cabal
 
 DESCRIPTION="Efficient Arrays"
 HOMEPAGE="https://github.com/haskell/vector"
-SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
-	https://hackage.haskell.org/package/${P}/revision/${CABAL_HACKAGE_REVISION}.cabal
-		-> ${CABAL_DISTFILE}"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boundschecks internalchecks unsafechecks"
-
-PATCHES=( "${FILESDIR}/${PN}-0.12.3.1-cabal-doctest.patch" )
 
 RDEPEND=">=dev-haskell/primitive-0.6.4.0:=[profile?] <dev-haskell/primitive-0.8:=[profile?]
 	>=dev-lang/ghc-8.4.3:=
@@ -43,20 +36,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-quickcheck )
 "
 BDEPEND="app-text/dos2unix"
-
-src_prepare() {
-	# pull revised cabal from upstream
-	cp "${DISTDIR}/${CABAL_DISTFILE}" "${CABAL_FILE}" || die
-
-	# Convert to unix line endings
-	dos2unix "${CABAL_FILE}" || die
-
-	# Apply patches *after* pulling the revised cabal
-	default
-
-	cabal_chdeps \
-		'doctest   >=0.15 && <0.19' 'doctest >=0.15'
-}
 
 src_configure() {
 	haskell-cabal_src_configure \
