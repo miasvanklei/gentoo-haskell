@@ -21,6 +21,7 @@ IUSE="roundtrip"
 RDEPEND=">=dev-haskell/free-4.12:=[profile?]
 	>=dev-haskell/ghc-paths-0.1:=[profile?]
 	>=dev-haskell/mtl-2.2.1:=[profile?]
+	dev-haskell/ordered-containers:=[profile?]
 	>=dev-haskell/syb-0.5:=[profile?]
 	>=dev-lang/ghc-8.4.3:=
 	roundtrip? ( dev-haskell/diff:=[profile?]
