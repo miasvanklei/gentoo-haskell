@@ -7,13 +7,12 @@ EAPI=8
 #hackport: flags: aeson,assoc,quickcheck,semigroupoids,+assoc
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
-CABAL_HACKAGE_REVISION="5"
+CABAL_HACKAGE_REVISION="6"
+
 inherit haskell-cabal
 
 DESCRIPTION="An either-or-both data type"
 HOMEPAGE="https://github.com/haskellari/these"
-SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
-	https://hackage.haskell.org/package/${P}/revision/${CABAL_HACKAGE_REVISION}.cabal -> ${PF}.cabal"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
@@ -30,16 +29,4 @@ DEPEND="${RDEPEND}
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=assoc
-}
-BDEPEND="app-text/dos2unix"
-
-src_prepare() {
-	# pull revised cabal from upstream
-	cp "${DISTDIR}/${PF}.cabal" "${S}/${PN}.cabal" || die
-
-	# Convert to unix line endings
-	dos2unix "${S}/${PN}.cabal" || die
-
-	# Apply patches *after* pulling the revised cabal
-	default
 }
