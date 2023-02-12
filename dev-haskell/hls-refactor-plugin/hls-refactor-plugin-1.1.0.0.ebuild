@@ -25,7 +25,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
-	<dev-haskell/ghc-exactprint-1
+	dev-haskell/ghc-exactprint
 	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
 	>=dev-haskell/hls-plugin-api-1.6:=[profile?] <dev-haskell/hls-plugin-api-1.7:=[profile?]
