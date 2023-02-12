@@ -8,7 +8,8 @@ EAPI=8
 CABAL_PN="HsYAML-aeson"
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
-CABAL_HACKAGE_REVISION=4
+CABAL_HACKAGE_REVISION=5
+
 inherit haskell-cabal
 
 DESCRIPTION="JSON to YAML Adapter"
