@@ -1,0 +1,13 @@
+--- a/hls-stylish-haskell-plugin.cabal	2023-02-13 17:30:47.428883421 +0100
++++ b/hls-stylish-haskell-plugin.cabal	2023-02-13 17:30:52.867947176 +0100
+@@ -20,10 +20,6 @@
+     location: https://github.com/haskell/haskell-language-server.git
+ 
+ library
+-  if impl(ghc >= 9.3)
+-    buildable: False
+-  else
+-    buildable: True
+   exposed-modules:  Ide.Plugin.StylishHaskell
+   hs-source-dirs:   src
+   build-depends:
