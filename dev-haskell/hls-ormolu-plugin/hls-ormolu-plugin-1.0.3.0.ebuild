@@ -31,6 +31,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}/buildable-ghc-9.4.patch"
+)
+
 src_test() {
 	# Limit tasty threads to avoid random failures
 	# See: <https://github.com/haskell/haskell-language-server/issues/3224#issuecomment-1257070277>
