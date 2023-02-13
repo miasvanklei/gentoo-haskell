@@ -141,6 +141,10 @@ DEPEND="${RDEPEND}
 		)
 "
 
+PATCHES=(
+	"${FILESDIR}/support-hls-call-hierarchy-1.2.patch"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag hls_formatters_brittany brittany) \
