@@ -1,0 +1,13 @@
+--- a/hls-rename-plugin.cabal	2023-02-13 17:33:14.175563509 +0100
++++ b/hls-rename-plugin.cabal	2023-02-13 17:33:31.510757016 +0100
+@@ -21,10 +21,6 @@
+     location: https://github.com/haskell/haskell-language-server.git
+ 
+ library
+-  if impl(ghc >= 9.3)
+-    buildable: False
+-  else
+-    buildable: True
+   exposed-modules:  Ide.Plugin.Rename
+   hs-source-dirs:   src
+   build-depends:
