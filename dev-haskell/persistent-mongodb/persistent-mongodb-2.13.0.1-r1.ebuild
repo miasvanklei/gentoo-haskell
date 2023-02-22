@@ -40,7 +40,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/hunit
 		dev-haskell/persistent-qq
 		dev-haskell/persistent-test
-		dev-haskell/process
+		|| ( dev-lang/ghc dev-haskell/process )
 		dev-haskell/quickcheck )
 "
 

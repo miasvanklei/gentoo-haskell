@@ -22,7 +22,7 @@ PATCHES=( "${FILESDIR}/${PN}-0.9.2.0-add-executable-flag.patch" )
 RDEPEND=">=dev-haskell/extra-1.7.3:=[profile?]
 	>=dev-haskell/filemanip-0.3.6.3:=[profile?] <dev-haskell/filemanip-0.4:=[profile?]
 	>=dev-haskell/ghc-exactprint-1.5.0:=[profile?]
-	>=dev-haskell/optparse-applicative-0.15.1.0:=[profile?]
+	|| ( dev-lang/ghc >=dev-haskell/process-1.6[profile?] )
 	>=dev-haskell/refact-0.2:=[profile?]
 	>=dev-haskell/syb-0.7.1:=[profile?]
 	>=dev-haskell/uniplate-1.6.13:=[profile?]
