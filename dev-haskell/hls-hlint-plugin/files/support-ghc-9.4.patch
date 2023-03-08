@@ -35,7 +35,7 @@
  
              applyParseFlagsFixities :: ParsedSource -> ParsedSource
              applyParseFlagsFixities modul = GhclibParserEx.applyFixities (parseFlagsToFixities _flags) modul
-@@ -602,14 +602,11 @@
+@@ -594,14 +594,12 @@
          case mbParsedModule of
              Nothing -> throwE "Apply hint: error parsing the module"
              Just pm -> do
@@ -46,11 +46,12 @@
 -                (anns', modu') <-
 -                    ExceptT $ mapM (uncurry Refact.applyFixities)
 -                            $ postParseTransform (Right (anns, [], dflags, modu)) rigidLayout
--                liftIO $ (Right <$> withRuntimeLibdir (Refact.applyRefactorings' position commands anns' modu'))
+-                liftIO $ (Right <$> Refact.applyRefactorings' position commands anns' modu')
++                let rigidLayout = deltaOptions
 +                modu' <-
-+                    ExceptT $ mapM (Refact.applyFixities)
++                    ExceptT $ mapM Refact.applyFixities
 +                            $ postParseTransform (Right ([], dflags, modu))
-+                liftIO $ (Right <$> withRuntimeLibdir (Refact.applyRefactorings' position commands modu'))
++                liftIO $ (Right <$> Refact.applyRefactorings' position commands modu')
                              `catches` errorHandlers
  #endif
      case res of
@@ -68,16 +69,13 @@
  flag pedantic
    description: Enable -Werror
    default:     False
-@@ -59,14 +64,12 @@
+@@ -59,11 +64,9 @@
      , text
      , transformers
      , unordered-containers
 -    , ghc-lib-parser
      , ghc-lib-parser-ex
-   if impl(ghc >= 9.2)
-     build-depends: apply-refact ^>= 0.11.0.0
-   else
-     build-depends: apply-refact ^>= 0.9.0.0
+     , apply-refact
  
 -  cpp-options:   -DHLINT_ON_GHC_LIB
    ghc-options:
