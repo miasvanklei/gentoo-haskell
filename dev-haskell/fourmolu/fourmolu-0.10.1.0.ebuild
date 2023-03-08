@@ -15,12 +15,10 @@ HOMEPAGE="https://github.com/fourmolu/fourmolu"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
-IUSE="examples executable ghc-lib +fixity-th"
+IUSE="examples executable +fixity-th"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
 	"${FILESDIR}/${PN}-0.8.2.0-add-flags.patch"
-	"${FILESDIR}/${PV}-use-system-ghc.patch"
 )
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -33,6 +31,7 @@ RDEPEND="
 	>=dev-haskell/cabal-syntax-3.8:=[profile?] <dev-haskell/cabal-syntax-3.9:=[profile?]
 	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-1.0:=[profile?]
 	>=dev-haskell/dlist-0.8:=[profile?] <dev-haskell/dlist-2.0:=[profile?]
+	>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
 	>=dev-haskell/megaparsec-9.0:=[profile?]
 	>=dev-haskell/memotrie-0.6:=[profile?] <dev-haskell/memotrie-0.7:=[profile?]
 	>=dev-haskell/syb-0.7:=[profile?] <dev-haskell/syb-0.8:=[profile?]
@@ -43,12 +42,6 @@ RDEPEND="
 	executable? (
 		>=dev-haskell/gitrev-1.3:=[profile?] <dev-haskell/gitrev-1.4:=[profile?]
 		>=dev-haskell/optparse-applicative-0.14:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?]
-	)
-	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
-	)
-	!ghc-lib? (
-		=dev-lang/ghc-9.4*:=
 	)
 	!fixity-th? (
 		>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
@@ -78,7 +71,6 @@ src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-dev \
 		--flag=$exe_flag \
-		$(cabal_flag ghc-lib ghc-lib) \
 		$(cabal_flag fixity-th fixity-th)
 }
 
