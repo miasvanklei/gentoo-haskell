@@ -6,7 +6,7 @@
 		<name>Gentoo Haskell</name>
 	</maintainer>
 	<upstream>
-		<remote-id type="hackage">lhs2tex</remote-id>
-		<remote-id type="github">kosmikus/lhs2tex</remote-id>
+		<remote-id type="hackage">ansi-terminal-types</remote-id>
+		<remote-id type="github">UnkindPartition/ansi-terminal</remote-id>
 	</upstream>
 </pkgmetadata>
