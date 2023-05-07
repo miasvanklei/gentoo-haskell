@@ -32,7 +32,7 @@ HOMEPAGE="https://wiki.portal.chalmers.se/agda/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="cpphs debug emacs enable-cluster-counting optimise-heavily +stdlib"
 
 RDEPEND="
@@ -62,7 +62,7 @@ RDEPEND="
 	>=dev-haskell/vector-0.12:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-haskell/vector-hashtables-0.1:=[profile?] <dev-haskell/vector-hashtables-0.2:=[profile?]
 	>=dev-haskell/zlib-0.6:=[profile?] <dev-haskell/zlib-0.7:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	enable-cluster-counting? (
 		>=dev-haskell/text-icu-0.7.1.0:=[profile?]
 	)

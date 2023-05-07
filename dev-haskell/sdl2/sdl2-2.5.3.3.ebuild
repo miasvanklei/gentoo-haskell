@@ -14,14 +14,14 @@ HOMEPAGE="https://hackage.haskell.org/package/sdl2"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples no-linear"
 
 RESTRICT=test #fails if XDG_RUNTIME_DIR and video device cannot be found
 
 RDEPEND=">=dev-haskell/statevar-1.1.0.0:=[profile?] <dev-haskell/statevar-1.3:=[profile?]
 	>=dev-haskell/vector-0.10.9.0:=[profile?] <dev-haskell/vector-0.13:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	>=media-libs/libsdl2-2.0.10
 	examples? ( dev-haskell/opengl:=[profile?] )
 	!no-linear? ( >=dev-haskell/linear-1.10.1.2:=[profile?] <dev-haskell/linear-1.22:=[profile?] )

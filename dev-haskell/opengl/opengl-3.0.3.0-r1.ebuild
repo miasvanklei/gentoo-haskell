@@ -16,7 +16,7 @@ HOMEPAGE="https://wiki.haskell.org/OpenGL"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/gluraw-2.0:=[profile?] <dev-haskell/gluraw-2.1:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND="
 	>=dev-haskell/openglraw-3.0:=[profile?] <dev-haskell/openglraw-3.4:=[profile?]
 	>=dev-haskell/statevar-1.1:=[profile?] <dev-haskell/statevar-1.3:=[profile?]
 	>=dev-haskell/text-0.1:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

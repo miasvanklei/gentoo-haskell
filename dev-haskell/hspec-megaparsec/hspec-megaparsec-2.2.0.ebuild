@@ -15,12 +15,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/hspec-expectations-0.8:=[profile?] <dev-haskell/hspec-expectations-0.9:=[profile?]
 	>=dev-haskell/megaparsec-9.0:=[profile?] <dev-haskell/megaparsec-10.0:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

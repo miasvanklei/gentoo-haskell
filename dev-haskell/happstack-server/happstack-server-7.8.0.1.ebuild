@@ -14,7 +14,7 @@ HOMEPAGE="https://happstack.com"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/base64-bytestring-1.0:=[profile?] <dev-haskell/base64-bytestring-1.3:=[profile?]
@@ -35,7 +35,7 @@ RDEPEND="
 	>=dev-haskell/utf8-string-0.3.4:=[profile?] <dev-haskell/utf8-string-1.1:=[profile?]
 	dev-haskell/xhtml:=[profile?]
 	dev-haskell/zlib:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

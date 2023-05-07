@@ -20,7 +20,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/attoparsec-0.10.4.0:=[profile?]
 	>=dev-haskell/cmdargs-0.10.5:=[profile?] <dev-haskell/cmdargs-0.11:=[profile?]
@@ -29,7 +29,7 @@ RDEPEND=">=dev-haskell/attoparsec-0.10.4.0:=[profile?]
 	>=dev-haskell/ilist-0.1:=[profile?] <dev-haskell/ilist-0.5:=[profile?]
 	>=dev-haskell/microlens-0.4:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
 	>=dev-haskell/split-0.2.2:=[profile?] <dev-haskell/split-0.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

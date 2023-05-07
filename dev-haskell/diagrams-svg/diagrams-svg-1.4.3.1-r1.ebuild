@@ -15,7 +15,7 @@ HOMEPAGE="https://diagrams.github.io/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/base64-bytestring-1:=[profile?] <dev-haskell/base64-bytestring-1.3:=[profile?]
@@ -30,7 +30,7 @@ RDEPEND="
 	>=dev-haskell/semigroups-0.13:=[profile?] <dev-haskell/semigroups-0.21:=[profile?]
 	>=dev-haskell/split-0.1.2:=[profile?] <dev-haskell/split-0.3:=[profile?]
 	>=dev-haskell/svg-builder-0.1:=[profile?] <dev-haskell/svg-builder-0.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

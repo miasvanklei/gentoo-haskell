@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/UnkindPartition/tasty"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/optparse-applicative:=[profile?]
 	>=dev-haskell/quickcheck-2.10:2=[profile?]
 	dev-haskell/random:=[profile?]
 	dev-haskell/tagged:=[profile?]
 	>=dev-haskell/tasty-1.0.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

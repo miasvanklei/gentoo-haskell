@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/aeson:=
@@ -22,7 +22,7 @@ RDEPEND="dev-haskell/aeson:=
 	dev-haskell/optparse-applicative:=
 	dev-haskell/text:=
 	dev-haskell/yaml:=
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.20

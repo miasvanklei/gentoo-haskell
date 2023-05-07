@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/dzen-dhall/dzen-dhall#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/file-embed-lzma:=[profile?]
@@ -36,7 +36,7 @@ RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-lang/dhall:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

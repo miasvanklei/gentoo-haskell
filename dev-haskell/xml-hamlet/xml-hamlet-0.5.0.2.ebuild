@@ -13,14 +13,14 @@ HOMEPAGE="https://www.yesodweb.com/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/parsec-2.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/shakespeare-1.0:=[profile?] <dev-haskell/shakespeare-2.2:=[profile?]
 	>=dev-haskell/text-0.10:=[profile?]
 	>=dev-haskell/xml-conduit-1.0:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

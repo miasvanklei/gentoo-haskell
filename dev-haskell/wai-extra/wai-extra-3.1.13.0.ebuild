@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/yesodweb/wai"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 CABAL_CHDEPS=(
@@ -43,7 +43,7 @@ RDEPEND="
 	>=dev-haskell/wai-logger-2.3.7:=[profile?]
 	>=dev-haskell/warp-3.3.22:=[profile?]
 	dev-haskell/word8:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

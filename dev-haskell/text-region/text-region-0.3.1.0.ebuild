@@ -16,14 +16,14 @@ PATCHES=( "${FILESDIR}/${PN}-0.3.1.0-ghc-9_0-fix.patch" )
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.9:=[profile?]
 	>=dev-haskell/base-unicode-symbols-0.2:=[profile?]
 	>=dev-haskell/groups-0.4.0:=[profile?]
 	>=dev-haskell/lens-4.12:=[profile?]
 	>=dev-haskell/text-1.2.1:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.24.0.0

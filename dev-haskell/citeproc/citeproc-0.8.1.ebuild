@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/citeproc"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable icu"
 
 # Many tests for this package are known to fail and this is acceptable for
@@ -36,7 +36,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/uniplate:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-haskell/xml-conduit:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	executable? ( dev-haskell/aeson-pretty:=[profile?] )
 	icu? ( >=dev-haskell/text-icu-0.7.1.0:=[profile?] )
 "

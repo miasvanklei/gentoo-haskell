@@ -13,7 +13,7 @@ HOMEPAGE="https://arbtt.nomeata.de/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_TEST_REQUIRED_BINS=( arbtt-{capture,dump,import,recover,stats} )
 
@@ -29,7 +29,7 @@ RDEPEND=">=dev-haskell/aeson-0.10:= <dev-haskell/aeson-2.2:=
 	dev-haskell/unliftio-core:=
 	dev-haskell/utf8-string:=
 	>=dev-haskell/x11-1.9:=
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

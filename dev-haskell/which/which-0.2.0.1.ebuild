@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/which"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'shelly              >= 1.8.0 && < 1.10' 'shelly >= 1.8.0'
@@ -21,7 +21,7 @@ CABAL_CHDEPS=(
 
 RDEPEND="
 	>=dev-haskell/shelly-1.8.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

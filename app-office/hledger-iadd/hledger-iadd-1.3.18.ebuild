@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/hpdeifel/hledger-iadd#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/brick-1.5:=[profile?]
@@ -30,7 +30,7 @@ RDEPEND="
 	dev-haskell/vector:=[profile?]
 	>=dev-haskell/vty-5.4:=[profile?]
 	dev-haskell/xdg-basedir:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

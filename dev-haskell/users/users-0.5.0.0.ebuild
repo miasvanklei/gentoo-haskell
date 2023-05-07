@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/aeson-0.7:=[profile?]
 	>=dev-haskell/bcrypt-0.0.8:=[profile?]
 	>=dev-haskell/path-pieces-0.1:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?]
-	>=dev-lang/ghc-7.6.1:=
+	>=dev-lang/ghc-7.6.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.16.0

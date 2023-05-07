@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/mrkkrp/req"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.9:=[profile?] <dev-haskell/aeson-3:=[profile?]
 	>=dev-haskell/authenticate-oauth-1.5:=[profile?] <dev-haskell/authenticate-oauth-1.8:=[profile?]
@@ -32,7 +32,7 @@ RDEPEND=">=dev-haskell/aeson-0.9:=[profile?] <dev-haskell/aeson-3:=[profile?]
 	>=dev-haskell/retry-0.8:=[profile?] <dev-haskell/retry-0.10:=[profile?]
 	dev-haskell/transformers-base:=[profile?]
 	>=dev-haskell/unliftio-core-0.1.1:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

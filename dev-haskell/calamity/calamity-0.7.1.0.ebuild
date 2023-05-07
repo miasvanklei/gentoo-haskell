@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/simmsb/calamity"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/aeson-2.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
@@ -58,7 +58,7 @@ RDEPEND="
 	>=dev-haskell/vector-0.12:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-haskell/websockets-0.12:=[profile?] <dev-haskell/websockets-0.13:=[profile?]
 	>=dev-haskell/x509-system-1.6.6:=[profile?] <dev-haskell/x509-system-1.7:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

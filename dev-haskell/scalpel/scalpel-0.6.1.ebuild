@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/case-insensitive:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND="dev-haskell/case-insensitive:=[profile?]
 	~dev-haskell/scalpel-core-0.6.1:=[profile?]
 	>=dev-haskell/tagsoup-0.12.2:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.6.2:=
+	>=dev-lang/ghc-7.6.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.16.0

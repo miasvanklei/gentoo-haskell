@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/happstack/web-routes-th"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'hspec >= 2.2 && < 2.10' 'hspec >= 2.2'
@@ -22,7 +22,7 @@ CABAL_CHDEPS=(
 RDEPEND="
 	>=dev-haskell/split-0.2:=[profile?] <dev-haskell/split-0.3:=[profile?]
 	>=dev-haskell/web-routes-0.26:=[profile?] <dev-haskell/web-routes-0.28:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

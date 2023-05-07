@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/ekmett/bytes"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/binary-orphans-1.0.1:=[profile?] <dev-haskell/binary-orphans-1.1:=[profile?]
 	>=dev-haskell/cereal-0.5.2:=[profile?] <dev-haskell/cereal-0.6:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/binary-orphans-1.0.1:=[profile?] <dev-haskell/binary-orph
 	>=dev-haskell/transformers-compat-0.6.5:=[profile?] <dev-haskell/transformers-compat-1:=[profile?]
 	>=dev-haskell/unordered-containers-0.2:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/void-0.6:=[profile?] <dev-haskell/void-1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/kazu-yamamoto/http2"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT=test # requires network to run one of the test suites
 
@@ -27,7 +27,7 @@ RDEPEND="dev-haskell/async:=[profile?]
 	dev-haskell/time-manager:=[profile?]
 	dev-haskell/unix-time:=[profile?]
 	dev-haskell/unliftio:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

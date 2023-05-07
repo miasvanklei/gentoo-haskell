@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/directory-tree-0.11:= <dev-haskell/directory-tree-0.13:=
 	>=dev-haskell/old-time-1.0:= <dev-haskell/old-time-1.2:=
 	>=dev-haskell/text-0.11:= <dev-haskell/text-1.3:=
 	>=dev-haskell/hashable-1.2.0.6:=
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.8

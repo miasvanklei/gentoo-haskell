@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/ezyang/compact"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'base       >= 4.10 && < 4.16' 'base >= 4.10'
@@ -23,7 +23,7 @@ CABAL_CHDEPS=(
 )
 
 RDEPEND="
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

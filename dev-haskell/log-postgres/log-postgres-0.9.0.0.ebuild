@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/scrive/log"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-1.0:=[profile?]
 	>=dev-haskell/aeson-pretty-0.8:=[profile?]
@@ -28,7 +28,7 @@ RDEPEND=">=dev-haskell/aeson-1.0:=[profile?]
 	>=dev-haskell/unliftio-core-0.2:=[profile?]
 	>=dev-haskell/unordered-containers-0.2:=[profile?]
 	>=dev-haskell/vector-0.12:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

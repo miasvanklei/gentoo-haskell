@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/cairo-0.13:=[profile?] <dev-haskell/cairo-0.14:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/cairo-0.13:=[profile?] <dev-haskell/cairo-0.14:=[profile?
 	>=dev-haskell/opengl-2.9:=[profile?] <dev-haskell/opengl-3.1:=[profile?]
 	>=dev-haskell/pango-0.13:=[profile?] <dev-haskell/pango-0.14:=[profile?]
 	>=dev-haskell/pipes-4.1:=[profile?] <dev-haskell/pipes-4.4:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

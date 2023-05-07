@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/aeson-0.6.2.0:=[profile?]
@@ -38,7 +38,7 @@ RDEPEND=">=dev-haskell/aeson-0.6.2.0:=[profile?]
 	>=dev-haskell/unordered-containers-0.1.3:=[profile?]
 	>=dev-haskell/vector-0.3:=[profile?]
 	>=dev-haskell/zip-archive-0.1.1.8:=[profile?]
-	>=dev-lang/ghc-7.10.1:=
+	>=dev-lang/ghc-7.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.22.2.0

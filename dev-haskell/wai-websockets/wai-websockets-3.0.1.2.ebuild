@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+examples"
 
 RDEPEND=">=dev-haskell/case-insensitive-0.2:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND=">=dev-haskell/case-insensitive-0.2:=[profile?]
 	>=dev-haskell/network-2.2.1.5:=[profile?]
 	>=dev-haskell/wai-3.0:=[profile?] <dev-haskell/wai-3.3:=[profile?]
 	>=dev-haskell/websockets-0.9:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	examples? ( dev-haskell/file-embed:=[profile?]
 			dev-haskell/text:=[profile?]
 			dev-haskell/wai-app-static:=[profile?]

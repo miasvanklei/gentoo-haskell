@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell-gi/haskell-gi"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/ansi-terminal-0.10:=[profile?]
 	>=dev-haskell/attoparsec-0.13:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/ansi-terminal-0.10:=[profile?]
 	>=dev-haskell/text-1.0:=[profile?]
 	dev-haskell/xdg-basedir:=[profile?]
 	>=dev-haskell/xml-conduit-1.3:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	dev-libs/glib:2
 	dev-libs/gobject-introspection
 "

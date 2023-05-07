@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ocharles/logging-effect"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/async-2.0:=[profile?] <dev-haskell/async-2.3:=[profile?]
 	>=dev-haskell/free-4.12.1:=[profile?] <dev-haskell/free-5.2:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/async-2.0:=[profile?] <dev-haskell/async-2.3:=[profile?]
 	>=dev-haskell/stm-delay-0.1.1.1:=[profile?] <dev-haskell/stm-delay-0.2:=[profile?]
 	>=dev-haskell/transformers-base-0.4.4:=[profile?] <dev-haskell/transformers-base-0.5:=[profile?]
 	>=dev-haskell/unliftio-core-0.2.0.0:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

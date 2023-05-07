@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ennocramer/floskell"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=( "${FILESDIR}/${PN}-0.10.5-add-executable-flag.patch" )
@@ -30,7 +30,7 @@ RDEPEND="
 		>=dev-haskell/aeson-pretty-0.8.2:=[profile?] <dev-haskell/aeson-pretty-0.9:=[profile?]
 		>=dev-haskell/optparse-applicative-0.12.1.0:=[profile?]
 	)
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

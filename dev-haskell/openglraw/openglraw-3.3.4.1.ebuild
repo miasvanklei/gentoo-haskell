@@ -17,13 +17,13 @@ HOMEPAGE="https://www.haskell.org/haskellwiki/Opengl"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/fixed-0.2:=[profile?] <dev-haskell/fixed-0.4:=[profile?]
 	>=dev-haskell/half-0.2.2.1:=[profile?] <dev-haskell/half-0.4:=[profile?]
 	>=dev-haskell/text-0.1:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	virtual/opengl
 "
 DEPEND="${RDEPEND}

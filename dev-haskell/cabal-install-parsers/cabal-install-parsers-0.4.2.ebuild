@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2 BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/base16-bytestring-1.0.0.0:=[profile?] <dev-haskell/base16-bytestring-1.1:=[profile?]
 	>=dev-haskell/binary-instances-1:=[profile?] <dev-haskell/binary-instances-1.1:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-1.0.0.0:=[profile?] <dev-haskell/base16
 	>=dev-haskell/lukko-0.1.1:=[profile?] <dev-haskell/lukko-0.2:=[profile?]
 	>=dev-haskell/network-uri-2.6.1.0:=[profile?] <dev-haskell/network-uri-2.7:=[profile?]
 	>=dev-haskell/tar-0.5.1.1:=[profile?] <dev-haskell/tar-0.6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-haskell/aeson-1.4.6.0:=[profile?] <dev-haskell/aeson-1.6:=[profile?]
 "
 DEPEND="${RDEPEND}

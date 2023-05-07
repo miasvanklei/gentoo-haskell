@@ -14,14 +14,14 @@ HOMEPAGE="https://github.com/haskell-unordered-containers/hashable"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="random-initial-seed"
 
 RESTRICT=test # fails 1 test consistently on ghc-9.0.2
 
 RDEPEND=">=dev-haskell/base-orphans-0.8.6:=[profile?] <dev-haskell/base-orphans-0.9:=[profile?]
 	>=dev-haskell/data-array-byte-0.1.0.1:=[profile?] <dev-haskell/data-array-byte-0.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

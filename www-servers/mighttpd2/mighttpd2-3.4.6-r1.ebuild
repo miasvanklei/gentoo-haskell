@@ -13,7 +13,7 @@ HOMEPAGE="https://kazu-yamamoto.github.io/mighttpd2/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="tls"
 
 CABAL_CHDEPS=(
@@ -43,7 +43,7 @@ RDEPEND="
 	>=dev-haskell/wai-http2-extra-0.1:=[profile?]
 	>=dev-haskell/wai-logger-2.3.0:=[profile?]
 	>=dev-haskell/warp-3.3:=[profile?] <dev-haskell/warp-3.4:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	tls? (
 		dev-haskell/tls:=[profile?]
 		>=dev-haskell/tls-session-manager-0.0.2.0:=[profile?]

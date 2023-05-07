@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # Ambiguous module name ‘Data.Kind’: it was found in multiple packages: base-4.12.0.0 kinds-0.0.1.5
@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/exact-pi-0.4.1:=[profile?] <dev-haskell/exact-pi-0.6:=[pr
 	>=dev-haskell/numtype-dk-0.5:=[profile?] <dev-haskell/numtype-dk-1.1:=[profile?]
 	dev-haskell/semigroups:=[profile?]
 	>=dev-haskell/vector-0.10:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.24.0.0

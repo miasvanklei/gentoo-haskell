@@ -13,7 +13,7 @@ HOMEPAGE="https://jaspervdj.be/hakyll"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="buildwebsite +checkexternal +previewserver +usepandoc +watchserver"
 
 RDEPEND=">=dev-haskell/blaze-html-0.5:=[profile?] <dev-haskell/blaze-html-0.10:=[profile?]
@@ -36,7 +36,7 @@ RDEPEND=">=dev-haskell/blaze-html-0.5:=[profile?] <dev-haskell/blaze-html-0.10:=
 	>=dev-haskell/vector-0.11:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-haskell/wai-app-static-3.1:=[profile?] <dev-haskell/wai-app-static-3.2:=[profile?]
 	>=dev-haskell/yaml-0.8.11:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	>=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?] <dev-haskell/text-2.1:=[profile?]
 	buildwebsite? ( >=app-text/pandoc-2.11:=[profile?] <app-text/pandoc-3.2:=[profile?] )

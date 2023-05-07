@@ -16,12 +16,12 @@ HOMEPAGE="https://hackage.haskell.org/package/rere"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+cfg intersection"
 
 RDEPEND="
 	>=dev-haskell/quickcheck-2.14.2:2=[profile?] <dev-haskell/quickcheck-2.15:2=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	cfg? (
 		>=dev-haskell/fin-0.2:=[profile?] <dev-haskell/fin-0.3:=[profile?]
 		>=dev-haskell/vec-0.4:=[profile?] <dev-haskell/vec-0.5:=[profile?]

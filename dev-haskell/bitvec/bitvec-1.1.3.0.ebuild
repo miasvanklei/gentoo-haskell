@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/Bodigrim/bitvec"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+gmp"
 
 RDEPEND="
 	>=dev-haskell/primitive-0.5:=[profile?]
 	>=dev-haskell/vector-0.11:=[profile?] <dev-haskell/vector-0.14:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	gmp? (
 		dev-libs/gmp
 	)

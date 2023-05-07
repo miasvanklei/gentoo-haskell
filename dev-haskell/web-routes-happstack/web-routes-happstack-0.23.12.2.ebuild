@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/web-routes-happstack"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'happstack-server >= 6.6    && < 7.8' 'happstack-server >= 6.6'
@@ -22,7 +22,7 @@ CABAL_CHDEPS=(
 RDEPEND="
 	>=dev-haskell/happstack-server-6.6:=[profile?]
 	>=dev-haskell/web-routes-0.27.1:=[profile?] <dev-haskell/web-routes-0.28:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/klapaucius/vector-hashtables#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/hashable:=[profile?]
 	>=dev-haskell/primitive-0.7.1.0:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

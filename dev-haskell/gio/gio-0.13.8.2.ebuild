@@ -13,14 +13,14 @@ HOMEPAGE="https://projects.haskell.org/gtk2hs/"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	gtk2hs-buildtools
 )
 
 RDEPEND=">=dev-haskell/glib-0.13.0.0:=[profile?] <dev-haskell/glib-0.14:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	dev-libs/glib:2
 "
 DEPEND="${RDEPEND}

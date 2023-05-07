@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/phadej/vec"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+adjunctions +distributive +semigroupoids"
 # Turning on 'adjunctions' without 'distributive' does nothing.
 # See <https://hackage.haskell.org/package/vec-0.4.1/revision/1.cabal>
@@ -30,7 +30,7 @@ RDEPEND=">=dev-haskell/boring-0.2:=[profile?] <dev-haskell/boring-0.3:=[profile?
 	>=dev-haskell/hashable-1.2.7.0:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
 	>=dev-haskell/indexed-traversable-0.1.1:=[profile?] <dev-haskell/indexed-traversable-0.2:=[profile?]
 	>=dev-haskell/quickcheck-2.14.2:2=[profile?] <dev-haskell/quickcheck-2.15:2=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	adjunctions? ( >=dev-haskell/adjunctions-4.4:=[profile?] <dev-haskell/adjunctions-4.5:=[profile?] )
 	distributive? ( >=dev-haskell/distributive-0.5.3:=[profile?] <dev-haskell/distributive-0.7:=[profile?] )
 	semigroupoids? ( >=dev-haskell/semigroupoids-5.3.5:=[profile?] <dev-haskell/semigroupoids-5.4:=[profile?] )

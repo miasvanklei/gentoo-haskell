@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # missing files: Could not find module ‘Tests.Hermite’
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/prettyclass:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-haskell/vector-space:=[profile?]
 	>=dev-haskell/vector-th-unbox-0.2.1:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.8

@@ -15,13 +15,13 @@ HOMEPAGE="https://hackage.haskell.org/package/force-layout"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/data-default-class-0.0.1:=[profile?] <dev-haskell/data-default-class-0.2:=[profile?]
 	>=dev-haskell/lens-3.0:=[profile?] <dev-haskell/lens-5.3:=[profile?]
 	>=dev-haskell/linear-1.10:=[profile?] <dev-haskell/linear-1.22:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

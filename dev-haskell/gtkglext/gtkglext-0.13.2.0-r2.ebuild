@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="2/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 GHC_BOOTSTRAP_PACKAGES=(
@@ -25,7 +25,7 @@ GHC_BOOTSTRAP_PACKAGES=(
 RDEPEND=">=dev-haskell/glib-0.13.3.0:=[profile?] <dev-haskell/glib-0.14:=[profile?]
 	>=dev-haskell/gtk-0.14.3:=[profile?] <dev-haskell/gtk-0.16:=[profile?]
 	>=dev-haskell/pango-0.13.2.0:=[profile?] <dev-haskell/pango-0.14:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	x11-libs/gtkglext
 "
 DEPEND="${RDEPEND}

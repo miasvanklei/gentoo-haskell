@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell/lsp/blob/master/lsp-test/README.md"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.14.1.0-disable-test-timeout.patch"
@@ -35,7 +35,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/parser-combinators-1.2:=[profile?]
 	dev-haskell/some:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

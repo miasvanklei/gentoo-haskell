@@ -13,7 +13,7 @@ HOMEPAGE="https://www.yesodweb.com/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/conduit-1.3:=[profile?]
@@ -33,7 +33,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/yesod-core-1.6:=[profile?] <dev-haskell/yesod-core-1.7:=[profile?]
 	>=dev-haskell/yesod-form-1.6:=[profile?] <dev-haskell/yesod-form-1.8:=[profile?]
 	>=dev-haskell/yesod-persistent-1.6:=[profile?] <dev-haskell/yesod-persistent-1.7:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

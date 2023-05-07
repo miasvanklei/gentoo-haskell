@@ -15,12 +15,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/fixed-0.2.1:=[profile?]
 	>=dev-haskell/half-0.2:=[profile?] <dev-haskell/half-0.4:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	virtual/opengl
 "
 DEPEND="${RDEPEND}

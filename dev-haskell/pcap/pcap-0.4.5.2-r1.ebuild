@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/network:=[profile?]
-		>=dev-lang/ghc-6.12.1:=
+		>=dev-lang/ghc-6.12.1:=[profile?]
 		net-libs/libpcap"
 DEPEND="${RDEPEND}
 		>=dev-haskell/cabal-1.6"

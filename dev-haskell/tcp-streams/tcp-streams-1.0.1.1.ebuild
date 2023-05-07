@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # needs network
@@ -27,7 +27,7 @@ RDEPEND="dev-haskell/data-default-class:=[profile?]
 	>=dev-haskell/x509-1.5:=[profile?] <dev-haskell/x509-2.0:=[profile?]
 	>=dev-haskell/x509-store-1.5:=[profile?] <dev-haskell/x509-store-2.0:=[profile?]
 	>=dev-haskell/x509-system-1.5:=[profile?] <dev-haskell/x509-system-2.0:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

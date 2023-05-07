@@ -16,7 +16,7 @@ HOMEPAGE="https://www.haskell.org/haskellwiki/Synthesizer"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/event-list-0.1:=[profile?] <dev-haskell/event-list-0.2:=[profile?]
 	>=dev-haskell/explicit-exception-0.1.6:=[profile?] <dev-haskell/explicit-exception-0.3:=[profile?]
@@ -34,7 +34,7 @@ RDEPEND=">=dev-haskell/event-list-0.1:=[profile?] <dev-haskell/event-list-0.2:=[
 	>=dev-haskell/storable-tuple-0.0.1:=[profile?] <dev-haskell/storable-tuple-0.1:=[profile?]
 	>=dev-haskell/storablevector-0.2.5:=[profile?] <dev-haskell/storablevector-0.3:=[profile?]
 	>=dev-haskell/utility-ht-0.0.14:=[profile?] <dev-haskell/utility-ht-0.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

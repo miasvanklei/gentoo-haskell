@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-0.3.2-fix-ghc-9.patch" )
 
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/mtl-2.0.1.0:=[profile?]
 	>=dev-haskell/parsec-3.1.1:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?]
 	>=dev-haskell/th-lift-0.5.3:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

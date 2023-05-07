@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/active"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/lens-4.0:=[profile?] <dev-haskell/lens-5.3:=[profile?]
@@ -21,7 +21,7 @@ RDEPEND="
 	>=dev-haskell/semigroupoids-1.2:=[profile?] <dev-haskell/semigroupoids-5.4:=[profile?]
 	>=dev-haskell/semigroups-0.1:=[profile?] <dev-haskell/semigroups-0.21:=[profile?]
 	>=dev-haskell/vector-0.10:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -15,14 +15,14 @@ HOMEPAGE="https://github.com/informatikr/aeson-pretty"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+executable"
 
 RDEPEND=">=dev-haskell/base-compat-0.9:=[profile?]
 	>=dev-haskell/scientific-0.3:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.14.0:=[profile?]
 	>=dev-haskell/vector-0.9:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	executable? ( >=dev-haskell/aeson-0.6:=[profile?]
 			>=dev-haskell/attoparsec-0.10:=[profile?]

@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/NorfairKing/validity#readme"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/genvalidity-1.0:=[profile?]
 	>=dev-haskell/genvalidity-property-0.5:=[profile?]
@@ -21,7 +21,7 @@ RDEPEND=">=dev-haskell/genvalidity-1.0:=[profile?]
 	>=dev-haskell/hspec-core-2.5.0:=[profile?]
 	dev-haskell/quickcheck:2=[profile?]
 	>=dev-haskell/validity-0.5:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

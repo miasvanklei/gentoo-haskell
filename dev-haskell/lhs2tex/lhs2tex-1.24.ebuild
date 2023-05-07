@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/kosmikus/lhs2tex"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	regex-compat
@@ -23,7 +23,7 @@ GHC_BOOTSTRAP_PACKAGES=(
 # for guide generation. dev-texlive/texlive-latexextra provides polytable
 RDEPEND="
 	dev-haskell/regex-compat:=
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	dev-texlive/texlive-mathscience:=
 	dev-texlive/texlive-latexextra:=
 "

@@ -13,11 +13,11 @@ HOMEPAGE="https://github.com/tek/incipit-core#readme"
 
 LICENSE="BSD-2-with-patent"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="~dev-haskell/incipit-base-0.5.1.0:=[profile?]
 	>=dev-haskell/polysemy-1.6:=[profile?] <dev-haskell/polysemy-2:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

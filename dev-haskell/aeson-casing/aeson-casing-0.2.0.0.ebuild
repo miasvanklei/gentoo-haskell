@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 # Upstream bug:  https://github.com/AndrewRademacher/aeson-casing/issues/7
 RESTRICT=test # does not preserve ordering
 
 RDEPEND=">=dev-haskell/aeson-0.8:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

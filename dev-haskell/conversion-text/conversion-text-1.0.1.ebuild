@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/base-prelude-0.1.19:=[profile?] <dev-haskell/base-prelude-2:=[profile?]
 	>=dev-haskell/conversion-1:=[profile?] <dev-haskell/conversion-2:=[profile?]
 	>=dev-haskell/conversion-bytestring-1.0.0.1:=[profile?] <dev-haskell/conversion-bytestring-2:=[profile?]
 	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2:=[profile?]
-	>=dev-lang/ghc-7.6.1:=
+	>=dev-lang/ghc-7.6.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.16.0

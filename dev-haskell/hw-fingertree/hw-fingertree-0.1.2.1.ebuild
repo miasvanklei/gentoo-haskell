@@ -15,11 +15,11 @@ HOMEPAGE="https://github.com/haskell-works/hw-fingertree#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/hw-prim-0.6.2.25:=[profile?] <dev-haskell/hw-prim-0.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/attoparsec:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/attoparsec:=[profile?]
 	dev-haskell/http-api-data:=[profile?]
 	dev-haskell/network-uri:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10

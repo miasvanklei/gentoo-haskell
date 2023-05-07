@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=app-text/pandoc-2.0:=[profile?]
 	>=dev-haskell/blaze-html-0.5:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=app-text/pandoc-2.0:=[profile?]
 	>=dev-haskell/xss-sanitize-0.3.1:=[profile?]
 	>=dev-haskell/yesod-core-1.2:=[profile?]
 	>=dev-haskell/yesod-form-1.3:=[profile?]
-	>=dev-lang/ghc-8.8.3:=
+	>=dev-lang/ghc-8.8.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.1.0"

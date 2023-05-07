@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/base64-bytestring-0.1:=[profile?] <dev-haskell/base64-bytestring-1.3:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/base64-bytestring-0.1:=[profile?] <dev-haskell/base64-byt
 	>=dev-haskell/rsa-2.0:=[profile?] <dev-haskell/rsa-2.5:=[profile?]
 	>=dev-haskell/sha-1.4:=[profile?] <dev-haskell/sha-1.7:=[profile?]
 	>=dev-haskell/transformers-compat-0.3:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

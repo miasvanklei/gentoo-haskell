@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # missing files
@@ -27,7 +27,7 @@ RDEPEND="dev-haskell/blaze-builder:=[profile?]
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/transformers:=[profile?]
 	dev-haskell/yesod-core:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

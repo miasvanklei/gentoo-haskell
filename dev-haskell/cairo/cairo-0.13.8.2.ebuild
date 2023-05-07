@@ -14,11 +14,11 @@ HOMEPAGE="https://projects.haskell.org/gtk2hs/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+svg"
 
 RDEPEND=">=dev-haskell/utf8-string-0.2:=[profile?] <dev-haskell/utf8-string-1.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	x11-libs/cairo
 "
 DEPEND="${RDEPEND}

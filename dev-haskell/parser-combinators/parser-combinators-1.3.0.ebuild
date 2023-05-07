@@ -18,11 +18,11 @@ SRC_URI+=" test? ( https://hackage.haskell.org/package/${TEST_P}/${TEST_P}.tar.g
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="test"
 RESTRICT+=" !test? ( test )"
 
-RDEPEND=">=dev-lang/ghc-8.6.3:=
+RDEPEND=">=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

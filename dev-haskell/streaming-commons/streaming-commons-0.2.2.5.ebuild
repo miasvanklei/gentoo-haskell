@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/fpco/streaming-commons"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/async:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND="
 	dev-haskell/random:=[profile?]
 	dev-haskell/stm:=[profile?]
 	dev-haskell/zlib:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

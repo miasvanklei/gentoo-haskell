@@ -19,10 +19,10 @@ SRC_URI="
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+binary +hashable +template-haskell"
 
-RDEPEND=">=dev-lang/ghc-7.4.1:=
+RDEPEND=">=dev-lang/ghc-7.4.1:=[profile?]
 	hashable? ( >=dev-haskell/hashable-1.1.2.0:=[profile?] )
 "
 DEPEND="${RDEPEND}"

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # likes to fail under a load
@@ -32,7 +32,7 @@ RDEPEND=">=dev-haskell/aeson-0.6.0.0:=[profile?]
 	>=dev-haskell/vector-algorithms-0.4:=[profile?]
 	>=dev-haskell/vector-binary-instances-0.2.1:=[profile?]
 	dev-haskell/vector-th-unbox:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.8

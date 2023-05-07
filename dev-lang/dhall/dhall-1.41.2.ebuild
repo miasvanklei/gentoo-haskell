@@ -16,7 +16,7 @@ HOMEPAGE="https://hackage.haskell.org/package/dhall"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+http +http-client-tls"
 REQUIRED_USE="http-client-tls? ( http )" # carry over between version bumps
 
@@ -60,7 +60,7 @@ RDEPEND=">=dev-haskell/aeson-1.0.0.0:=[profile?] <dev-haskell/aeson-2.2:=[profil
 	>=dev-haskell/unordered-containers-0.1.3.0:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	<dev-haskell/uri-encode-1.6:=[profile?]
 	>=dev-haskell/vector-0.11.0.0:=[profile?] <dev-haskell/vector-0.14:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	http? ( >=dev-haskell/http-client-0.5.0:=[profile?] <dev-haskell/http-client-0.8:=[profile?]
 		>=dev-haskell/http-types-0.7.0:=[profile?] <dev-haskell/http-types-0.13:=[profile?]
 		http-client-tls? ( >=dev-haskell/http-client-tls-0.2.0:=[profile?] <dev-haskell/http-client-tls-0.4:=[profile?] ) )

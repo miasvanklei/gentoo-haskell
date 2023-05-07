@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server#readme"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+fingertree"
 
 RDEPEND="
@@ -35,7 +35,7 @@ RDEPEND="
 	dev-haskell/optparse-applicative:=[profile?]
 	>=dev-haskell/regex-tdfa-1.3.1.0:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 	fingertree? (
 		dev-haskell/hw-fingertree:=[profile?]
 	)

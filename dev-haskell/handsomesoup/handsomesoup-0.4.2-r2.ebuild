@@ -18,7 +18,7 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 RDEPEND="dev-haskell/http:=[profile?]
@@ -26,7 +26,7 @@ RDEPEND="dev-haskell/http:=[profile?]
 	dev-haskell/hxt-http:=[profile?]
 	dev-haskell/mtl:=[profile?]
 	dev-haskell/parsec:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-haskell/network-2.6:=[profile?]
 	>=dev-haskell/network-uri-2.6:=[profile?]
 "

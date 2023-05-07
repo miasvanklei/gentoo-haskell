@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # Ambiguous module name ‘Network.DNS’: dns-4.0.1 resolv-0.1.2.0
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/cmdargs-0.10:=
 	>=dev-haskell/pcre-light-0.4:=
 	>=dev-haskell/tasty-0.8:=
 	>=dev-haskell/tasty-hunit-0.8:=
-	>=dev-lang/ghc-7.6.1:=
+	>=dev-lang/ghc-7.6.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.16.0

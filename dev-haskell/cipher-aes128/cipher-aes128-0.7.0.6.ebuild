@@ -18,12 +18,12 @@ PATCHES=( "${DISTDIR}/${P}-ghc-9.2.patch" )
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/cereal:=[profile?]
 	>=dev-haskell/crypto-api-0.13:=[profile?]
 	dev-haskell/tagged:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1 <dev-haskell/cabal-3.7

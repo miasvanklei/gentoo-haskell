@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/hsql-1.8.2:=[profile?]
-		>=dev-lang/ghc-6.10.1:=
+		>=dev-lang/ghc-6.10.1:=[profile?]
 		>=dev-db/unixODBC-2.2"
 DEPEND="${RDEPEND}
 		dev-haskell/cabal"

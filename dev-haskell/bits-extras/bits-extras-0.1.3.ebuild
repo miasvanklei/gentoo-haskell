@@ -14,12 +14,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="test"
 
 RESTRICT=test # fails trailingZeros test
 
-RDEPEND=">=dev-lang/ghc-7.4.1:=
+RDEPEND=">=dev-lang/ghc-7.4.1:=[profile?]
 	test? ( dev-haskell/hunit:=[profile?]
 		dev-haskell/quickcheck:2=[profile?]
 		dev-haskell/test-framework:=[profile?]

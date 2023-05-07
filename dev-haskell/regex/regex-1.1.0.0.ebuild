@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/base-compat-0.6:=[profile?] <dev-haskell/base-compat-1:=[profile?]
@@ -26,7 +26,7 @@ RDEPEND=">=dev-haskell/base-compat-0.6:=[profile?] <dev-haskell/base-compat-1:=[
 	>=dev-haskell/time-locale-compat-0.1:=[profile?]
 	>=dev-haskell/unordered-containers-0.2:=[profile?]
 	>=dev-haskell/utf8-string-1:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

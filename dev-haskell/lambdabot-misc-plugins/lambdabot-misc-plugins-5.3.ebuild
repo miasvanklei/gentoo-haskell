@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/lambdabot-core-5.3:=[profile?] <dev-haskell/lambdabot-core-5.4:=[profile?]
@@ -33,7 +33,7 @@ RDEPEND=">=dev-haskell/lambdabot-core-5.3:=[profile?] <dev-haskell/lambdabot-cor
 	>=dev-haskell/transformers-base-0.4:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?]
 	>=dev-haskell/zlib-0.5:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

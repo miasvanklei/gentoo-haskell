@@ -18,7 +18,7 @@ RESTRICT="test"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="embed-files"
 
 RDEPEND="
@@ -34,7 +34,7 @@ RDEPEND="
 	dev-haskell/random:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.7:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	embed-files? (
 		>=dev-haskell/file-embed-0.0.11:=[profile?]
 	)

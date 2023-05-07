@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/blaze-html-0.9.1.2:=[profile?]
 	>=dev-haskell/blaze-markup-0.8.2.8:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND=">=dev-haskell/blaze-html-0.9.1.2:=[profile?]
 	>=dev-haskell/shakespeare-2.0.26:=[profile?]
 	>=dev-haskell/template-haskell-compat-v0208-0.1.7:=[profile?]
 	>=dev-haskell/text-1.2.4.1:=[profile?]
-	>=dev-lang/ghc-9.0.2:=
+	>=dev-lang/ghc-9.0.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

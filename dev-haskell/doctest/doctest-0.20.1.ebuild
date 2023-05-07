@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/sol/doctest#readme"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/base-compat-0.7.0:=[profile?]
@@ -21,7 +21,7 @@ RDEPEND="
 	>=dev-haskell/ghc-paths-0.1.0.9:=[profile?]
 	|| ( dev-lang/ghc dev-haskell/process[profile?] )
 	>=dev-haskell/syb-0.3:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

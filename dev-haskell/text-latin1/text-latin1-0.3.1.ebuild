@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/case-insensitive-1.0:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/case-insensitive-1.0:=[profile?]
 	>=dev-haskell/hashable-1.1:=[profile?]
 	>=dev-haskell/semigroups-0.18.4:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.6.0

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="test"
 
 RDEPEND=">=dev-haskell/base64-bytestring-0.1.1.1:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/base64-bytestring-0.1.1.1:=[profile?]
 	dev-haskell/setenv:=[profile?]
 	>=dev-haskell/skein-1.0:=[profile?] <dev-haskell/skein-1.1:=[profile?]
 	>=dev-haskell/tagged-0.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

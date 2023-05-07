@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell/lsp"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-1.2.2.0:=[profile?]
 	dev-haskell/data-default:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/aeson-1.2.2.0:=[profile?]
 	dev-haskell/scientific:=[profile?]
 	dev-haskell/some:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

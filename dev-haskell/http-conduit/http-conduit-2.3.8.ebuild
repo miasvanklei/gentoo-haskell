@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # needs network
@@ -30,7 +30,7 @@ RDEPEND=">=dev-haskell/aeson-0.8:=[profile?]
 	dev-haskell/mtl:=[profile?]
 	>=dev-haskell/resourcet-1.1:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-haskell/aeson-0.8:=[profile?]
 "
 DEPEND="${RDEPEND}

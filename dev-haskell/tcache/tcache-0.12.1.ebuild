@@ -17,7 +17,7 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/hashtables:=[profile?]
@@ -26,7 +26,7 @@ RDEPEND="dev-haskell/hashtables:=[profile?]
 	>=dev-haskell/refserialize-0.4.0:=[profile?]
 	dev-haskell/stm:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.6

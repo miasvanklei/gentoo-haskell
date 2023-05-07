@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/snoyberg/mono-traversable#readme"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/async:=[profile?]
 	>=dev-haskell/basic-prelude-0.7:=[profile?]
@@ -32,7 +32,7 @@ RDEPEND="dev-haskell/async:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-haskell/vector-instances:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

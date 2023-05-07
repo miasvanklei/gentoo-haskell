@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 GHC_BOOTSTRAP_PACKAGES=(
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/cairo-0.13.0.0:= <dev-haskell/cairo-0.14:=
 	>=dev-haskell/glib-0.13.0.0:= <dev-haskell/glib-0.14:=
 	dev-haskell/mtl:=
 	dev-haskell/text:=
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	gnome-base/librsvg
 "
 DEPEND="${RDEPEND}

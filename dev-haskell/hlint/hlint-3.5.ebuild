@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ndmitchell/hlint#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="emacs ghc-lib +gpl hsyaml test"
 RESTRICT="!test? ( test )"
 
@@ -34,7 +34,7 @@ RDEPEND="
 	dev-haskell/unordered-containers:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	ghc-lib? (
 		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
 	)

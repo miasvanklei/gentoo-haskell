@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+type-errors"
 
 RDEPEND="dev-haskell/ansi-terminal:=[profile?]
@@ -30,7 +30,7 @@ RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/stm:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/unix-compat:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 	type-errors? ( dev-haskell/type-errors:=[profile?] )
 "
 DEPEND="${RDEPEND}

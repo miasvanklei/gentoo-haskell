@@ -13,14 +13,14 @@ HOMEPAGE="https://hslua.org/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 RDEPEND=">=dev-haskell/hslua-core-2.3.1:=[profile?] <dev-haskell/hslua-core-2.4:=[profile?]
 	>=dev-haskell/isocline-1.0:=[profile?] <dev-haskell/isocline-1.1:=[profile?]
 	>=dev-haskell/lua-2.3:=[profile?] <dev-haskell/lua-2.4:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

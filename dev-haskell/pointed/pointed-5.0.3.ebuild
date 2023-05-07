@@ -17,11 +17,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+comonad +kan-extensions +semigroupoids +semigroups +stm +tagged +transformers +unordered-containers"
 
 RDEPEND=">=dev-haskell/data-default-class-0.0.1:=[profile?] <dev-haskell/data-default-class-0.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	comonad? ( >=dev-haskell/comonad-5:=[profile?] <dev-haskell/comonad-6:=[profile?] )
 	kan-extensions? ( >=dev-haskell/kan-extensions-5:=[profile?] <dev-haskell/kan-extensions-6:=[profile?] )
 	semigroupoids? ( >=dev-haskell/semigroupoids-4:=[profile?] <dev-haskell/semigroupoids-6:=[profile?] )

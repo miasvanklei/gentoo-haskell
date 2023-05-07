@@ -18,12 +18,12 @@ HOMEPAGE="https://github.com/kolmodin/binary"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 RESTRICT=test # circular depend: test-framework->base-orphans->cabal->semigroups->nats->binary
 
 RDEPEND="
-	>=dev-lang/ghc-8.10.6:=
+	>=dev-lang/ghc-8.10.6:=[profile?]
 "
 DEPEND="${RDEPEND}
 "

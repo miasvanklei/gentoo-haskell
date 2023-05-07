@@ -13,12 +13,12 @@ HOMEPAGE="https://hackage.haskell.org/package/saltine"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/hashable:=[profile?]
 	>=dev-haskell/profunctors-5.3:=[profile?] <dev-haskell/profunctors-5.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-libs/libsodium-1.0.13
 "
 DEPEND="${RDEPEND}

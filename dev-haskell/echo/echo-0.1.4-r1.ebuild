@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/RyanGlScott/echo"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 # Change example name to avoid name collisions
@@ -24,7 +24,7 @@ CABAL_CHDEPS=(
 
 RDEPEND="
 	|| ( dev-lang/ghc ( >=dev-haskell/process-1.0.1.1[profile?] <dev-haskell/process-1.7[profile?] ) )
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

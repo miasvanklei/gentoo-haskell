@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/typeclasses/chell"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/chell-0.3:=[profile?] <dev-haskell/chell-0.6:=[profile?]
 	>=dev-haskell/quickcheck-2.7:2=[profile?] <dev-haskell/quickcheck-2.15:2=[profile?]
 	>=dev-haskell/random-1.1:=[profile?] <dev-haskell/random-1.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0

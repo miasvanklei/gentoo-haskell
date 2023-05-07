@@ -14,13 +14,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="constraints debug examples"
 
 RESTRICT=test # Test suite functional-tests: FAIL
 
-RDEPEND=">=dev-lang/ghc-8.0.1:=[profile?] <dev-lang/ghc-9.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+RDEPEND=">=dev-lang/ghc-8.4.3:=[profile?] <dev-lang/ghc-9.1:=[profile?]
 	constraints? ( >=dev-haskell/constraints-0.6:=[profile?] )
 "
 DEPEND="${RDEPEND}

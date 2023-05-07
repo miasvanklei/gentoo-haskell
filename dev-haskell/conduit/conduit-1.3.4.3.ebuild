@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/snoyberg/conduit"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/mono-traversable-1.0.7:=[profile?]
 	dev-haskell/primitive:=[profile?]
 	>=dev-haskell/resourcet-1.2:=[profile?] <dev-haskell/resourcet-1.3:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

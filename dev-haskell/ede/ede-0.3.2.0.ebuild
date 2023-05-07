@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # missing files
@@ -35,7 +35,7 @@ RDEPEND=">=dev-haskell/aeson-0.8:=[profile?]
 	>=dev-haskell/trifecta-2.1:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.3:=[profile?]
 	>=dev-haskell/vector-0.7.1:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

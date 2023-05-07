@@ -15,13 +15,13 @@ HOMEPAGE="https://hackage.haskell.org/package/openssl-streams"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/hsopenssl-0.10.3:=[profile?] <dev-haskell/hsopenssl-0.12:=[profile?]
 	>=dev-haskell/io-streams-1.0:=[profile?] <dev-haskell/io-streams-1.6:=[profile?]
 	>=dev-haskell/network-2.4:=[profile?] <dev-haskell/network-3.2:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

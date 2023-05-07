@@ -16,14 +16,14 @@ HOMEPAGE="https://github.com/simonmar/monad-par"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/abstract-deque-0.1.4:=[profile?]
 	dev-haskell/abstract-par:=[profile?]
 	>=dev-haskell/monad-par-extras-0.3:=[profile?]
 	>=dev-haskell/mwc-random-0.11:=[profile?]
 	>=dev-haskell/parallel-3.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

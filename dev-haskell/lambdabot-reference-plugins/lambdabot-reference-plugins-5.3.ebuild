@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/http-4000:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/http-4000:=[profile?]
 	>=dev-haskell/split-0.2:=[profile?]
 	>=dev-haskell/tagsoup-0.12:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10

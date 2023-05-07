@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/haskell-nix/hnix-store"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.5.0.0-test-rtsopts.patch"
@@ -43,7 +43,7 @@ RDEPEND=">=dev-haskell/algebraic-graphs-0.5:=[profile?]
 	<dev-haskell/saltine-0.3:=[profile?]
 	<dev-haskell/unordered-containers-0.3:=[profile?]
 	<dev-haskell/vector-0.13:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

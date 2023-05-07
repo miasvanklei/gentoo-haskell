@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/erikd/hjsmin"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.2.0.4-fix-tests.patch"
@@ -25,7 +25,7 @@ RDEPEND="
 	>=dev-haskell/language-javascript-0.6:=[profile?] <dev-haskell/language-javascript-0.8:=[profile?]
 	>=dev-haskell/optparse-applicative-0.7:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-1.3:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

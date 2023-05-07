@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell-gi/haskell-gi"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	haskell-gi
@@ -31,7 +31,7 @@ RDEPEND="
 	>=dev-haskell/haskell-gi-0.26:=[profile?] <dev-haskell/haskell-gi-0.27:=[profile?]
 	>=dev-haskell/haskell-gi-base-0.26:=[profile?] <dev-haskell/haskell-gi-base-0.27:=[profile?]
 	<dev-haskell/haskell-gi-overloading-1.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	x11-libs/pango[introspection]
 "
 DEPEND="${RDEPEND}

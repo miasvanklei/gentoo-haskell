@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/puffnfresh/haskell-jwt"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.11.0-fix-tests-aeson-2.patch"
@@ -35,7 +35,7 @@ RDEPEND="
 	>=dev-haskell/vector-0.7.1:=[profile?]
 	dev-haskell/x509:=[profile?]
 	dev-haskell/x509-store:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

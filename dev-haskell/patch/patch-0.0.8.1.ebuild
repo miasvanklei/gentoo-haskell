@@ -14,7 +14,7 @@ HOMEPAGE="https://obsidian.systems"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+hlint-test"
 
 # The <hlint-3.5 restriction on ghc-9.0 shouldn't be necessary with ghc-lib
@@ -34,7 +34,7 @@ RDEPEND="
 	>=dev-haskell/semigroupoids-4.0:=[profile?] <dev-haskell/semigroupoids-6:=[profile?]
 	>=dev-haskell/these-1:=[profile?] <dev-haskell/these-1.2:=[profile?]
 	>=dev-haskell/witherable-0.3:=[profile?] <dev-haskell/witherable-0.5:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/tweag/linear-base#README"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/hashable:=[profile?]
 	>=dev-haskell/linear-generics-0.2:=[profile?]
 	dev-haskell/primitive:=[profile?]
 	dev-haskell/storable-tuple:=[profile?]
 	>=dev-haskell/vector-0.12.2:=[profile?]
-	>=dev-lang/ghc-9.0.2:=
+	>=dev-lang/ghc-9.0.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

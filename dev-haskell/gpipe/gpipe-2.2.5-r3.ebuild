@@ -20,14 +20,14 @@ SRC_URI="https://hackage.haskell.org/package/${CABAL_P}/${CABAL_P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/boolean-0.2:=[profile?] <dev-haskell/boolean-0.3:=[profile?]
 	>=dev-haskell/exception-transformers-0.3:=[profile?] <dev-haskell/exception-transformers-0.5:=[profile?]
 	>=dev-haskell/gl-0.8:=[profile?]
 	>=dev-haskell/hashtables-1.2:=[profile?]
 	>=dev-haskell/linear-1.18:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

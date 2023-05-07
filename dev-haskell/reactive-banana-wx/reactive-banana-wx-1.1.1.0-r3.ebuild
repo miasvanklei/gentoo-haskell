@@ -15,14 +15,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 WX_GTK_VER="3.0-gtk3"
 
 RDEPEND=">=dev-haskell/cabal-macosx-0.1:=[profile?] <dev-haskell/cabal-macosx-0.3:=[profile?]
 	>=dev-haskell/reactive-banana-1.1:=[profile?] <dev-haskell/reactive-banana-1.3:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	>=dev-haskell/wx-0.90.0.1:${WX_GTK_VER}=[profile?]
 	>=dev-haskell/wxcore-0.90.0.1:${WX_GTK_VER}=[profile?]
 	examples? (

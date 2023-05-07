@@ -18,12 +18,12 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/binary:=[profile?]
 		dev-haskell/network:=[profile?]
 		dev-haskell/pcap:=[profile?]
-		>=dev-lang/ghc-6.10.4:=
+		>=dev-lang/ghc-6.10.4:=[profile?]
 		net-libs/libpcap"
 DEPEND="${RDEPEND}
 		>=dev-haskell/cabal-0"

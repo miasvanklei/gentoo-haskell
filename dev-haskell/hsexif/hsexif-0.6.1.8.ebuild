@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+iconv"
 
 RDEPEND=">=dev-haskell/text-0.9:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	iconv? ( >=dev-haskell/iconv-0.4:=[profile?] <dev-haskell/iconv-0.5:=[profile?] )
 "
 DEPEND="${RDEPEND}

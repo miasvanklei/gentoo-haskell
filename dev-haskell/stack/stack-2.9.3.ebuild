@@ -14,7 +14,7 @@ HOMEPAGE="https://haskellstack.org"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.9.3-disable-network-tests.patch"
@@ -91,7 +91,7 @@ RDEPEND="
 	dev-haskell/yaml:=[profile?]
 	dev-haskell/zip-archive:=[profile?]
 	dev-haskell/zlib:=[profile?]
-	>=dev-lang/ghc-9.0.2:=
+	>=dev-lang/ghc-9.0.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+network-uri omit-data omit-serialize"
 
 RDEPEND="dev-haskell/base64-bytestring:=[profile?]
@@ -51,7 +51,7 @@ RDEPEND="dev-haskell/base64-bytestring:=[profile?]
 	dev-haskell/uuid-orphans:=[profile?]
 	dev-haskell/uuid-types:=[profile?]
 	dev-haskell/zlib:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	network-uri? ( >=dev-haskell/network-uri-2.6:=[profile?] )
 	!network-uri? ( >=dev-haskell/network-2.4:=[profile?] )
 "

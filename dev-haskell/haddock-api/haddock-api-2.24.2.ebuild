@@ -14,7 +14,7 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 LICENSE="BSD-2"
 SLOT="0/${PV}"
 # keep in sync with ghc-8.10
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 RESTRICT=test
 
@@ -33,7 +33,7 @@ RDEPEND="
 	>=dev-haskell/ghc-paths-0.1.0.9:=[profile?] <dev-haskell/ghc-paths-0.2:=[profile?]
 	>=dev-haskell/haddock-library-1.9.0:=[profile?]
 	>=dev-haskell/xhtml-3000.2.2:=[profile?] <dev-haskell/xhtml-3000.3:=[profile?]
-	>=dev-lang/ghc-8.10:= <dev-lang/ghc-8.11:=
+	>=dev-lang/ghc-8.10:=[profile?] <dev-lang/ghc-8.11:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

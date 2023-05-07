@@ -15,7 +15,7 @@ HOMEPAGE="https://docs.servant.dev/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'hspec                >= 2.6.0    && < 2.10' 'hspec >= 2.6.0'
@@ -41,7 +41,7 @@ RDEPEND="
 	>=dev-haskell/tagged-0.8.6:=[profile?] <dev-haskell/tagged-0.9:=[profile?]
 	>=dev-haskell/text-1.2.3.0:=[profile?] <dev-haskell/text-2.1:=[profile?]
 	>=dev-haskell/vault-0.3.1.2:=[profile?] <dev-haskell/vault-0.4:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

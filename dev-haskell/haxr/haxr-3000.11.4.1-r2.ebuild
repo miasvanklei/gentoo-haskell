@@ -16,7 +16,7 @@ HOMEPAGE="https://www.haskell.org/haskellwiki/HaXR"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/base-compat-0.8:=[profile?] <dev-haskell/base-compat-0.13:=[profile?]
 	dev-haskell/base64-bytestring:=[profile?]
@@ -32,7 +32,7 @@ RDEPEND=">=dev-haskell/base-compat-0.8:=[profile?] <dev-haskell/base-compat-0.13
 	dev-haskell/old-locale:=[profile?]
 	dev-haskell/old-time:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,12 +14,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~amd64 ~amd64-linux ~ppc-macos"
 # IUSE="test"
 
 RESTRICT="test" # the test suite compile fails: Not in scope: data constructor `Permissions'
 
-RDEPEND=">=dev-lang/ghc-6.10.4:="
+RDEPEND=">=dev-lang/ghc-6.10.4:=[profile?]"
 DEPEND="${RDEPEND}
 		>=dev-haskell/cabal-1.6"
 #		test? ( dev-haskell/hunit[profile?] )" # pcheck dislikes useless depends

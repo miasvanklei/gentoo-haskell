@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/mpickering/apply-refact"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=( "${FILESDIR}/${PN}-0.9.2.0-add-executable-flag.patch" )
@@ -29,7 +29,7 @@ RDEPEND="
 	>=dev-haskell/syb-0.7.1:=[profile?]
 	>=dev-haskell/uniplate-1.6.13:=[profile?]
 	>=dev-haskell/unix-compat-0.5.2:=[profile?]
-	>=dev-lang/ghc-8.6.5:=
+	>=dev-lang/ghc-8.6.5:=[profile?]
 	executable? (
 		>=dev-haskell/optparse-applicative-0.15.1.0:=[profile?]
 	)

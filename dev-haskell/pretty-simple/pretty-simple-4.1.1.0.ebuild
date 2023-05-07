@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/cdepillabout/pretty-simple"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples executable"
 
 GHC_BOOTSTRAP_PACKAGES=(
@@ -23,7 +23,7 @@ GHC_BOOTSTRAP_PACKAGES=(
 
 RDEPEND=">=dev-haskell/prettyprinter-1.7.0:=[profile?]
 	>=dev-haskell/prettyprinter-ansi-terminal-1.1.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	examples? ( dev-haskell/aeson:=[profile?] )
 	executable? ( dev-haskell/optparse-applicative:=[profile?] )
 "

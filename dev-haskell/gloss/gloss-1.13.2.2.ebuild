@@ -13,7 +13,7 @@ HOMEPAGE="https://gloss.ouroborus.net"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="glfw +glut"
 
 RDEPEND="
@@ -21,7 +21,7 @@ RDEPEND="
 	>=dev-haskell/gloss-rendering-1.13:=[profile?] <dev-haskell/gloss-rendering-1.14:=[profile?]
 	>=dev-haskell/glut-2.7:=[profile?] <dev-haskell/glut-2.8:=[profile?]
 	>=dev-haskell/opengl-2.12:=[profile?] <dev-haskell/opengl-3.1:=[profile?]
-	>=dev-lang/ghc-9.2.4:=
+	>=dev-lang/ghc-9.2.4:=[profile?]
 	glfw? (
 		>=dev-haskell/glfw-b-1.4.1.0:=[profile?] <dev-haskell/glfw-b-2:=[profile?]
 	)

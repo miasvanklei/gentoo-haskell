@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-3"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="ibus +pulseaudio"
 
 RDEPEND="dev-haskell/cereal:=[profile?]
@@ -32,7 +32,7 @@ RDEPEND="dev-haskell/cereal:=[profile?]
 	dev-haskell/stm:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/transformers-compat:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	ibus? ( dev-haskell/dbus:=[profile?]
 		dev-haskell/ibus-hs:=[profile?] )
 	pulseaudio? ( >=dev-haskell/pulseaudio-0.0.2.0:=[profile?] <dev-haskell/pulseaudio-0.1.0.0:=[profile?] )

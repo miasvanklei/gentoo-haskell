@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/mpickering/hie-bios"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-0.11.0-disable-network-tests.patch" )
 
@@ -36,7 +36,7 @@ RDEPEND="
 	>=dev-haskell/unordered-containers-0.2.9:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/vector-0.12.0:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-haskell/yaml-0.10.0:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="debug tester"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/persistent-template-2.6.0:=[profile?]
 	dev-haskell/resourcet:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	tester? ( dev-haskell/blaze-html:=[profile?]
 			>=dev-haskell/esqueleto-2.1:=[profile?]
 			dev-haskell/monad-control:=[profile?] )

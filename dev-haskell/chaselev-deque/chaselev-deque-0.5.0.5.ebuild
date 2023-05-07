@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/rrnewton/haskell-lockfree/wiki"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="debug"
 
 RESTRICT=test
@@ -21,7 +21,7 @@ RESTRICT=test
 RDEPEND=">=dev-haskell/abstract-deque-0.3:=[profile?] <dev-haskell/abstract-deque-0.4:=[profile?]
 	>=dev-haskell/atomic-primops-0.5.0.2:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

@@ -13,12 +13,12 @@ HOMEPAGE="https://github.com/DougBurke/hvega"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="tools"
 
 RDEPEND=">=dev-haskell/aeson-0.11:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/unordered-containers-0.2:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	tools? ( >=dev-haskell/aeson-pretty-0.8:=[profile?] <dev-haskell/aeson-pretty-0.9:=[profile?]
 			>=dev-haskell/http-conduit-2.3:=[profile?] <dev-haskell/http-conduit-2.4:=[profile?]
 			>=dev-haskell/tagsoup-0.14:=[profile?] <dev-haskell/tagsoup-0.15:=[profile?] )

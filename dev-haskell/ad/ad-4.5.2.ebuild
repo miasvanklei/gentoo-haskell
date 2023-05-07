@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/ekmett/ad"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="ffi"
 
 RDEPEND=">=dev-haskell/adjunctions-4.4:=[profile?] <dev-haskell/adjunctions-5:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/adjunctions-4.4:=[profile?] <dev-haskell/adjunctions-5:=[
 	>=dev-haskell/nats-0.1.2:=[profile?] <dev-haskell/nats-2:=[profile?]
 	>=dev-haskell/reflection-1.4:=[profile?] <dev-haskell/reflection-3:=[profile?]
 	>=dev-haskell/semigroups-0.16:=[profile?] <dev-haskell/semigroups-1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

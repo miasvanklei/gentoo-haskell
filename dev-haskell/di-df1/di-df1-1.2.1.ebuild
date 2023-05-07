@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/k0001/di"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/df1:=[profile?]
 	dev-haskell/di-core:=[profile?]
 	dev-haskell/di-handle:=[profile?]
 	dev-haskell/di-monad:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

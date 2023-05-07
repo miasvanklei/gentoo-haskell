@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/skogsbaer/HTF/"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -42,7 +42,7 @@ RDEPEND="
 	>=dev-haskell/regex-compat-0.92:=[profile?]
 	dev-haskell/vector:=[profile?]
 	>=dev-haskell/xmlgen-0.6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/kowainik/validation-selective"
 
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	cabal-doctest
@@ -25,7 +25,7 @@ PATCHES=(
 
 RDEPEND="
 	>=dev-haskell/selective-0.3:=[profile?] <dev-haskell/selective-0.6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4

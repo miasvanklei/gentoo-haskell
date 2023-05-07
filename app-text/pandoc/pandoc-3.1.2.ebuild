@@ -14,7 +14,7 @@ HOMEPAGE="https://pandoc.org"
 
 LICENSE="GPL-2+"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="embed-data-files"
 
 RESTRICT=test # one test case fails with newer deps
@@ -72,7 +72,7 @@ RDEPEND=">=dev-haskell/aeson-2.0.1.0:=[profile?] <dev-haskell/aeson-2.2:=[profil
 	>=dev-haskell/yaml-0.11:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
 	>=dev-haskell/zip-archive-0.4.3:=[profile?] <dev-haskell/zip-archive-0.5:=[profile?]
 	>=dev-haskell/zlib-0.5:=[profile?] <dev-haskell/zlib-0.7:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

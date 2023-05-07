@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.7.0:=[profile?]
 	>=dev-haskell/aeson-pretty-0.7.0:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/aeson-0.7.0:=[profile?]
 	>=dev-haskell/mtl-2.1.0:=[profile?]
 	>=dev-haskell/network-2.4.0:=[profile?]
 	>=dev-haskell/text-1.1.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

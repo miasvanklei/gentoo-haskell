@@ -15,7 +15,7 @@ HOMEPAGE="https://docs.servant.dev/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'hspec                >= 2.6.0    && < 2.10' 'hspec >= 2.6.0'
@@ -44,7 +44,7 @@ RDEPEND="
 	>=dev-haskell/wai-app-static-3.1.6.2:=[profile?] <dev-haskell/wai-app-static-3.2:=[profile?]
 	>=dev-haskell/warp-3.2.25:=[profile?] <dev-haskell/warp-3.4:=[profile?]
 	>=dev-haskell/word8-0.1.3:=[profile?] <dev-haskell/word8-0.2:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

@@ -14,10 +14,10 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
-RDEPEND=">=dev-lang/ghc-7.8.2:=
+RDEPEND=">=dev-lang/ghc-7.8.2:=[profile?]
 	>=dev-haskell/haskell-src-exts-simple-1.18:=[profile?]
 	>=dev-haskell/mtl-2:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?]

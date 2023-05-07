@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/jgm/skylighting"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 RDEPEND=">=dev-haskell/aeson-1.0:=[profile?]
@@ -26,7 +26,7 @@ RDEPEND=">=dev-haskell/aeson-1.0:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	>=dev-haskell/xml-conduit-1.9.1.0:=[profile?] <dev-haskell/xml-conduit-1.10:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

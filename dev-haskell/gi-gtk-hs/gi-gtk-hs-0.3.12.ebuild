@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/base-compat-0.9.0:=[profile?] <dev-haskell/base-compat-0.13:=[profile?]
 	>=dev-haskell/gi-gdk-3.0.6:=[profile?] <dev-haskell/gi-gdk-3.1:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND=">=dev-haskell/base-compat-0.9.0:=[profile?] <dev-haskell/base-compat-0.
 	>=dev-haskell/gi-gobject-2.0.6:=[profile?] <dev-haskell/gi-gobject-2.1:=[profile?]
 	>=dev-haskell/gi-gtk-3.0.26:=[profile?] <dev-haskell/gi-gtk-3.1:=[profile?]
 	>=dev-haskell/haskell-gi-base-0.25.0:=[profile?] <dev-haskell/haskell-gi-base-0.27:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

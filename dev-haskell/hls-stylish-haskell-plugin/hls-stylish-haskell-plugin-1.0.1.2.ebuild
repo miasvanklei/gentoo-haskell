@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/ghcide-1.7:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
 	>=dev-haskell/hls-plugin-api-1.4:=[profile?] <dev-haskell/hls-plugin-api-1.7:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	>=dev-haskell/stylish-haskell-0.14.2:=[profile?] <dev-haskell/stylish-haskell-0.15:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

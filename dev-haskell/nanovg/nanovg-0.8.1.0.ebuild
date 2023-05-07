@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/cocreature/nanovg-hs"
 
 LICENSE="ISC"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples gles +truetype"
 
 # Make example executables more resiliant to name collisions
@@ -25,7 +25,7 @@ CABAL_CHDEPS=(
 RDEPEND="
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-1.3:=[profile?]
 	>=dev-haskell/vector-0.11:=[profile?] <dev-haskell/vector-0.13:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	media-libs/glew:0
 	virtual/glu
 	virtual/libc

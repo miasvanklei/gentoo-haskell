@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/pjones/themoviedb"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="maintainer"
 
 RDEPEND=">=dev-haskell/aeson-2.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
@@ -21,7 +21,7 @@ RDEPEND=">=dev-haskell/aeson-2.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/http-client-tls-0.2.2:=[profile?] <dev-haskell/http-client-tls-0.4:=[profile?]
 	>=dev-haskell/http-types-0.8:=[profile?] <dev-haskell/http-types-0.13:=[profile?]
 	>=dev-haskell/relude-1.0:=[profile?] <dev-haskell/relude-1.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

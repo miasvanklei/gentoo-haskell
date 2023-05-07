@@ -20,7 +20,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/ghcide#
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable test-exe"
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -81,7 +81,7 @@ RDEPEND="
 	dev-haskell/unliftio-core:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	executable? (
 		dev-haskell/gitrev:=[profile?]
 	)

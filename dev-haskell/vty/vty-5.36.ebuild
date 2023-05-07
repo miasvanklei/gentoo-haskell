@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/jtdaugherty/vty"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/ansi-terminal-0.10.3:=[profile?]
 	>=dev-haskell/blaze-builder-0.3.3.2:=[profile?] <dev-haskell/blaze-builder-0.5:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND=">=dev-haskell/ansi-terminal-0.10.3:=[profile?]
 	dev-haskell/stm:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?] <dev-haskell/utf8-string-1.1:=[profile?]
 	>=dev-haskell/vector-0.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/binary-state:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND="dev-haskell/binary-state:=[profile?]
 	dev-haskell/mtl:=[profile?]
 	>=dev-haskell/parsec-3:=[profile?] <dev-haskell/parsec-4:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.6

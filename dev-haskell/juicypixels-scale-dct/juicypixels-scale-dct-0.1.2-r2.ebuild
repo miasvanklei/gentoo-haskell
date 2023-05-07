@@ -24,13 +24,13 @@ SRC_URI="https://hackage.haskell.org/package/${CABAL_P}/${CABAL_P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/base-compat-0.6.0:=[profile?] <dev-haskell/base-compat-0.13:=[profile?]
 	>=dev-haskell/carray-0.1.6.1:=[profile?] <dev-haskell/carray-0.2:=[profile?]
 	>=dev-haskell/fft-0.1.8.1:=[profile?] <dev-haskell/fft-0.2:=[profile?]
 	>=dev-haskell/juicypixels-3.2.5.3:=[profile?] <dev-haskell/juicypixels-3.4:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

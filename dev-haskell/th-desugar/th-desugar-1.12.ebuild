@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/goldfirere/th-desugar"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/ordered-containers-0.2.2:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND="
 	>=dev-haskell/th-lift-0.6.1:=[profile?]
 	>=dev-haskell/th-orphans-0.13.7:=[profile?]
 	>=dev-haskell/transformers-compat-0.6.3:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

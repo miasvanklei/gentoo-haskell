@@ -14,7 +14,7 @@ HOMEPAGE="https://git-annex.branchable.com/"
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 IUSE="+assistant +benchmark +dbus debug doc +gitlfs +magicmime +pairing +torrentparser +webapp"
 
 REQUIRED_USE="webapp? ( assistant )"
@@ -87,7 +87,7 @@ RDEPEND="dev-haskell/aeson:=
 	dev-haskell/utf8-string:=
 	>=dev-haskell/uuid-1.2.6:=
 	dev-haskell/vector:=
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	assistant? ( >=dev-haskell/hinotify-0.3.10:=
 			dev-haskell/mountpoints:= )
 	benchmark? ( dev-haskell/criterion:= )

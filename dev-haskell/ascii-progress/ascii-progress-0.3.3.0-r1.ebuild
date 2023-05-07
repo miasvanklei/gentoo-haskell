@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 PATCHES=( "${FILESDIR}/${PN}-0.3.3.0-fix-examples.patch" )
@@ -22,7 +22,7 @@ PATCHES=( "${FILESDIR}/${PN}-0.3.3.0-fix-examples.patch" )
 RDEPEND=">=dev-haskell/async-2.0.1.5:=[profile?]
 	>=dev-haskell/concurrent-output-1.7:=[profile?]
 	>=dev-haskell/data-default-0.5.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	examples? ( dev-haskell/random:=[profile?] )
 "
 DEPEND="${RDEPEND}

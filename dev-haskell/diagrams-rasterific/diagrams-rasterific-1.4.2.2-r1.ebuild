@@ -15,7 +15,7 @@ HOMEPAGE="https://projects.haskell.org/diagrams/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/data-default-class-0.0:=[profile?] <dev-haskell/data-default-class-0.2:=[profile?]
@@ -28,7 +28,7 @@ RDEPEND="
 	>=dev-haskell/lens-4.0:=[profile?] <dev-haskell/lens-5.3:=[profile?]
 	>=dev-haskell/optparse-applicative-0.13:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?]
 	>=dev-haskell/rasterific-0.7.4:=[profile?] <dev-haskell/rasterific-0.8:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/ucsd-progsys/liquidhaskell"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="deterministic-profiling mirror-modules-helper no-plugin"
 
 CABAL_CHDEPS=(
@@ -58,7 +58,7 @@ RDEPEND="
 	<dev-haskell/th-compat-0.2:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.11:=[profile?]
 	>=dev-haskell/vector-0.10:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	mirror-modules-helper? (
 		dev-haskell/mustache:=[profile?]
 		<dev-haskell/shelly-1.10:=[profile?]

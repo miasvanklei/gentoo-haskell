@@ -13,9 +13,9 @@ HOMEPAGE="https://www.cs.uu.nl/wiki/GenericProgramming/SYB"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
-RDEPEND=">=dev-lang/ghc-8.8.1:=
+RDEPEND=">=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

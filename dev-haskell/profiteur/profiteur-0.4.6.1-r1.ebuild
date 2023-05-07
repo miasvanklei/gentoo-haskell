@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/jaspervdj/profiteur"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="embed-data-files"
 
 CABAL_CHDEPS=(
@@ -27,7 +27,7 @@ RDEPEND="
 	>=dev-haskell/scientific-0.3:= <dev-haskell/scientific-0.4:=
 	>=dev-haskell/unordered-containers-0.2:= <dev-haskell/unordered-containers-0.3:=
 	>=dev-haskell/vector-0.10:= <dev-haskell/vector-0.13:=
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	embed-data-files? (
 		>=dev-haskell/file-embed-0.0.10:=
 	)

@@ -16,13 +16,13 @@ HOMEPAGE="https://hackage.haskell.org/package/ghc-exactprint"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="roundtrip"
 
 RDEPEND=">=dev-haskell/free-4.12:=[profile?]
 	>=dev-haskell/ghc-paths-0.1:=[profile?]
 	>=dev-haskell/syb-0.5:=[profile?]
-	>=dev-lang/ghc-8.4.3:= <dev-lang/ghc-9.2:=
+	>=dev-lang/ghc-8.4.3:=[profile?] <dev-lang/ghc-9.2:=[profile?]
 	roundtrip? (
 		dev-haskell/diff:=[profile?]
 		dev-haskell/filemanip:=[profile?]

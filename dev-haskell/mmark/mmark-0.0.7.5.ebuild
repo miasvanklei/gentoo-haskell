@@ -16,7 +16,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.11:=[profile?] <dev-haskell/aeson-3:=[profile?]
 	>=dev-haskell/case-insensitive-1.2:=[profile?] <dev-haskell/case-insensitive-1.3:=[profile?]
@@ -34,7 +34,7 @@ RDEPEND=">=dev-haskell/aeson-0.11:=[profile?] <dev-haskell/aeson-3:=[profile?]
 	>=dev-haskell/text-metrics-0.3:=[profile?] <dev-haskell/text-metrics-0.4:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.5:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/yaml-0.11.5:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0"

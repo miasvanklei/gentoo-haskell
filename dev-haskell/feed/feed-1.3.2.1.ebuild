@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-1.3.2.1-disable-doctest.patch" )
 
@@ -26,7 +26,7 @@ RDEPEND=">=dev-haskell/base-compat-0.9:=[profile?] <dev-haskell/base-compat-0.13
 	<dev-haskell/utf8-string-1.1:=[profile?]
 	>=dev-haskell/xml-conduit-1.3:=[profile?] <dev-haskell/xml-conduit-1.10:=[profile?]
 	>=dev-haskell/xml-types-0.3.6:=[profile?] <dev-haskell/xml-types-0.4:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

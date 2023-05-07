@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/foldl"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-1.4.12-cabal-doctest.patch" )
 
@@ -30,7 +30,7 @@ RDEPEND=">=dev-haskell/comonad-4.0:=[profile?] <dev-haskell/comonad-6:=[profile?
 	>=dev-haskell/semigroupoids-1.0:=[profile?] <dev-haskell/semigroupoids-5.4:=[profile?]
 	<dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/vector-0.7:=[profile?] <dev-haskell/vector-0.14:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

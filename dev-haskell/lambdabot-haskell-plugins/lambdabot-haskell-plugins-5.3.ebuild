@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/arrows-0.4:=[profile?]
@@ -41,7 +41,7 @@ RDEPEND=">=dev-haskell/arrows-0.4:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?]
 	>=dev-haskell/vector-space-0.8:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	>=dev-util/hoogle-5.0.17.1:=[profile?]
 "
 DEPEND="${RDEPEND}

@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/fpco/typed-process"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.2.10.1-smp-flag.patch"
@@ -24,7 +24,7 @@ RDEPEND="
 	|| ( dev-lang/ghc >=dev-haskell/process-1.2[profile?] )
 	dev-haskell/stm:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

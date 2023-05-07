@@ -17,7 +17,7 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # needs running mongodb
@@ -47,7 +47,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-0.1.1.6:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-haskell/tls-1.3.0:=[profile?]
 	>=dev-haskell/transformers-base-0.4.1:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	>=dev-haskell/network-3.0:=[profile?]
 	>=dev-haskell/network-bsd-2.7:=[profile?] <dev-haskell/network-bsd-2.9:=[profile?]
 "

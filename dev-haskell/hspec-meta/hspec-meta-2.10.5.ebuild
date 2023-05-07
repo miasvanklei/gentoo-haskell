@@ -13,7 +13,7 @@ HOMEPAGE="https://hspec.github.io/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/call-stack:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/random:=[profile?]
 	dev-haskell/setenv:=[profile?]
 	>=dev-haskell/stm-2.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

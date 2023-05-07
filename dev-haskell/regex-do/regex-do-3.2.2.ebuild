@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/regex-base-0.93.0:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/regex-base-0.93.0:=[profile?]
 	>=dev-haskell/stringsearch-0.3.0:=[profile?]
 	>=dev-haskell/tagged-0.8.0:=[profile?]
 	>=dev-haskell/text-1.2.0:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

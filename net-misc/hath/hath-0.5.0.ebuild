@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/cmdargs-0.10:=
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/cmdargs-0.10:=
 	>=dev-haskell/tasty-0.8:=
 	>=dev-haskell/tasty-hunit-0.8:=
 	>=dev-haskell/tasty-quickcheck-0.8.1:=
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.24.0.0

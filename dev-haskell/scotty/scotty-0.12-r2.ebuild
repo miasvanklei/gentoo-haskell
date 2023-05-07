@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/scotty-web/scotty"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.6.2.1:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/base-compat-batteries-0.10:=[profile?] <dev-haskell/base-compat-batteries-0.13:=[profile?]
@@ -34,7 +34,7 @@ RDEPEND=">=dev-haskell/aeson-0.6.2.1:=[profile?] <dev-haskell/aeson-2.2:=[profil
 	>=dev-haskell/wai-3.0.0:=[profile?] <dev-haskell/wai-3.3:=[profile?]
 	>=dev-haskell/wai-extra-3.0.0:=[profile?] <dev-haskell/wai-extra-3.2:=[profile?]
 	>=dev-haskell/warp-3.0.13:=[profile?] <dev-haskell/warp-3.4:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

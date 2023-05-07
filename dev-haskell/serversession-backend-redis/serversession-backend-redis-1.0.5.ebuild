@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/yesodweb/serversession"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/hedis-0.15:=[profile?] <dev-haskell/hedis-0.16:=[profile?]
 	dev-haskell/path-pieces:=[profile?]
 	>=dev-haskell/serversession-1.0:=[profile?] <dev-haskell/serversession-1.1:=[profile?]
 	>=dev-haskell/tagged-0.7:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

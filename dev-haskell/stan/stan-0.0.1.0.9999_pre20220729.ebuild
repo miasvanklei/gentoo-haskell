@@ -23,7 +23,7 @@ CABAL_FILE="${S}/${PN}.cabal"
 
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=(
@@ -60,7 +60,7 @@ RDEPEND="
 	>=dev-haskell/trial-optparse-applicative-0.0.0.0:=[profile?] <dev-haskell/trial-optparse-applicative-0.1:=[profile?]
 	>=dev-haskell/trial-tomland-0.0.0.0:=[profile?] <dev-haskell/trial-tomland-0.1:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.8.3:=
+	>=dev-lang/ghc-8.8.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.1.0

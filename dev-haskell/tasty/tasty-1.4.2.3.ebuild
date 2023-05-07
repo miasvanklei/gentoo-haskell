@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/UnkindPartition/tasty"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+clock"
 
 RDEPEND="
@@ -24,7 +24,7 @@ RDEPEND="
 	>=dev-haskell/tagged-0.5:=[profile?]
 	>=dev-haskell/unbounded-delays-0.1:=[profile?]
 	dev-haskell/wcwidth:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	clock? (
 		>=dev-haskell/clock-0.4.4.0:=[profile?]
 	)

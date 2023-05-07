@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/kowainik/trial"
 
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	cabal-doctest
@@ -37,7 +37,7 @@ CABAL_CHDEPS=(
 RDEPEND="
 	>=dev-haskell/colourista-0.1.0.0:=[profile?] <dev-haskell/colourista-0.2:=[profile?]
 	>=dev-haskell/dlist-0.8.0.8:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="builddemo buildrasterdemo buildtranscodedemo buildvplaydemo"
 
 RDEPEND="dev-haskell/either:=[profile?]
 	dev-haskell/exceptions:=[profile?]
 	>=dev-haskell/mtl-2.2.1:=[profile?] <dev-haskell/mtl-2.3:=[profile?]
 	>=dev-haskell/vector-0.10.9:=[profile?] <dev-haskell/vector-0.13:=[profile?]
-	>=dev-lang/ghc-7.10.1:=
+	>=dev-lang/ghc-7.10.1:=[profile?]
 	media-video/ffmpeg
 	buildrasterdemo? ( >=dev-haskell/juicypixels-3.2:=[profile?] <dev-haskell/juicypixels-3.4:=[profile?]
 				>=dev-haskell/rasterific-0.3:=[profile?] )

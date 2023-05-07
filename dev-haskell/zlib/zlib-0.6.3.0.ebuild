@@ -14,10 +14,10 @@ HOMEPAGE="https://hackage.haskell.org/package/zlib"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~ppc-macos"
+KEYWORDS="~amd64 ~ppc-macos"
 IUSE="bundled-c-zlib non-blocking-ffi"
 
-RDEPEND=">=dev-lang/ghc-8.4.3:=
+RDEPEND=">=dev-lang/ghc-8.4.3:=[profile?]
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}

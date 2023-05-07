@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=[profile?] <dev-haskell/cabal-3.9:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND="
 	>=dev-haskell/regex-tdfa-1.3.1:=[profile?] <dev-haskell/regex-tdfa-1.4:=[profile?]
 	dev-haskell/stm:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0

@@ -16,10 +16,10 @@ HOMEPAGE="https://github.com/haskell/mtl"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x86-solaris"
+KEYWORDS="~amd64 ~amd64-linux ~ppc-macos"
 
 RDEPEND="
-	>=dev-lang/ghc-8.10.6:=
+	>=dev-lang/ghc-8.10.6:=[profile?]
 "
 DEPEND="${RDEPEND}
 "

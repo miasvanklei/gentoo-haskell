@@ -16,7 +16,7 @@ HOMEPAGE="https://dhall-lang.org/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-1.0.8-cabal-doctest.patch" )
 
@@ -36,7 +36,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-1.0.0.0:=[profile?]
 	>=dev-haskell/path-io-1.6.0:=[profile?] <dev-haskell/path-io-2:=[profile?]
 	>=dev-haskell/prettyprinter-1.7.0:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 	>=dev-lang/dhall-1.38.0:=[profile?] <dev-lang/dhall-1.42:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

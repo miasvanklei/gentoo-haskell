@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/gentoo-haskell/hackport#readme"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="profile"
 
 RDEPEND="
@@ -48,7 +48,7 @@ RDEPEND="
 	>=dev-haskell/text-1.2.3.0:=
 	dev-haskell/xml:=
 	>=dev-haskell/zlib-0.5.3:=
-	>=dev-lang/ghc-8.10.6:=
+	>=dev-lang/ghc-8.10.6:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0

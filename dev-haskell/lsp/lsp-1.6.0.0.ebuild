@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/haskell/lsp"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 RDEPEND=">=dev-haskell/aeson-1.0.0.0:=[profile?]
@@ -34,7 +34,7 @@ RDEPEND=">=dev-haskell/aeson-1.0.0.0:=[profile?]
 	>=dev-haskell/unliftio-core-0.2.0.0:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-haskell/uuid-1.3:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

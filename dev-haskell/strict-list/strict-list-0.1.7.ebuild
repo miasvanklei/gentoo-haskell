@@ -13,11 +13,11 @@ HOMEPAGE="https://github.com/nikita-volkov/strict-list"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/hashable-1.2:=[profile?] <dev-haskell/hashable-2:=[profile?]
 	>=dev-haskell/semigroupoids-5.3:=[profile?] <dev-haskell/semigroupoids-6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0

@@ -17,9 +17,9 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
-RDEPEND=">=dev-lang/ghc-6.10.4:="
+RDEPEND=">=dev-lang/ghc-6.10.4:=[profile?]"
 DEPEND="${RDEPEND}
 		>=dev-haskell/cabal-1.6"
 

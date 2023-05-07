@@ -17,14 +17,14 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="test"
 
 RDEPEND=">=dev-haskell/binary-0.4.0:=[profile?]
 	>=dev-haskell/cereal-0.2:=[profile?]
 	dev-haskell/crypto-api:=[profile?]
 	dev-haskell/tagged:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10

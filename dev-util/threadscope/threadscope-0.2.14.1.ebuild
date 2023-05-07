@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="<dev-haskell/cairo-0.14:=
 	<dev-haskell/file-embed-0.1:=
@@ -23,7 +23,7 @@ RDEPEND="<dev-haskell/cairo-0.14:=
 	>=dev-haskell/gtk-0.12:= <dev-haskell/gtk-0.16:=
 	<dev-haskell/pango-0.14:=
 	>=dev-haskell/temporary-1.1:= <dev-haskell/temporary-1.4:=
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

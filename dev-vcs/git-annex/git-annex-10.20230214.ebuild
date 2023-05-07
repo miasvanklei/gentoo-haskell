@@ -14,7 +14,7 @@ HOMEPAGE="https://git-annex.branchable.com/"
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 IUSE="+assistant +benchmark +dbus debug +gitlfs +magicmime +pairing +torrentparser"
 
 GHC_BOOTSTRAP_PACKAGES=(
@@ -99,7 +99,7 @@ RDEPEND="
 	>=dev-haskell/yesod-core-1.6.0:=
 	>=dev-haskell/yesod-form-1.4.8:=
 	>=dev-haskell/yesod-static-1.5.1:=
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	assistant? (
 		>=dev-haskell/hinotify-0.3.10:=
 	)

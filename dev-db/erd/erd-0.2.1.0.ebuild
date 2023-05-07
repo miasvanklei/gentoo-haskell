@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/gitrev-1.3.1:=
 	>=dev-haskell/graphviz-2999.20:= <dev-haskell/graphviz-2999.21:=
 	>=dev-haskell/raw-strings-qq-1.1:=
 	>=dev-haskell/yaml-0.8.32:=
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

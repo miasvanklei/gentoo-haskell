@@ -18,7 +18,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server#readme"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 # Disabled:
 # - hls_plugins_stan: Requires ghc < 9
@@ -101,7 +101,7 @@ RDEPEND="
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 	hls_formatters_floskell? ( >dev-haskell/hls-floskell-plugin-1.0.1.1:=[profile?] <dev-haskell/hls-floskell-plugin-1.1:=[profile?] )
 	hls_formatters_fourmolu? ( >=dev-haskell/hls-fourmolu-plugin-1.1:=[profile?] <dev-haskell/hls-fourmolu-plugin-1.2:=[profile?] )
 	hls_formatters_ormolu? ( >=dev-haskell/hls-ormolu-plugin-1.0:=[profile?] <dev-haskell/hls-ormolu-plugin-1.1:=[profile?] )

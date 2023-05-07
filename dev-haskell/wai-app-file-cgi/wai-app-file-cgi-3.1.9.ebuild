@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/attoparsec-0.10.0.0:=[profile?]
@@ -36,7 +36,7 @@ RDEPEND=">=dev-haskell/attoparsec-0.10.0.0:=[profile?]
 	dev-haskell/wai-conduit:=[profile?]
 	>=dev-haskell/warp-3.3:=[profile?] <dev-haskell/warp-3.4:=[profile?]
 	dev-haskell/word8:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.24.0.0

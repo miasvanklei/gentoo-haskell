@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/wai-handler-launch"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/async:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND="
 	>=dev-haskell/streaming-commons-0.2:=[profile?]
 	>=dev-haskell/wai-3.0:=[profile?] <dev-haskell/wai-3.3:=[profile?]
 	>=dev-haskell/warp-3.0:=[profile?] <dev-haskell/warp-3.4:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -13,13 +13,13 @@ HOMEPAGE="https://pandoc.org/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-0.6.2:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/quickcheck-2.10:2=[profile?] <dev-haskell/quickcheck-2.15:2=[profile?]
 	>=dev-haskell/syb-0.1:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="glfw +glut"
 
 RDEPEND=">=dev-haskell/bmp-1.2:=[profile?] <dev-haskell/bmp-1.3:=[profile?]
 	>=dev-haskell/gloss-rendering-1.13:=[profile?] <dev-haskell/gloss-rendering-1.14:=[profile?]
 	>=dev-haskell/glut-2.7:=[profile?] <dev-haskell/glut-2.8:=[profile?]
 	>=dev-haskell/opengl-2.12:=[profile?] <dev-haskell/opengl-3.1:=[profile?]
-	>=dev-lang/ghc-7.10.1:=
+	>=dev-lang/ghc-7.10.1:=[profile?]
 	glfw? ( >=dev-haskell/glfw-b-1.4.1.0:=[profile?] <dev-haskell/glfw-b-2:=[profile?] )
 "
 DEPEND="${RDEPEND}

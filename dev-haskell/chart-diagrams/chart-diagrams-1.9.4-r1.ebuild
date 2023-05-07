@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/timbod7/haskell-chart/wiki"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'lens >= 3.9 && < 5.2' 'lens >= 3.9'
@@ -35,7 +35,7 @@ RDEPEND="
 	>=dev-haskell/operational-0.2.2:=[profile?] <dev-haskell/operational-0.3:=[profile?]
 	>=dev-haskell/svg-builder-0.1:=[profile?] <dev-haskell/svg-builder-0.2:=[profile?]
 	>=dev-haskell/svgfonts-1.8:=[profile?] <dev-haskell/svgfonts-1.9:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

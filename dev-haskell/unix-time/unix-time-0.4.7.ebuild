@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # QuickCheck finds counterxamples:
@@ -24,7 +24,7 @@ RESTRICT=test # QuickCheck finds counterxamples:
 #         UnixTime {utSeconds = 747130527, utMicroSeconds = 819438}
 
 RDEPEND="dev-haskell/old-time:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18

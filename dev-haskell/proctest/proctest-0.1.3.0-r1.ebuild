@@ -14,14 +14,14 @@ HOMEPAGE="https://github.com/nh2/proctest"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/hspec:=[profile?]
 	dev-haskell/hunit:=[profile?]
 	|| ( dev-lang/ghc >=dev-haskell/process-1.1.0.1[profile?] )
 	>=dev-haskell/quickcheck-2.4.2:2=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

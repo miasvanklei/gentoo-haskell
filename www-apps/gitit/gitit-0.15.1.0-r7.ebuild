@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/gitit"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+plugins"
 
 CABAL_CHDEPS=(
@@ -71,10 +71,9 @@ RDEPEND="
 	>=dev-haskell/xml-types-0.3:=[profile?]
 	>=dev-haskell/xss-sanitize-0.3:=[profile?] <dev-haskell/xss-sanitize-0.4:=[profile?]
 	>=dev-haskell/zlib-0.5:=[profile?] <dev-haskell/zlib-0.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	plugins? (
 		dev-haskell/ghc-paths:=[profile?]
-		dev-lang/ghc:=[profile?]
 	)
 "
 DEPEND="${RDEPEND}

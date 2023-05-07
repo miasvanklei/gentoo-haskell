@@ -15,14 +15,14 @@ HOMEPAGE="https://github.com/hspec/HUnit#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.6.2.0-prevent-abi-change.patch"
 )
 
 RDEPEND=">=dev-haskell/call-stack-0.3.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

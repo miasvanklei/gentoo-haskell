@@ -14,7 +14,7 @@ HOMEPAGE="https://www.serpentine.com/wreq"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT=test # requires network
 
@@ -35,7 +35,7 @@ RDEPEND=">=dev-haskell/aeson-0.7.0.3:=[profile?]
 	>=dev-haskell/psqueues-0.2:=[profile?]
 	dev-haskell/time-locale-compat:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

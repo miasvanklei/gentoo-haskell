@@ -17,7 +17,7 @@ HOMEPAGE="https://clash-lang.org/"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	"lens                      >= 4.10    && < 5.1.0" "lens >=4.10"
@@ -46,7 +46,7 @@ RDEPEND="
 	>=dev-haskell/type-errors-0.2.0.0:=[profile?] <dev-haskell/type-errors-0.3:=[profile?]
 	>=dev-haskell/uniplate-1.6.12:=[profile?] <dev-haskell/uniplate-1.7:=[profile?]
 	>=dev-haskell/vector-0.11:=[profile?] <dev-haskell/vector-1.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

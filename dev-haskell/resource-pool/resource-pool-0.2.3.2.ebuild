@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/hashable:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/hashable:=[profile?]
 	>=dev-haskell/stm-2.3:=[profile?]
 	>=dev-haskell/transformers-base-0.4:=[profile?]
 	>=dev-haskell/vector-0.7:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

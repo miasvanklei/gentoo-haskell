@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/bos/bloomfilter"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.0.1.0-ghc-9_2-fix.patch"
@@ -26,7 +26,7 @@ CABAL_CHDEPS=(
 	'base >= 4.4 && < 4.16' 'base >= 4.4'
 )
 
-RDEPEND=">=dev-lang/ghc-8.8.1:=
+RDEPEND=">=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

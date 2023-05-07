@@ -13,11 +13,11 @@ HOMEPAGE="https://github.com/clckwrks/web-plugins"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="<dev-haskell/http-types-0.13:=[profile?]
 	>=dev-haskell/stm-2.3:=[profile?] <dev-haskell/stm-2.6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

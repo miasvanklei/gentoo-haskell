@@ -14,14 +14,14 @@ HOMEPAGE="https://github.com/shayne-fletcher/ghc-lib-parser-ex#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="ghc-lib"
 
 RDEPEND="
 	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
 	!ghc-lib? ( =dev-lang/ghc-9.4*:= )
 	>=dev-haskell/uniplate-1.5:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

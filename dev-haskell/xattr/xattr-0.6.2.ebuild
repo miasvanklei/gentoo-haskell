@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT=test # needs xattr support on filesystem
 
-RDEPEND=">=dev-lang/ghc-6.10.4:=
+RDEPEND=">=dev-lang/ghc-6.10.4:=[profile?]
 	sys-apps/attr
 "
 DEPEND="${RDEPEND}

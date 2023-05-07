@@ -13,7 +13,7 @@ HOMEPAGE="https://clckwrks.com/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'happstack-server       >= 7.0 && < 7.8' 'happstack-server >= 7.0'
@@ -37,7 +37,7 @@ RDEPEND="
 	>=dev-haskell/web-plugins-0.4:=[profile?] <dev-haskell/web-plugins-0.5:=[profile?]
 	>=dev-haskell/web-routes-0.27:=[profile?] <dev-haskell/web-routes-0.28:=[profile?]
 	>=dev-haskell/web-routes-th-0.21:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=www-apps/clckwrks-0.21:=[profile?] <www-apps/clckwrks-0.29:=[profile?]
 "
 DEPEND="${RDEPEND}

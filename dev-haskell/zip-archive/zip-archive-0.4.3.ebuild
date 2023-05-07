@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/jgm/zip-archive"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 RDEPEND=">=dev-haskell/digest-0.0.0.1:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?]
 	dev-haskell/zlib:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

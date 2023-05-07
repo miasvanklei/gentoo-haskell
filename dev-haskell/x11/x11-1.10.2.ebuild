@@ -15,12 +15,12 @@ HOMEPAGE="https://github.com/xmonad/X11"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~amd64 ~amd64-linux ~ppc-macos"
 IUSE="+xinerama"
 
 # add +xinerama to IUSE and RDEPEND on libXScrnSaver and libXinerama below
 RDEPEND=">=dev-haskell/data-default-class-0.1:=[profile?] <dev-haskell/data-default-class-0.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	x11-libs/libX11
 	x11-libs/libXext
 	x11-libs/libXrandr

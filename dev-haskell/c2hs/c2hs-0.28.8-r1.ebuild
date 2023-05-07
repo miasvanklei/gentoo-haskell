@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/haskell/c2hs"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT=test # needs unprefixed 'cpp'
 
@@ -24,7 +24,7 @@ RDEPEND="
 	dev-haskell/dlist:=
 	>=dev-haskell/language-c-0.7.1:= <dev-haskell/language-c-0.10:=
 	|| ( dev-lang/ghc dev-haskell/process )
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

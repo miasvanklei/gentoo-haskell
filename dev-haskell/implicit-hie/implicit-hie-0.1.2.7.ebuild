@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/Avi-D-coder/implicit-hie#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 RDEPEND=">=dev-haskell/attoparsec-0.13:=[profile?]
 	>=dev-haskell/filepattern-0.1:=[profile?]
 	>=dev-haskell/yaml-0.5:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

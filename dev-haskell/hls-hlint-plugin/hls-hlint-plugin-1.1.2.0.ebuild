@@ -20,7 +20,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
 IUSE="ghc-lib"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
@@ -42,7 +42,7 @@ RDEPEND="
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
 	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.5:= )
 "

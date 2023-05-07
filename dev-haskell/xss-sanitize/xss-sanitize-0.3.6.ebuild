@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/attoparsec-0.10.0.3:=[profile?] <dev-haskell/attoparsec-1:=[profile?]
 	>=dev-haskell/css-text-0.1.1:=[profile?] <dev-haskell/css-text-0.2:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/attoparsec-0.10.0.3:=[profile?] <dev-haskell/attoparsec-1
 	>=dev-haskell/tagsoup-0.12.2:=[profile?] <dev-haskell/tagsoup-1:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?] <dev-haskell/text-2:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?] <dev-haskell/utf8-string-1.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

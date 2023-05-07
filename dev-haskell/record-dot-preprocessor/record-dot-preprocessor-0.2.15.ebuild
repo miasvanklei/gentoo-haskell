@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ndmitchell/record-dot-preprocessor#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=(
@@ -24,7 +24,7 @@ PATCHES=(
 RDEPEND="
 	dev-haskell/extra:=[profile?]
 	dev-haskell/uniplate:=[profile?]
-	>=dev-lang/ghc-8.6:=
+	>=dev-lang/ghc-8.6:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

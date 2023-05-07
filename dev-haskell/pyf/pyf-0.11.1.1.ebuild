@@ -15,13 +15,13 @@ HOMEPAGE="https://hackage.haskell.org/package/PyF"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="python-test"
 
 RDEPEND="
 	>=dev-haskell/parsec-3.1.13:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/text-1.2.3:=[profile?] <=dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

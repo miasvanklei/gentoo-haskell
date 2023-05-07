@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 GHC_BOOTSTRAP_PACKAGES=(
 	cabal-doctest
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/extra-1.5.3:=[profile?]
 	>=dev-haskell/hint-0.7.0:=[profile?]
 	>=dev-haskell/list-t-1:=[profile?]
 	>=dev-haskell/stringsearch-0.3.6.6:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

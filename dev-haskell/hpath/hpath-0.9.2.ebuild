@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # testsuite spec: pass, doctest: fail (`not in scope`)
@@ -26,7 +26,7 @@ RDEPEND="dev-haskell/exceptions:=[profile?]
 	dev-haskell/unix-bytestring:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/word8:=[profile?]
-	>=dev-lang/ghc-7.6.1:=
+	>=dev-lang/ghc-7.6.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.16.0

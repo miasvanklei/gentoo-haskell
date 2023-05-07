@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/jtdaugherty/brick/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples"
 
 RDEPEND="
@@ -30,7 +30,7 @@ RDEPEND="
 	dev-haskell/vector:=[profile?]
 	>=dev-haskell/vty-5.36:=[profile?]
 	>=dev-haskell/word-wrap-0.2:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	examples? (
 		dev-haskell/random:=[profile?]
 	)

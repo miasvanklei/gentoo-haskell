@@ -13,7 +13,7 @@ HOMEPAGE="https://www.yesodweb.com/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+network-uri"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
@@ -31,7 +31,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/xss-sanitize-0.3.0.1:=[profile?]
 	>=dev-haskell/yesod-core-1.6:=[profile?] <dev-haskell/yesod-core-1.7:=[profile?]
 	>=dev-haskell/yesod-persistent-1.6:=[profile?] <dev-haskell/yesod-persistent-1.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	network-uri? ( >=dev-haskell/network-uri-2.6:=[profile?] )
 "
 DEPEND="${RDEPEND}

@@ -18,7 +18,7 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="2/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-db/unixODBC
@@ -26,7 +26,7 @@ RDEPEND="dev-db/unixODBC
 	>=dev-haskell/hdbc-2.1.0:2=[profile?]
 	dev-haskell/mtl:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	virtual/libc
 "
 DEPEND="${RDEPEND}

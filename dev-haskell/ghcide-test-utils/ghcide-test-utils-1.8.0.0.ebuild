@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/ghcide#
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND="
 	>=dev-haskell/lsp-test-0.14:=[profile?] <dev-haskell/lsp-test-0.15:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	>=dev-haskell/tasty-hunit-0.10:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0

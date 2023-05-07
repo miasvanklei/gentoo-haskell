@@ -17,14 +17,14 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/hjavascript-0.4.6:=[profile?]
 	>=dev-haskell/hsp-0.9:=[profile?]
 	dev-haskell/mtl:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?]
-	>=dev-lang/ghc-6.10.4:=
+	>=dev-lang/ghc-6.10.4:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.6.0.3

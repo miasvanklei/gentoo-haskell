@@ -16,14 +16,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="wxWinLL-3.1"
 SLOT="${WX_GTK_VER}/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="gstreamer"
 
 RDEPEND="dev-haskell/parsec:=[profile?]
 	dev-haskell/stm:=[profile?]
 	>=dev-haskell/wxc-0.92:${WX_GTK_VER}=[profile?,gstreamer?]
 	>=dev-haskell/wxdirect-0.91:${WX_GTK_VER}=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	x11-libs/wxGTK:${WX_GTK_VER}=[X,gstreamer?,opengl]
 	!!dev-haskell/wxcore:3.0
 "

@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+useghctypelits"
 
 RDEPEND="dev-haskell/hashable:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	useghctypelits? ( >=dev-haskell/singletons-1.0:=[profile?] )
 	!useghctypelits? ( >=dev-haskell/type-level-numbers-0.1.1.0:=[profile?] <dev-haskell/type-level-numbers-0.2.0.0:=[profile?] )
 "

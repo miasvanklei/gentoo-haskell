@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/mtl-2.2.1:=[profile?]
 	>=dev-haskell/singletons-3.0:=[profile?] <dev-haskell/singletons-3.1:=[profile?]
 	>=dev-haskell/syb-0.4:=[profile?]
 	>=dev-haskell/th-desugar-1.12:=[profile?] <dev-haskell/th-desugar-1.13:=[profile?]
 	>=dev-haskell/th-orphans-0.13.11:=[profile?] <dev-haskell/th-orphans-0.14:=[profile?]
-	>=dev-lang/ghc-9.0.2:=
+	>=dev-lang/ghc-9.0.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

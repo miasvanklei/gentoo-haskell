@@ -17,12 +17,12 @@ SRC_URI="https://hackage.haskell.org/package/${MY_P}/${MY_P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="debug"
 
 RDEPEND=">=dev-haskell/hdbc-2.1.0:2=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 	dev-libs/openssl:0=
 	sys-libs/zlib
 	dev-db/mysql-connector-c:0=

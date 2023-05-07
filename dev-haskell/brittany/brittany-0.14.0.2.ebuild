@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/lspitzner/brittany/"
 
 LICENSE="AGPL-3"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.14.0.2-fix-tests.patch"
@@ -41,7 +41,7 @@ RDEPEND=">=dev-haskell/aeson-2.0.1:=[profile?] <dev-haskell/aeson-2.1:=[profile?
 	>=dev-haskell/syb-0.7.2:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/uniplate-1.6.13:=[profile?] <dev-haskell/uniplate-1.7:=[profile?]
 	>=dev-haskell/yaml-0.11.7:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-9.0.2:=
+	>=dev-lang/ghc-9.0.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

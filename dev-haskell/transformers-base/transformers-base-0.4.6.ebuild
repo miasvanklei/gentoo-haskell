@@ -13,12 +13,12 @@ HOMEPAGE="https://github.com/mvv/transformers-base"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 IUSE="+orphaninstances"
 
 RDEPEND=">=dev-haskell/stm-2.3:=[profile?]
 	>=dev-haskell/transformers-compat-0.6.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	orphaninstances? ( >=dev-haskell/base-orphans-0.3:=[profile?] )
 "
 DEPEND="${RDEPEND}

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=( "${FILESDIR}/${PN}-0.1.8.0-add-executable-flag.patch" )
@@ -35,7 +35,7 @@ RDEPEND=">=dev-haskell/dbus-1.0.0:=[profile?] <dev-haskell/dbus-2.0.0:=[profile?
 	dev-haskell/hslogger:=[profile?]
 	>=dev-haskell/status-notifier-item-0.3.1.0:=[profile?] <dev-haskell/status-notifier-item-0.4.0.0:=[profile?]
 	>=dev-haskell/transformers-base-0.4:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	x11-libs/gtk+:3
 	executable? ( >=dev-haskell/dbus-hslogger-0.1.0.1:=[profile?] <dev-haskell/dbus-hslogger-0.2.0.0:=[profile?]
 			dev-haskell/optparse-applicative:=[profile?] )

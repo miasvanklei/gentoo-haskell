@@ -14,13 +14,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT=test # QuickCheck occasionally finds counterexamples
 # and fails to build: Duplicate instance declarations: instance NFData Ordering
 
 RDEPEND=">=dev-haskell/text-0.9.1.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	dev-libs/icu
 "
 DEPEND="${RDEPEND}

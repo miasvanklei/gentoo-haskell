@@ -15,7 +15,7 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 CABAL_CHDEPS=(
 	'hspec                          >= 2.4.4    && < 2.8' 'hspec >=2.4.4'
@@ -29,7 +29,7 @@ CABAL_CHDEPS=(
 RDEPEND="
 	>=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/text-1.2.3.0:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

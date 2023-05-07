@@ -14,13 +14,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/old-locale:=[profile?]
 	dev-haskell/process-extras:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/time-locale-compat:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	>=dev-haskell/mtl-2.1.1:=[profile?]
 "
 DEPEND="${RDEPEND}

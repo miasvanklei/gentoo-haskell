@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="WTFPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/conduit-1.3:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/conduit-1.3:=[profile?]
 	dev-haskell/parsers:=[profile?]
 	dev-haskell/safe:=[profile?]
 	dev-haskell/safe-exceptions:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

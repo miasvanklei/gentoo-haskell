@@ -16,7 +16,7 @@ HOMEPAGE="https://diagrams.github.io/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="cairo pgf rasterific svg"
 
 CABAL_CHDEPS=(
@@ -34,7 +34,7 @@ RDEPEND="
 	>=dev-haskell/hint-0.4:=[profile?] <dev-haskell/hint-0.10:=[profile?]
 	>=dev-haskell/lens-4.0:=[profile?] <dev-haskell/lens-5.3:=[profile?]
 	>=dev-haskell/split-0.2:=[profile?] <dev-haskell/split-0.3:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	cairo? ( 
 		>=dev-haskell/diagrams-cairo-1.4:=[profile?] <dev-haskell/diagrams-cairo-1.5:=[profile?]
 	)

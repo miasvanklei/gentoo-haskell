@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ysangkok/aeson-diff"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 # Ambiguous module name ‘Data.Vector’: found in multiple packages: AC-Vector-Fancy-2.4.0 vector-0.12.0.2
 RESTRICT=test
@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/aeson-2.0.3:=[profile?]
 	dev-haskell/scientific:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-haskell/yaml:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1 <dev-haskell/cabal-4

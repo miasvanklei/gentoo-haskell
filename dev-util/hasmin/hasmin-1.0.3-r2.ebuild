@@ -20,7 +20,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-1.0.3-cabal-doctest.patch" )
 
@@ -31,7 +31,7 @@ RDEPEND=">=dev-haskell/attoparsec-0.12:=[profile?]
 	>=dev-haskell/numbers-3000.2.0.0:=[profile?] <dev-haskell/numbers-3000.3:=[profile?]
 	>=dev-haskell/optparse-applicative-0.11:=[profile?]
 	>=dev-haskell/parsers-0.12.3:=[profile?] <dev-haskell/parsers-0.13:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

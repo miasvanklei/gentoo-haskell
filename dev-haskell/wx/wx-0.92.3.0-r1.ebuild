@@ -16,12 +16,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="wxWinLL-3.1"
 SLOT="${WX_GTK_VER}/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/stm:=[profile?]
 	>=dev-haskell/wxcore-0.92:${WX_GTK_VER}=[profile?]
-	>=dev-lang/ghc-7.6.1:=
+	>=dev-lang/ghc-7.6.1:=[profile?]
 	!!dev-haskell/wx:3.0
 "
 DEPEND="${RDEPEND}

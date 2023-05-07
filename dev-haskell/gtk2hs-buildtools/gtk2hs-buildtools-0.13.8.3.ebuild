@@ -13,13 +13,13 @@ HOMEPAGE="https://projects.haskell.org/gtk2hs/"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+closuresignals"
 
 RDEPEND=">=dev-haskell/cabal-1.24.0.0:=[profile?]
 	dev-haskell/hashtables:=[profile?]
 	dev-haskell/random:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/alex-3.0.1

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # fails test, not sure if it's severe
@@ -22,7 +22,7 @@ RESTRICT=test # fails test, not sure if it's severe
 RDEPEND=">=dev-haskell/attoparsec-0.10.2.0:=[profile?]
 	>=dev-haskell/semigroups-0.16.1:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10

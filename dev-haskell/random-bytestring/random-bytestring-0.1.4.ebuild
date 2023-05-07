@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+pcg"
 
 RDEPEND=">=dev-haskell/mwc-random-0.13:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	pcg? ( >=dev-haskell/pcg-random-0.1:=[profile?] )
 "
 DEPEND="${RDEPEND}

@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/haskell/stylish-haskell"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="ghc-lib"
 
 RDEPEND="
@@ -28,7 +28,7 @@ RDEPEND="
 	>=dev-haskell/strict-0.3:=[profile?] <dev-haskell/strict-0.5:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
 	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.5:= )
 "

@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/martijnbastiaan/doctest-parallel#readme"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RESTRICT="test" # Known failure, issue #22 on upstream github
 
@@ -30,7 +30,7 @@ RDEPEND=">=dev-haskell/base-compat-0.7.0:=[profile?]
 	>=dev-haskell/random-1.2:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

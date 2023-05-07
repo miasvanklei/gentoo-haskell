@@ -15,7 +15,7 @@ HOMEPAGE="https://www.yesodweb.com/"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=
 	>=dev-haskell/cabal-1.18:=
@@ -45,7 +45,7 @@ RDEPEND="dev-haskell/aeson:=
 	>=dev-haskell/warp-tls-3.0.1:=
 	>=dev-haskell/yaml-0.8:= <dev-haskell/yaml-0.12:=
 	>=dev-haskell/zlib-0.5:=
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

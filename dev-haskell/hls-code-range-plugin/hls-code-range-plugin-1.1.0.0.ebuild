@@ -17,7 +17,7 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
@@ -29,7 +29,7 @@ RDEPEND="
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/semigroupoids:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

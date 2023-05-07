@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/robstewart57/rdf4h"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/algebraic-graphs-0.5:=[profile?]
 	dev-haskell/attoparsec:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/algebraic-graphs-0.5:=[profile?]
 	dev-haskell/selective:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
 	dev-haskell/xeno:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

@@ -13,7 +13,7 @@ HOMEPAGE="https://www.yesodweb.com/"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/async:=[profile?]
@@ -37,7 +37,7 @@ RDEPEND="
 	>=dev-haskell/wai-1.3:=[profile?]
 	>=dev-haskell/wai-app-static-3.1:=[profile?]
 	>=dev-haskell/yesod-core-1.6:=[profile?] <dev-haskell/yesod-core-1.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

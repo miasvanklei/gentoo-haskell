@@ -13,13 +13,13 @@ HOMEPAGE="https://hackage.haskell.org/package/uuid-orphans"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/safecopy:=[profile?]
 	dev-haskell/th-lift:=[profile?]
 	>=dev-haskell/uuid-types-1.0.2:=[profile?]
 	dev-haskell/web-routes:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -13,9 +13,9 @@ HOMEPAGE="https://github.com/joelwilliamson/bimap"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
-RDEPEND=">=dev-lang/ghc-8.10.1:=
+RDEPEND=">=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

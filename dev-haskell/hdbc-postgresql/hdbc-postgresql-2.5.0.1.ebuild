@@ -24,7 +24,7 @@ LICENSE="BSD"
 # This should be changed at some point, but currently the version in ::gentoo
 # is also set to 2.
 SLOT="2/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-db/postgresql-7
@@ -33,7 +33,7 @@ RDEPEND="
 	dev-haskell/old-time:=[profile?]
 	dev-haskell/parsec:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/event-list-0.1:=[profile?] <dev-haskell/event-list-0.2:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/event-list-0.1:=[profile?] <dev-haskell/event-list-0.2:=[
 	>=dev-haskell/storablevector-0.2.3:=[profile?] <dev-haskell/storablevector-0.3:=[profile?]
 	>=dev-haskell/synthesizer-core-0.8.1:=[profile?] <dev-haskell/synthesizer-core-0.9:=[profile?]
 	>=dev-haskell/utility-ht-0.0.5:=[profile?] <dev-haskell/utility-ht-0.1:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

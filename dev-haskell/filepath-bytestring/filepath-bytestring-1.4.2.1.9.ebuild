@@ -13,14 +13,14 @@ HOMEPAGE="https://hackage.haskell.org/package/filepath-bytestring"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'filepath >= 1.4.2 && <= 1.4.2.1' 'filepath >= 1.4.2'
 )
 
 RDEPEND="
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

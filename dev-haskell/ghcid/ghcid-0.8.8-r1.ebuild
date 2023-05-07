@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/ndmitchell/ghcid#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/ansi-terminal:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND="
 	>=dev-haskell/fsnotify-0.4:=[profile?]
 	|| ( dev-lang/ghc >=dev-haskell/process-1.1[profile?] )
 	>=dev-haskell/terminal-size-0.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

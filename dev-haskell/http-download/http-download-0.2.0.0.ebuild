@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test #requires network access
@@ -34,7 +34,7 @@ RDEPEND="dev-haskell/base64-bytestring:=[profile?]
 	dev-haskell/retry:=[profile?]
 	dev-haskell/rio:=[profile?]
 	dev-haskell/rio-prettyprint:=[profile?]
-	>=dev-lang/ghc-8.2.1:=
+	>=dev-lang/ghc-8.2.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.0.0.2

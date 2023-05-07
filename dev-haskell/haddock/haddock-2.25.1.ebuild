@@ -15,12 +15,12 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 LICENSE="BSD"
 SLOT="0"
 #keep in sync with ghc-9.0
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 RESTRICT=test # missing test-suite
 
 RDEPEND="~dev-haskell/haddock-api-2.25.1:=
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

@@ -14,9 +14,9 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
-RDEPEND=">=dev-lang/ghc-7.6.1:=
+RDEPEND=">=dev-lang/ghc-7.6.1:=[profile?]
 	dev-libs/nanomsg
 "
 DEPEND="${RDEPEND}

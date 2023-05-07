@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/hadolint/hadolint"
 
 LICENSE="GPL-3"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/cabal:=[profile?]
@@ -37,7 +37,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/split-0.2:=[profile?]
 	>=dev-haskell/timerep-2.0:=[profile?]
 	dev-haskell/void:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	>=dev-util/shellcheck-0.8.0:=[profile?]
 "
 DEPEND="${RDEPEND}

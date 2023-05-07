@@ -14,12 +14,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/http-media-0.6.4:=[profile?] <dev-haskell/http-media-0.9:=[profile?]
 	>=dev-haskell/lucid-2.9.8:=[profile?] <dev-haskell/lucid-2.12:=[profile?]
 	>=dev-haskell/servant-0.17:=[profile?] <dev-haskell/servant-0.20:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/direct-sqlite-2.3.5:=[profile?]
@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/direct-sqlite-2.3.5:=[profile?]
 	>=dev-haskell/resourcet-1.1.2:=[profile?]
 	>=dev-haskell/text-0.8:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

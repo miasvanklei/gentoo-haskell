@@ -15,7 +15,7 @@ HOMEPAGE="https://hackage.haskell.org/package/postgresql-simple"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/aeson-1.4.1.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
@@ -29,7 +29,7 @@ RDEPEND="
 	>=dev-haskell/time-compat-1.9.5:=[profile?] <dev-haskell/time-compat-1.12:=[profile?]
 	>=dev-haskell/uuid-types-1.0.3:=[profile?] <dev-haskell/uuid-types-1.1:=[profile?]
 	>=dev-haskell/vector-0.12.0.1:=[profile?] <dev-haskell/vector-0.14:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

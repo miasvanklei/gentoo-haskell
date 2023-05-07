@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/lens-4:=[profile?] <dev-haskell/lens-6:=[profile?]
 	>=dev-haskell/linear-1.16.2:=[profile?]
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/lens-4:=[profile?] <dev-haskell/lens-6:=[profile?]
 	>=dev-haskell/th-desugar-1.5.4:=[profile?]
 	>=dev-haskell/units-parser-0.1:=[profile?] <dev-haskell/units-parser-1.0:=[profile?]
 	>=dev-haskell/vector-space-0.8:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

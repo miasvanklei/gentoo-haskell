@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 # Ambiguous module name ‘Control.Monad.Trans.Free’: it was found in multiple packages: free-5.1.2 transformers-free-1.0.1
@@ -23,7 +23,7 @@ RESTRICT=test
 RDEPEND=">=dev-haskell/free-3.2:=[profile?]
 	>=dev-haskell/pipes-4.0:=[profile?] <dev-haskell/pipes-4.4:=[profile?]
 	>=dev-haskell/pipes-parse-3.0.0:=[profile?] <dev-haskell/pipes-parse-3.1:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

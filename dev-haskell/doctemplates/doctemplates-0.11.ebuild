@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/jgm/doctemplates#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/doclayout-0.4:=[profile?] <dev-haskell/doclayout-0.5:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/text-conversions:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

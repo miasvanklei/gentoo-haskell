@@ -14,13 +14,13 @@ HOMEPAGE="https://xmonad.org/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+xft"
 
 RDEPEND="dev-haskell/random:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	>=dev-haskell/x11-1.10:=[profile?] <dev-haskell/x11-1.11:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=x11-wm/xmonad-0.16.99999:=[profile?] <x11-wm/xmonad-0.18:=[profile?]
 	xft? ( >=dev-haskell/x11-xft-0.2:=[profile?] )
 "

@@ -13,7 +13,7 @@ HOMEPAGE="https://gitlab.com/williamyaoh/string-interpolate/blob/master/README.m
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="bytestring-builder extended-benchmarks text-builder"
 
 RDEPEND="<dev-haskell/haskell-src-exts-1.24:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND="<dev-haskell/haskell-src-exts-1.24:=[profile?]
 	<dev-haskell/text-2.1:=[profile?]
 	<dev-haskell/text-conversions-0.4:=[profile?]
 	<dev-haskell/utf8-string-1.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

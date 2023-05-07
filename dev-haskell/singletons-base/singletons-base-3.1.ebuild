@@ -15,14 +15,14 @@ HOMEPAGE="https://www.github.com/goldfirere/singletons"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	~dev-haskell/singletons-3.0.1:=[profile?]
 	>=dev-haskell/singletons-th-3.1:=[profile?] <dev-haskell/singletons-th-3.2:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?]
 	>=dev-haskell/th-desugar-1.13:=[profile?] <dev-haskell/th-desugar-1.14:=[profile?]
-	>=dev-lang/ghc-9.2.4:=
+	>=dev-lang/ghc-9.2.4:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0 <dev-haskell/cabal-3.7

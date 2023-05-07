@@ -13,7 +13,11 @@ HOMEPAGE="https://github.com/JustusAdam/mustache"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
+
+PATCHES=(
+	"${FILESDIR}/${PN}-2.3.2-disable-langspec-tests.patch"
+)
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/cmdargs:=[profile?]
@@ -24,7 +28,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	dev-haskell/vector:=[profile?]
 	dev-haskell/yaml:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

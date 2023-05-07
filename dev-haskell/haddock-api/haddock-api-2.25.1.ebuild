@@ -14,7 +14,7 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 LICENSE="BSD-2"
 SLOT="0/${PV}"
 # keep in sync with ghc-9.0
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 CABAL_CHDEPS=(
 	'hspec           >= 2.4.4 && < 2.8' 'hspec >=2.4.4'
@@ -26,7 +26,7 @@ RDEPEND="
 	>=dev-haskell/haddock-library-1.10.0:=[profile?] <dev-haskell/haddock-library-1.11:=[profile?]
 	>=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/xhtml-3000.2.2:=[profile?] <dev-haskell/xhtml-3000.3:=[profile?]
-	>=dev-lang/ghc-9.0:= <dev-lang/ghc-9.1:=
+	>=dev-lang/ghc-9.0:=[profile?] <dev-lang/ghc-9.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0

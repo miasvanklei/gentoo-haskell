@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/bytestring-lexing-0.5:= <dev-haskell/bytestring-lexing-0.6:=
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/bytestring-lexing-0.5:= <dev-haskell/bytestring-lexing-0.
 	dev-haskell/regex-tdfa:=
 	>=dev-haskell/strptime-0.1.7:=
 	>=dev-haskell/vcs-revision-0.0.2:=
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3

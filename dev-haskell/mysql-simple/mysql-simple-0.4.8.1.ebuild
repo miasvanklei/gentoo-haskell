@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="debug"
 
 RESTRICT=test # need running mysql, missing files
@@ -27,7 +27,7 @@ RDEPEND=">=dev-haskell/attoparsec-0.10.0.0:=[profile?]
 	>=dev-haskell/mysql-0.1.7:=[profile?]
 	dev-haskell/old-locale:=[profile?]
 	dev-haskell/pcre-light:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

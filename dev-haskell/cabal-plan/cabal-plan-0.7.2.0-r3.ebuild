@@ -14,11 +14,11 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2+"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="underline +exe license-report"
 
 RDEPEND=">=dev-haskell/text-1.2.2:=[profile?] <dev-haskell/text-1.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=dev-haskell/aeson-1.4.0.0:=[profile?]
 	>=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-bytestring-0.2:=[profile?]
 	exe? ( >=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-0.12:=[profile?]

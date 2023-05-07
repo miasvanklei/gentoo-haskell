@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="microlens"
 
 RDEPEND="dev-haskell/attoparsec:=[profile?]
@@ -32,7 +32,7 @@ RDEPEND="dev-haskell/attoparsec:=[profile?]
 	>=dev-haskell/xml-conduit-1.1.0:=[profile?]
 	>=dev-haskell/zip-archive-0.2:=[profile?]
 	>=dev-haskell/zlib-0.5.4.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	microlens? ( >=dev-haskell/microlens-0.4:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
 			dev-haskell/microlens-ghc:=[profile?]
 			dev-haskell/microlens-mtl:=[profile?]

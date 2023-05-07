@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/feuerbach/temporary"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.3-smp-flag.patch"
@@ -21,7 +21,7 @@ PATCHES=(
 
 RDEPEND="
 	>=dev-haskell/random-1.1:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

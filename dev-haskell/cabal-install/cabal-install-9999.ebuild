@@ -20,7 +20,7 @@ if [[ -n ${LIVE_EBUILD} ]]; then
 	S="${S}"/${PN}
 else
 	SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="~amd64"
 fi
 
 LICENSE="BSD"
@@ -48,7 +48,7 @@ RDEPEND=">=dev-haskell/async-2.0:=
 	>=dev-haskell/tar-0.5.0.3:=
 	>=dev-haskell/text-1.2.3:=
 	>=dev-haskell/zlib-0.5.3:=
-	>=dev-lang/ghc-7.10.1:=
+	>=dev-lang/ghc-7.10.1:=[profile?]
 	native-dns? ( >=dev-haskell/resolv-0.1.1:= )
 "
 DEPEND="${RDEPEND}

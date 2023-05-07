@@ -14,13 +14,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RESTRICT=test # needs sctp support in kernel
 
 RDEPEND=">=dev-haskell/socket-0.7.0.0:=[profile?] <dev-haskell/socket-0.8:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	net-misc/lksctp-tools:=
 "
 DEPEND="${RDEPEND}

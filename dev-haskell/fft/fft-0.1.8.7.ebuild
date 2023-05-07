@@ -14,13 +14,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/carray-0.1.5:=[profile?] <dev-haskell/carray-0.2:=[profile?]
 	>=dev-haskell/ix-shapable-0.1:=[profile?] <dev-haskell/ix-shapable-0.2:=[profile?]
 	>=dev-haskell/storable-complex-0.2.1:=[profile?] <dev-haskell/storable-complex-0.3:=[profile?]
 	>=dev-haskell/syb-0.1:=[profile?] <dev-haskell/syb-0.8:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	>=sci-libs/fftw-3.3:=
 "
 DEPEND="${RDEPEND}

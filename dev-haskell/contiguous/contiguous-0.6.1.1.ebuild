@@ -14,12 +14,12 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/primitive-0.7.2:=[profile?] <dev-haskell/primitive-0.8:=[profile?]
 	>=dev-haskell/primitive-unlifted-0.1.3.1:=[profile?] <dev-haskell/primitive-unlifted-0.2:=[profile?]
 	>=dev-haskell/run-st-0.1.1:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

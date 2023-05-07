@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/haskell/hackage-security"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+cabal-syntax +lukko"
 
 RDEPEND=">=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-bytestring-1.1:=[profile?]
@@ -28,7 +28,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-b
 	>=dev-haskell/parsec-3.1:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/tar-0.5:=[profile?] <dev-haskell/tar-0.6:=[profile?]
 	>=dev-haskell/zlib-0.5:=[profile?] <dev-haskell/zlib-0.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 	cabal-syntax? ( >=dev-haskell/cabal-syntax-3.7:=[profile?] <dev-haskell/cabal-syntax-3.10:=[profile?] )
 	!cabal-syntax? ( >=dev-haskell/cabal-3.2:=[profile?] <dev-haskell/cabal-3.7:=[profile?] )
 	>=dev-haskell/network-2.6:=[profile?] <dev-haskell/network-3.2:=[profile?]

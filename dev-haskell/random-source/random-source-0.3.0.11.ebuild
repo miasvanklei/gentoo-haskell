@@ -16,7 +16,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz
 
 LICENSE="public-domain"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/flexible-defaults-0.0.0.2:=[profile?]
 	dev-haskell/mersenne-random-pure64:=[profile?]
@@ -26,7 +26,7 @@ RDEPEND=">=dev-haskell/flexible-defaults-0.0.0.2:=[profile?]
 	>=dev-haskell/stateref-0.3:=[profile?] <dev-haskell/stateref-0.4:=[profile?]
 	dev-haskell/syb:=[profile?]
 	dev-haskell/th-extras:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

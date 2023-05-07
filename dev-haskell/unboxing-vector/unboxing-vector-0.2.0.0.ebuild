@@ -13,13 +13,13 @@ HOMEPAGE="https://github.com/minoki/unboxing-vector#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+mono-traversable"
 
 RDEPEND="
 	dev-haskell/primitive:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	mono-traversable? (
 		dev-haskell/mono-traversable:=[profile?]
 	)

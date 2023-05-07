@@ -14,13 +14,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/cryptohash-md5-0.11:=[profile?] <dev-haskell/cryptohash-md5-0.12:=[profile?]
 	dev-haskell/data-binary-ieee754:=[profile?]
 	>=dev-haskell/mtl-2:=[profile?]
 	>=dev-haskell/text-0.11:=[profile?]
-	>=dev-lang/ghc-8.0.1:=
+	>=dev-lang/ghc-8.0.1:=[profile?]
 	>=dev-haskell/network-bsd-2.7:=[profile?] <dev-haskell/network-bsd-2.9:=[profile?]
 "
 DEPEND="${RDEPEND}

@@ -13,11 +13,11 @@ HOMEPAGE="https://github.com/haskell/network-uri"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 RDEPEND="
 	>=dev-haskell/th-compat-0.1.1:=[profile?] <dev-haskell/th-compat-1.0:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

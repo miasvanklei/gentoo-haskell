@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/nikita-volkov/rebase"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/bifunctors-5.5:=[profile?] <dev-haskell/bifunctors-5.6:=[profile?]
 	>=dev-haskell/comonad-5:=[profile?] <dev-haskell/comonad-5.1:=[profile?]
@@ -36,7 +36,7 @@ RDEPEND=">=dev-haskell/bifunctors-5.5:=[profile?] <dev-haskell/bifunctors-5.6:=[
 	>=dev-haskell/vector-0.12:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-haskell/vector-instances-3.4:=[profile?] <dev-haskell/vector-instances-3.5:=[profile?]
 	>=dev-haskell/void-0.7:=[profile?] <dev-haskell/void-0.8:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

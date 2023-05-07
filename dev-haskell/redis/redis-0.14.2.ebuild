@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND="dev-haskell/concurrent-extra:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/concurrent-extra:=[profile?]
 	dev-haskell/network:=[profile?]
 	dev-haskell/old-time:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10

@@ -15,7 +15,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/aeson-1.4.6.0:=[profile?] <dev-haskell/aeson-2.1:=[profile?]
 	>=dev-haskell/aeson-pretty-0.8.5:=[profile?] <dev-haskell/aeson-pretty-0.9:=[profile?]
@@ -29,7 +29,7 @@ RDEPEND=">=dev-haskell/aeson-1.4.6.0:=[profile?] <dev-haskell/aeson-2.1:=[profil
 	<dev-haskell/unordered-containers-0.3:=[profile?]
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/dhall-1.41.0:=[profile?] <dev-lang/dhall-1.42:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

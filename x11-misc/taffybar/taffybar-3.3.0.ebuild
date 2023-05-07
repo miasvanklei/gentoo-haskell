@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-3.3.0-fix-ghc-9.patch" )
 
@@ -64,7 +64,7 @@ RDEPEND="dev-haskell/ansi-terminal:=[profile?]
 	dev-haskell/xdg-desktop-entry:=[profile?]
 	dev-haskell/xml:=[profile?]
 	dev-haskell/xml-helpers:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	x11-libs/gtk+:3
 	>=x11-misc/gtk-sni-tray-0.1.8.0:=[profile?]
 	x11-wm/xmonad:=[profile?]

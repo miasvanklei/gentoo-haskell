@@ -15,7 +15,7 @@ HOMEPAGE="https://hackage.haskell.org/package/turtle"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/ansi-wl-pprint-0.6:=[profile?] <dev-haskell/ansi-wl-pprint-0.7:=[profile?]
@@ -31,7 +31,7 @@ RDEPEND="
 	<dev-haskell/streaming-commons-0.3:=[profile?]
 	<dev-haskell/temporary-1.4:=[profile?]
 	>=dev-haskell/unix-compat-0.4:=[profile?] <dev-haskell/unix-compat-0.7:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

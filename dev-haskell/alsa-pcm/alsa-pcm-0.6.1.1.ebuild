@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="buildexamples debug"
 
 RDEPEND=">=dev-haskell/alsa-core-0.5:=[profile?] <dev-haskell/alsa-core-0.6:=[profile?]
@@ -22,7 +22,7 @@ RDEPEND=">=dev-haskell/alsa-core-0.5:=[profile?] <dev-haskell/alsa-core-0.6:=[pr
 	>=dev-haskell/sample-frame-0.0.1:=[profile?] <dev-haskell/sample-frame-0.1:=[profile?]
 	>=dev-haskell/semigroups-0.1:=[profile?] <dev-haskell/semigroups-1.0:=[profile?]
 	>=dev-haskell/storable-record-0.0.2:=[profile?] <dev-haskell/storable-record-0.1:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	media-libs/alsa-lib
 "
 DEPEND="${RDEPEND}

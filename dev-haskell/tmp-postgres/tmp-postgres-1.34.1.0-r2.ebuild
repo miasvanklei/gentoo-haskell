@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/jfischoff/tmp-postgres#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 PATCHES=( "${FILESDIR}/${PN}-1.34.1.0-disable-test-executables.patch" )
 
@@ -32,7 +32,7 @@ RDEPEND="
 	|| ( dev-lang/ghc >=dev-haskell/process-1.2.0.0[profile?] )
 	dev-haskell/stm:=[profile?]
 	dev-haskell/temporary:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

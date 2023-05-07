@@ -15,13 +15,13 @@ HOMEPAGE="https://github.com/phadej/singleton-bool#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/boring-0.2:=[profile?] <dev-haskell/boring-0.3:=[profile?]
 	>=dev-haskell/dec-0.0.3:=[profile?] <dev-haskell/dec-0.1:=[profile?]
 	>=dev-haskell/some-1.0.3:=[profile?] <dev-haskell/some-1.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

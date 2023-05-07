@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="test-proxy"
 
 RESTRICT=test # Test suite spec: FAIL
@@ -22,7 +22,7 @@ RESTRICT=test # Test suite spec: FAIL
 RDEPEND=">=dev-haskell/hsopenssl-0.11.2:=[profile?]
 	>=dev-haskell/http-client-0.2:=[profile?]
 	dev-haskell/network:=[profile?]
-	>=dev-lang/ghc-7.10.1:=
+	>=dev-lang/ghc-7.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.22.2.0

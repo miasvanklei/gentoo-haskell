@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/yesodweb/Shelly.hs"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="examples lifted"
 
 RDEPEND="
@@ -28,7 +28,7 @@ RDEPEND="
 	|| ( dev-lang/ghc >=dev-haskell/process-1.4[profile?] )
 	dev-haskell/transformers-base:=[profile?]
 	>=dev-haskell/unix-compat-0.4.1.1:=[profile?] <dev-haskell/unix-compat-0.7:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.0.0

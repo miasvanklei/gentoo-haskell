@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/kowainik/trial"
 
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'base >= 4.12.0.0 && < 4.15' 'base >= 4.12.0.0'
@@ -22,7 +22,7 @@ CABAL_CHDEPS=(
 
 RDEPEND=">=dev-haskell/optparse-applicative-0.15:=[profile?]
 	dev-haskell/trial:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

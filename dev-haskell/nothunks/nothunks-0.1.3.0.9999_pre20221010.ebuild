@@ -25,12 +25,12 @@ CABAL_CHDEPS=(
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+bytestring +text +vector"
 
 RDEPEND="
 	>=dev-haskell/stm-2.5:=[profile?] <dev-haskell/stm-2.6:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-8.10.1:=[profile?]
 	vector? (
 		>=dev-haskell/vector-0.12:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	)

@@ -15,13 +15,13 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 RDEPEND=">=dev-haskell/hmatrix-0.18:=[profile?]
 	dev-haskell/random:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-7.4.1:=
+	>=dev-lang/ghc-7.4.1:=[profile?]
 	sci-libs/gsl
 "
 DEPEND="${RDEPEND}

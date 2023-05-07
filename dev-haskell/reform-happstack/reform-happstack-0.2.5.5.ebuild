@@ -13,7 +13,7 @@ HOMEPAGE="https://www.happstack.com/"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'happstack-server >= 7.0 && < 7.8' 'happstack-server >= 7.0'
@@ -24,7 +24,7 @@ RDEPEND="
 	>=dev-haskell/random-1.0:=[profile?] <dev-haskell/random-1.3:=[profile?]
 	>=dev-haskell/reform-0.2:=[profile?] <dev-haskell/reform-0.4:=[profile?]
 	>=dev-haskell/utf8-string-0.3:=[profile?] <dev-haskell/utf8-string-1.1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

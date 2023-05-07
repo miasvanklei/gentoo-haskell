@@ -15,14 +15,14 @@ HOMEPAGE="https://github.com/haskell-works/hw-hspec-hedgehog#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/call-stack-0.2:=[profile?] <dev-haskell/call-stack-0.5:=[profile?]
 	>=dev-haskell/hedgehog-0.5:=[profile?] <dev-haskell/hedgehog-1.3:=[profile?]
 	>=dev-haskell/hspec-2.6:=[profile?] <dev-haskell/hspec-3:=[profile?]
 	>=dev-haskell/hunit-1.5:=[profile?] <dev-haskell/hunit-1.7:=[profile?]
-	>=dev-lang/ghc-8.6.5:=
+	>=dev-lang/ghc-8.6.5:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1

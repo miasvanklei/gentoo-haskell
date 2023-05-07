@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/rest-rewrite"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'hashable             >= 1.3.0 && < 1.4' 'hashable >= 1.3.0'
@@ -27,7 +27,7 @@ RDEPEND="
 	>=dev-haskell/monad-loops-0.4.3:=[profile?] <dev-haskell/monad-loops-0.5:=[profile?]
 	dev-haskell/quickcheck:2=[profile?]
 	>=dev-haskell/unordered-containers-0.2.13:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
-	>=dev-lang/ghc-8.8.4:=
+	>=dev-lang/ghc-8.8.4:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.1.0

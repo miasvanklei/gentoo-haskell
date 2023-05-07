@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/async-2.0.0.0:=[profile?] <dev-haskell/async-2.3:=[profile?]
 	>=dev-haskell/contravariant-1.3.3:=[profile?] <dev-haskell/contravariant-1.6:=[profile?]
 	>=dev-haskell/pipes-4.0:=[profile?] <dev-haskell/pipes-4.4:=[profile?]
 	>=dev-haskell/stm-2.4.3:=[profile?] <dev-haskell/stm-2.6:=[profile?]
 	>=dev-haskell/void-0.6:=[profile?] <dev-haskell/void-1:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

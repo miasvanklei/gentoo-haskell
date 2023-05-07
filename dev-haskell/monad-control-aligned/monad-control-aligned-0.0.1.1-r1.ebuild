@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/athanclark/monad-control#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'transformers-compat  >= 0.3   && < 0.7' 'transformers-compat  >= 0.3'
@@ -23,7 +23,7 @@ RDEPEND="
 	>=dev-haskell/stm-2.3:=[profile?] <dev-haskell/stm-3:=[profile?]
 	>=dev-haskell/transformers-base-0.4.4:=[profile?] <dev-haskell/transformers-base-0.5:=[profile?]
 	>=dev-haskell/transformers-compat-0.3:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1

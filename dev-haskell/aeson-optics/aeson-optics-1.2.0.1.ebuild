@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/phadej/aeson-optics"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/aeson-2.0.3.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
@@ -25,7 +25,7 @@ RDEPEND="
 	>=dev-haskell/scientific-0.3.4.9:=[profile?] <dev-haskell/scientific-0.4:=[profile?]
 	>=dev-haskell/text-short-0.1.5:=[profile?] <dev-haskell/text-short-0.2:=[profile?]
 	>=dev-haskell/vector-0.11:=[profile?] <dev-haskell/vector-0.14:=[profile?]
-	>=dev-lang/ghc-8.8.1:=
+	>=dev-lang/ghc-8.8.1:=[profile?]
 	|| (
 		( >=dev-haskell/text-1.2.2.0 <dev-haskell/text-1.3 )
 		( >=dev-haskell/text-2.0 <dev-haskell/text-2.1 )

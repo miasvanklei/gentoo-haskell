@@ -23,7 +23,7 @@ CABAL_FILE="${S}/${PN}.cabal"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/aeson-pretty:=[profile?]
@@ -65,7 +65,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/with-utf8:=[profile?]
 	dev-haskell/zlib:=[profile?]
 	>=dev-lang/dhall-1.39.0:=[profile?]
-	>=dev-lang/ghc-8.8.3:=
+	>=dev-lang/ghc-8.8.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.1.0

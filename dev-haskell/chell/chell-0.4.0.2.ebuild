@@ -14,14 +14,14 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE="+color-output"
 
 RDEPEND=">=dev-haskell/options-1.0:=[profile?] <dev-haskell/options-2.0:=[profile?]
 	>=dev-haskell/patience-0.1:=[profile?] <dev-haskell/patience-0.2:=[profile?]
 	>=dev-haskell/random-1.0:=[profile?]
 	dev-haskell/text:=[profile?]
-	>=dev-lang/ghc-7.8.2:=
+	>=dev-lang/ghc-7.8.2:=[profile?]
 	color-output? ( >=dev-haskell/ansi-terminal-0.5:=[profile?] )
 "
 DEPEND="${RDEPEND}

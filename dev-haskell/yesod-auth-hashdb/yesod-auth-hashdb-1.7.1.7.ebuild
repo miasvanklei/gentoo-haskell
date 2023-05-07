@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/persistent-2.1:=[profile?]
@@ -23,7 +23,7 @@ RDEPEND="dev-haskell/aeson:=[profile?]
 	>=dev-haskell/yesod-core-1.4.19:=[profile?] <dev-haskell/yesod-core-1.7:=[profile?]
 	>=dev-haskell/yesod-form-1.4:=[profile?] <dev-haskell/yesod-form-1.8:=[profile?]
 	>=dev-haskell/yesod-persistent-1.2:=[profile?]
-	>=dev-lang/ghc-8.4.3:=
+	>=dev-lang/ghc-8.4.3:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
