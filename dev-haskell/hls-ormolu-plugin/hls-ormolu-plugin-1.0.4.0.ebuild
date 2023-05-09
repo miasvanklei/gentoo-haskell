@@ -16,11 +16,11 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	>=dev-haskell/ghcide-1.6:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
+	>=dev-haskell/ghcide-1.6:=[profile?] <dev-haskell/ghcide-1.11:=[profile?]
 	>=dev-haskell/hls-plugin-api-1.3:=[profile?] <dev-haskell/hls-plugin-api-1.7:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
-	>=dev-haskell/ormolu-0.5:=[profile?] <dev-haskell/ormolu-0.6
+	>=dev-haskell/ormolu-0.5:=[profile?] <dev-haskell/ormolu-0.7
 	>=dev-lang/ghc-8.6.3:=[profile?]
 "
 DEPEND="${RDEPEND}
@@ -31,8 +31,12 @@ DEPEND="${RDEPEND}
 	)
 "
 
+CABAL_CHDEPS=(
+	'ormolu          ^>=0.1.2 || ^>= 0.2 || ^>= 0.3 || ^>= 0.5' 'ormolu'
+)
+
 PATCHES=(
-	"${FILESDIR}/buildable-ghc-9.4.patch"
+	"${FILESDIR}"/buildable-ghc-9.6.patch
 )
 
 src_test() {
