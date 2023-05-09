@@ -1,14 +1,5 @@
-From: hololeap <hololeap@protonmail.com>
-Signed-off-by: hololeap <hololeap@protonmail.com>
-
-Add `executable` flag to toggle building the `ormolu` executable.
-
-This executable is not normally needed when building ormolu as a dependency
-for other packages.
-
-diff -urN ormolu-0.3.1.0/ormolu.cabal ormolu-0.3.1.0-r1/ormolu.cabal
---- ormolu-0.3.1.0/ormolu.cabal	2022-01-23 00:37:34.148907245 -0700
-+++ ormolu-0.3.1.0-r1/ormolu.cabal	2022-01-23 00:38:56.478907285 -0700
+--- a/ormolu.cabal	2022-01-23 00:37:34.148907245 -0700
++++ b/ormolu.cabal	2022-01-23 00:38:56.478907285 -0700
 @@ -108,6 +108,10 @@
      if impl(ghc <8.10.0)
          ghc-options: -fmax-pmcheck-iterations=3000000

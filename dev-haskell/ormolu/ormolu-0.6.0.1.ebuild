@@ -18,13 +18,13 @@ KEYWORDS="~amd64"
 IUSE="examples executable ghc-lib +fixity-th"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
+	"${FILESDIR}/ormolu-0.3.1.0-add-executable-flag.patch"
 	"${FILESDIR}/${PV}-use-system-ghc.patch"
 )
 
 RDEPEND=">=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-3.0:=[profile?]
 	>=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-1.0:=[profile?]
-	>=dev-haskell/cabal-3.8:=[profile?] <dev-haskell/cabal-3.9:=[profile?]
+	>=dev-haskell/cabal-3.8:=[profile?] <dev-haskell/cabal-3.11:=[profile?]
 	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-1.0:=[profile?]
 	>=dev-haskell/dlist-0.8:=[profile?] <dev-haskell/dlist-2.0:=[profile?]
 	>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
@@ -32,16 +32,17 @@ RDEPEND=">=dev-haskell/aeson-1.0:=[profile?] <dev-haskell/aeson-3.0:=[profile?]
 	>=dev-haskell/memotrie-0.6:=[profile?] <dev-haskell/memotrie-0.7:=[profile?]
 	>=dev-haskell/syb-0.7:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/text-0.2:=[profile?] <dev-haskell/text-3.0:=[profile?]
+	dev-haskell/th-env:=[profile?]
 	>=dev-lang/ghc-8.10.1:=[profile?]
 	executable? (
 		>=dev-haskell/gitrev-1.3:=[profile?] <dev-haskell/gitrev-1.4:=[profile?]
 		>=dev-haskell/optparse-applicative-0.14:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?]
 	)
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.6:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?]
 	)
 	!ghc-lib? (
-		=dev-lang/ghc-9.4*:=
+		=dev-lang/ghc-9.6*:=
 	)
 "
 DEPEND="${RDEPEND}
