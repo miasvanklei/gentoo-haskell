@@ -22,13 +22,12 @@ KEYWORDS="~amd64"
 
 # Disabled:
 # - hls_plugins_stan: Requires ghc < 9
-# - hls_plugins_cabal-fmt: Requires cabal >= 3.8
 # - hls_plugins_haddock-comments: Requires ghc < 9.1
-# - hls_formatters_brittany: Requires ghc < 9.1
 # - hls_plugins_wingman: Requires ghc < 9.1
 IUSE_HLS_PLUGINS="
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
+	+hls_plugins_cabal-fmt
 	+hls_plugins_call-hierarchy
 	+hls_plugins_change-type-signature
 	+hls_plugins_class
@@ -66,8 +65,6 @@ CABAL_TEST_REQUIRED_BINS=(
 )
 
 # Disabled:
-# hls_formatters_brittany? ( >=dev-haskell/hls-brittany-plugin-1.1:=[profile?] <dev-haskell/hls-brittany-plugin-1.2:=[profile?] )
-# hls_plugins_cabal-fmt? ( >=dev-haskell/hls-cabal-fmt-plugin-0.1.0.0:=[profile?] <dev-haskell/hls-cabal-fmt-plugin-0.2:=[profile?] )
 # hls_plugins_stan? ( >=dev-haskell/hls-stan-plugin-1.0:=[profile?] <dev-haskell/hls-stan-plugin-1.1:=[profile?] )
 # hls_plugins_haddock-comments? ( >=dev-haskell/hls-haddock-comments-plugin-1.1:=[profile?] <dev-haskell/hls-haddock-comments-plugin-1.2:=[profile?] )
 # hls_plugins_wingman? ( >=dev-haskell/hls-tactics-plugin-1.8:=[profile?] <dev-haskell/hls-tactics-plugin-1.9:=[profile?] )
@@ -80,7 +77,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-paths:=[profile?]
-	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
+	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.11:=[profile?]
 	dev-haskell/gitrev:=[profile?]
 	dev-haskell/githash:=[profile?]
 	dev-haskell/hashable:=[profile?]
@@ -105,15 +102,16 @@ RDEPEND="
 	hls_formatters_floskell? ( >dev-haskell/hls-floskell-plugin-1.0.1.1:=[profile?] <dev-haskell/hls-floskell-plugin-1.1:=[profile?] )
 	hls_formatters_fourmolu? ( >=dev-haskell/hls-fourmolu-plugin-1.1:=[profile?] <dev-haskell/hls-fourmolu-plugin-1.2:=[profile?] )
 	hls_formatters_ormolu? ( >=dev-haskell/hls-ormolu-plugin-1.0:=[profile?] <dev-haskell/hls-ormolu-plugin-1.1:=[profile?] )
-	hls_formatters_refactor? ( >=dev-haskell/hls-refactor-plugin-1.1:=[profile?] <dev-haskell/hls-refactor-plugin-1.2:=[profile?] )
+	hls_formatters_refactor? ( >=dev-haskell/hls-refactor-plugin-1.1:=[profile?] <dev-haskell/hls-refactor-plugin-1.3:=[profile?] )
 	hls_formatters_stylish-haskell? ( >=dev-haskell/hls-stylish-haskell-plugin-1.0:=[profile?] <dev-haskell/hls-stylish-haskell-plugin-1.1:=[profile?] )
 	hls_plugins_alternate-number-format? ( >=dev-haskell/hls-alternate-number-format-plugin-1.3:=[profile?] <dev-haskell/hls-alternate-number-format-plugin-1.4:=[profile?] )
 	hls_plugins_cabal? ( >=dev-haskell/hls-cabal-plugin-0.1:=[profile?] <dev-haskell/hls-cabal-plugin-0.2:=[profile?] )
+	hls_plugins_cabal-fmt? ( >=dev-haskell/hls-cabal-fmt-plugin-0.1.0.0:=[profile?] <dev-haskell/hls-cabal-fmt-plugin-0.2:=[profile?] )
 	hls_plugins_class? ( >=dev-haskell/hls-class-plugin-1.1:=[profile?] <dev-haskell/hls-class-plugin-1.2:=[profile?] )
         hls_plugins_call-hierarchy? ( >=dev-haskell/hls-call-hierarchy-plugin-1.1:=[profile?] <dev-haskell/hls-call-hierarchy-plugin-1.3:=[profile?] )
 	hls_plugins_change-type-signature? ( >dev-haskell/hls-change-type-signature-plugin-1.1 <dev-haskell/hls-change-type-signature-plugin-1.2 )
 	hls_plugins_code-range? ( >=dev-haskell/hls-code-range-plugin-1.1:=[profile?] <dev-haskell/hls-code-range-plugin-1.2:=[profile?] )
-	hls_plugins_eval? ( >=dev-haskell/hls-eval-plugin-1.4:=[profile?] <dev-haskell/hls-eval-plugin-1.5:=[profile?] )
+	hls_plugins_eval? ( >=dev-haskell/hls-eval-plugin-1.4:=[profile?] <dev-haskell/hls-eval-plugin-1.6:=[profile?] )
 	hls_plugins_explicit-fields? ( >=dev-haskell/hls-explicit-record-fields-plugin-1.0:=[profile?] <dev-haskell/hls-explicit-record-fields-plugin-1.1:=[profile?] )
 	hls_plugins_explicit-fixity? ( >=dev-haskell/hls-explicit-fixity-plugin-1.1:=[profile?] <dev-haskell/hls-explicit-fixity-plugin-1.2:=[profile?] )
 	hls_plugins_gadt? ( >=dev-haskell/hls-gadt-plugin-1.0:=[profile?] <dev-haskell/hls-gadt-plugin-1.1:=[profile?] )
@@ -125,7 +123,7 @@ RDEPEND="
 	hls_plugins_refine-imports? ( >=dev-haskell/hls-refine-imports-plugin-1.0:=[profile?] <dev-haskell/hls-refine-imports-plugin-1.1:=[profile?] )
 	hls_plugins_rename? ( >dev-haskell/hls-rename-plugin-1.0.0.2:=[profile?] <dev-haskell/hls-rename-plugin-1.1:=[profile?] )
 	hls_plugins_retrie? ( >dev-haskell/hls-retrie-plugin-1.0.2.1:=[profile?] <dev-haskell/hls-retrie-plugin-1.1:=[profile?] )
-	hls_plugins_splice? ( >=dev-haskell/hls-splice-plugin-1.0.0.1:=[profile?] <dev-haskell/hls-splice-plugin-1.1:=[profile?] )
+	hls_plugins_splice? ( >=dev-haskell/hls-splice-plugin-1.0.0.1:=[profile?] <dev-haskell/hls-splice-plugin-1.2:=[profile?] )
 "
 
 DEPEND="${RDEPEND}
@@ -141,13 +139,8 @@ DEPEND="${RDEPEND}
 		)
 "
 
-PATCHES=(
-	"${FILESDIR}/support-hls-call-hierarchy-1.2.patch"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
-		--flag=-brittany \
 		$(cabal_flag hls_formatters_floskell floskell) \
 		$(cabal_flag hls_formatters_fourmolu fourmolu) \
 		$(cabal_flag hls_formatters_ormolu ormolu) \
@@ -155,7 +148,7 @@ src_configure() {
 		$(cabal_flag hls_formatters_stylish-haskell stylishhaskell) \
 		$(cabal_flag hls_plugins_alternate-number-format alternateNumberFormat) \
 		$(cabal_flag hls_plugins_cabal cabal) \
-		--flag=-cabalfmt \
+		$(cabal_flag hls_plugins_cabal cabalfmt) \
 		$(cabal_flag hls_plugins_call-hierarchy callHierarchy) \
 		$(cabal_flag hls_plugins_change-type-signature changeTypeSignature) \
 		$(cabal_flag hls_plugins_class class) \
