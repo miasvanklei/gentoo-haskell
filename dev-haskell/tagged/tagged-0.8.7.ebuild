@@ -10,7 +10,6 @@ CABAL_FEATURES="lib profile haddock hoogle hscolour"
 # break circular dependencies:
 # https://github.com/gentoo-haskell/gentoo-haskell/issues/810
 CABAL_FEATURES+=" nocabaldep"
-CABAL_HACKAGE_REVISION=3
 
 inherit haskell-cabal
 
