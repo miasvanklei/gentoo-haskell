@@ -29,6 +29,11 @@ DEPEND="${RDEPEND}
 		dev-haskell/transformers-compat )
 "
 
+CABAL_CHDEPS=(
+	'transformers        >= 0.3   && < 0.7' 'transformers        >= 0.3   && < 0.8'
+)
+
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag semigroups semigroups) \
