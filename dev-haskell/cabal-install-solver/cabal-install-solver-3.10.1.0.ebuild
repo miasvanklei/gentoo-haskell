@@ -18,8 +18,8 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64 ~x86"
 IUSE="debug"
 
-RDEPEND=">=dev-haskell/cabal-3.8:=[profile?] <dev-haskell/cabal-3.9:=[profile?]
-	>=dev-haskell/cabal-syntax-3.8:=[profile?] <dev-haskell/cabal-syntax-3.9:=[profile?]
+RDEPEND=">=dev-haskell/cabal-3.10:=[profile?] <dev-haskell/cabal-3.11:=[profile?]
+	>=dev-haskell/cabal-syntax-3.10:=[profile?] <dev-haskell/cabal-syntax-3.11:=[profile?]
 	>=dev-haskell/edit-distance-0.2.2:=[profile?] <dev-haskell/edit-distance-0.3:=[profile?]
 	>=dev-lang/ghc-8.4.3:=
 	debug? ( >=dev-haskell/tracetree-0.1:=[profile?] <dev-haskell/tracetree-0.2:=[profile?] )
@@ -31,12 +31,9 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-quickcheck )
 "
 
-src_prepare() {
-	default
-
-	cabal_chdeps \
-		'base          >=4.10     && <4.17' 'base          >=4.10'
-}
+CABAL_CHDEPS=(
+	'base          >=4.10     && <4.18' 'base >=4.10 && <4.19'
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
