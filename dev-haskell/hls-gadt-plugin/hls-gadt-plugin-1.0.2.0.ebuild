@@ -24,7 +24,7 @@ RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-exactprint:=[profile?]
-	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.10:=[profile?]
+	>=dev-haskell/ghcide-1.9:=[profile?] <dev-haskell/ghcide-1.11:=[profile?]
 	>=dev-haskell/hls-plugin-api-1.6:=[profile?] <dev-haskell/hls-plugin-api-1.7:=[profile?]
 	dev-haskell/hls-refactor-plugin:=[profile?]
 	dev-haskell/lens:=[profile?]
