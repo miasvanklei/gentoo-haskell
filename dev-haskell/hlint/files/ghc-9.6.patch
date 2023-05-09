@@ -1,0 +1,1143 @@
+diff --git a/hlint.cabal b/hlint.cabal
+index d662c3a96..28a736a90 100644
+--- a/hlint.cabal
++++ b/hlint.cabal
+@@ -72,7 +72,7 @@ library
+         utf8-string,
+         data-default >= 0.3,
+         cpphs >= 1.20.1,
+-        cmdargs >= 0.10,
++        cmdargs >= 0.10.22,
+         uniplate >= 1.5,
+         ansi-terminal >= 0.8.1,
+         extra >= 1.7.3,
+@@ -81,16 +81,16 @@ library
+         deriving-aeson >= 0.2,
+         filepattern >= 0.1.1
+ 
+-    if !flag(ghc-lib) && impl(ghc >= 9.4.1) && impl(ghc < 9.5.0)
++    if !flag(ghc-lib) && impl(ghc >= 9.6.1) && impl(ghc < 9.7.0)
+       build-depends:
+-        ghc == 9.4.*,
++        ghc == 9.6.*,
+         ghc-boot-th,
+         ghc-boot
+     else
+       build-depends:
+-          ghc-lib-parser == 9.4.*
++          ghc-lib-parser == 9.6.*
+     build-depends:
+-        ghc-lib-parser-ex >= 9.4.0.0 && < 9.4.1
++        ghc-lib-parser-ex >= 9.6.0.0 && < 9.6.1
+ 
+     if flag(gpl)
+         build-depends: hscolour >= 1.21
+diff --git a/src/Apply.hs b/src/Apply.hs
+index 448a5bab4..2bd8d7429 100644
+--- a/src/Apply.hs
++++ b/src/Apply.hs
+@@ -73,7 +73,7 @@ applyHintsReal settings hints_ ms = concat $
+ removeRequiresExtensionNotes :: ModuleEx -> Idea -> Idea
+ removeRequiresExtensionNotes m = \x -> x{ideaNote = filter keep $ ideaNote x}
+     where
+-        exts = Set.fromList $ concatMap snd $ languagePragmas $ pragmas (comments (hsmodAnn (unLoc . ghcModule $ m)))
++        exts = Set.fromList $ concatMap snd $ languagePragmas $ pragmas (comments (hsmodAnn (hsmodExt . unLoc . ghcModule $ m)))
+         keep (RequiresExtension x) = not $ x `Set.member` exts
+         keep _ = True
+ 
+diff --git a/src/Config/Haskell.hs b/src/Config/Haskell.hs
+index 3b0296d8f..4b4fd0b47 100644
+--- a/src/Config/Haskell.hs
++++ b/src/Config/Haskell.hs
+@@ -31,7 +31,7 @@ import Language.Haskell.GhclibParserEx.GHC.Types.Name.Reader
+ -- | Read an {-# ANN #-} pragma and determine if it is intended for HLint.
+ --   Return Nothing if it is not an HLint pragma, otherwise what it means.
+ readPragma :: AnnDecl GhcPs -> Maybe Classify
+-readPragma (HsAnnotation _ _ provenance expr) = f expr
++readPragma (HsAnnotation _ provenance expr) = f expr
+     where
+         name = case provenance of
+             ValueAnnProvenance (L _ x) -> occNameStr x
+diff --git a/src/Config/Yaml.hs b/src/Config/Yaml.hs
+index 1f76ed9a5..6849c30b4 100644
+--- a/src/Config/Yaml.hs
++++ b/src/Config/Yaml.hs
+@@ -235,7 +235,7 @@ parseGHC parser v = do
+         POk _ x -> pure x
+         PFailed ps ->
+           let errMsg = head . bagToList . getMessages $ GhcPsMessage <$> snd (getPsMessages ps)
+-              msg = showSDoc baseDynFlags $ pprLocMsgEnvelope errMsg
++              msg = showSDoc baseDynFlags $ pprLocMsgEnvelopeDefault errMsg
+           in parseFail v $ "Failed to parse " ++ msg ++ ", when parsing:\n " ++ x
+ 
+ ---------------------------------------------------------------------
+@@ -440,7 +440,7 @@ settingsFromConfigYaml (mconcat -> ConfigYaml configs) = settings ++ concatMap f
+               scope'= asScope' packageMap' (map (fmap unextendInstances) groupImports)
+ 
+ asScope' :: Map.HashMap String [LocatedA (ImportDecl GhcPs)] -> [Either String (LocatedA (ImportDecl GhcPs))] -> Scope
+-asScope' packages xs = scopeCreate (HsModule EpAnnNotUsed NoLayoutInfo Nothing Nothing (concatMap f xs) [] Nothing Nothing)
++asScope' packages xs = scopeCreate (HsModule (XModulePs EpAnnNotUsed NoLayoutInfo Nothing Nothing) Nothing Nothing (concatMap f xs) [])
+     where
+         f (Right x) = [x]
+         f (Left x) | Just pkg <- Map.lookup x packages = pkg
+diff --git a/src/GHC/All.hs b/src/GHC/All.hs
+index 5d69db20d..86ea079af 100644
+--- a/src/GHC/All.hs
++++ b/src/GHC/All.hs
+@@ -5,7 +5,7 @@ module GHC.All(
+     CppFlags(..), ParseFlags(..), defaultParseFlags,
+     parseFlagsAddFixities, parseFlagsSetLanguage,
+     ParseError(..), ModuleEx(..),
+-    parseModuleEx, createModuleEx, createModuleExWithFixities, ghcComments, modComments,
++    parseModuleEx, createModuleEx, createModuleExWithFixities, ghcComments, modComments, firstDeclComments,
+     parseExpGhcWithMode, parseImportDeclGhcWithMode, parseDeclGhcWithMode,
+     ) where
+ 
+@@ -85,7 +85,7 @@ data ParseError = ParseError
+ 
+ -- | Result of 'parseModuleEx', representing a parsed module.
+ newtype ModuleEx = ModuleEx {
+-    ghcModule :: Located HsModule
++    ghcModule :: Located (HsModule GhcPs)
+ }
+ 
+ -- | Extract a complete list of all the comments in a module.
+@@ -94,7 +94,14 @@ ghcComments = universeBi . ghcModule
+ 
+ -- | Extract just the list of a modules' leading comments (pragmas).
+ modComments :: ModuleEx -> EpAnnComments
+-modComments = comments . hsmodAnn . unLoc . ghcModule
++modComments = comments . hsmodAnn . hsmodExt . unLoc . ghcModule
++
++-- | Extract comments associated with the first declaration of a module.
++firstDeclComments :: ModuleEx -> EpAnnComments
++firstDeclComments m =
++  case hsmodDecls . unLoc . ghcModule $ m of
++        [] -> EpaCommentsBalanced [] []
++        L (SrcSpanAnn ann _) _ : _ -> comments ann
+ 
+ -- | The error handler invoked when GHC parsing has failed.
+ ghcFailOpParseModuleEx :: String
+@@ -147,10 +154,10 @@ parseDeclGhcWithMode parseMode s =
+ -- | Create a 'ModuleEx' from a GHC module. It is assumed the incoming
+ -- parsed module has not been adjusted to account for operator
+ -- fixities (it uses the HLint default fixities).
+-createModuleEx :: Located HsModule -> ModuleEx
++createModuleEx :: Located (HsModule GhcPs) -> ModuleEx
+ createModuleEx = createModuleExWithFixities (map toFixity defaultFixities)
+ 
+-createModuleExWithFixities :: [(String, Fixity)] -> Located HsModule -> ModuleEx
++createModuleExWithFixities :: [(String, Fixity)] -> Located (HsModule GhcPs) -> ModuleEx
+ createModuleExWithFixities fixities ast =
+   ModuleEx (applyFixities (fixitiesFromModule ast ++ fixities) ast)
+ 
+@@ -201,7 +208,7 @@ parseModuleEx flags file str = timedIO "Parse" file $ runExceptT $ do
+     parseFailureErr dynFlags ppstr file str errs =
+       let errMsg = head errs
+           loc = errMsgSpan errMsg
+-          doc = pprLocMsgEnvelope errMsg
++          doc = pprLocMsgEnvelopeDefault errMsg
+       in ghcFailOpParseModuleEx ppstr file str (loc, doc)
+ 
+ -- | Given a line number, and some source code, put bird ticks around the appropriate bit.
+diff --git a/src/GHC/Util.hs b/src/GHC/Util.hs
+index e912fbf1e..1f16767b4 100644
+--- a/src/GHC/Util.hs
++++ b/src/GHC/Util.hs
+@@ -41,7 +41,7 @@ import GHC.Data.FastString
+ import System.FilePath
+ import Language.Preprocessor.Unlit
+ 
+-fileToModule :: FilePath -> String -> DynFlags -> ParseResult (Located HsModule)
++fileToModule :: FilePath -> String -> DynFlags -> ParseResult (Located (HsModule GhcPs))
+ fileToModule filename str flags =
+   parseFile filename flags
+     (if takeExtension filename /= ".lhs" then str else unlit filename str)
+diff --git a/src/GHC/Util/ApiAnnotation.hs b/src/GHC/Util/ApiAnnotation.hs
+index 041f102cc..12ced86d9 100644
+--- a/src/GHC/Util/ApiAnnotation.hs
++++ b/src/GHC/Util/ApiAnnotation.hs
+@@ -87,7 +87,7 @@ flags ps =
+ 
+ -- Language pragmas. The first element of the
+ -- pair is the (located) annotation comment that enables the
+--- pragmas enumerated by he second element of the pair.
++-- pragmas enumerated by the second element of the pair.
+ languagePragmas :: [(LEpaComment, String)] -> [(LEpaComment, [String])]
+ languagePragmas ps =
+   [(c, exts) | (c, s) <- ps
+diff --git a/src/GHC/Util/Brackets.hs b/src/GHC/Util/Brackets.hs
+index 4c2108fd8..ba68fe087 100644
+--- a/src/GHC/Util/Brackets.hs
++++ b/src/GHC/Util/Brackets.hs
+@@ -54,7 +54,8 @@ instance Brackets (LocatedA (HsExpr GhcPs)) where
+       HsUntypedBracket{} -> True
+       -- HsSplice might be $foo, where @($foo) would require brackets,
+       -- but in that case the $foo is a type, so we can still mark Splice as atomic
+-      HsSpliceE{} -> True
++      HsTypedSplice{} -> True
++      HsUntypedSplice{} -> True
+       HsOverLit _ x | not $ isNegativeOverLit x -> True
+       HsLit _ x     | not $ isNegativeLit x     -> True
+       _  -> False
+@@ -109,6 +110,7 @@ isAtomOrApp _ = False
+ instance Brackets (LocatedA (Pat GhcPs)) where
+   remParen (L _ (ParPat _ _ x _)) = Just x
+   remParen _ = Nothing
++
+   addParen = nlParPat
+ 
+   isAtom (L _ x) = case x of
+diff --git a/src/GHC/Util/DynFlags.hs b/src/GHC/Util/DynFlags.hs
+index 499b13269..0ee6acf0b 100644
+--- a/src/GHC/Util/DynFlags.hs
++++ b/src/GHC/Util/DynFlags.hs
+@@ -8,7 +8,7 @@ import Language.Haskell.GhclibParserEx.GHC.Settings.Config
+ -- 'parsePragmasIntoDynFlags' based solely on the parse flags
+ -- (and source level annotations).
+ baseDynFlags :: DynFlags
+-baseDynFlags = defaultDynFlags fakeSettings fakeLlvmConfig
++baseDynFlags = defaultDynFlags fakeSettings
+ 
+ initGlobalDynFlags :: IO ()
+ initGlobalDynFlags = setUnsafeGlobalDynFlags baseDynFlags
+diff --git a/src/GHC/Util/FreeVars.hs b/src/GHC/Util/FreeVars.hs
+index 61e5bf567..6cd30a005 100644
+--- a/src/GHC/Util/FreeVars.hs
++++ b/src/GHC/Util/FreeVars.hs
+@@ -97,7 +97,7 @@ unqualNames _ = []
+ 
+ instance FreeVars (LocatedA (HsExpr GhcPs)) where
+   freeVars (L _ (HsVar _ x)) = Set.fromList $ unqualNames x -- Variable.
+-  freeVars (L _ (HsUnboundVar _ x)) = Set.fromList [x] -- Unbound variable; also used for "holes".
++  freeVars (L _ (HsUnboundVar _ x)) = Set.fromList [rdrNameOcc x] -- Unbound variable; also used for "holes".
+   freeVars (L _ (HsLam _ mg)) = free (allVars mg) -- Lambda abstraction. Currently always a single match.
+   freeVars (L _ (HsLamCase _ _ MG{mg_alts=(L _ ms)})) = free (allVars ms) -- Lambda case
+   freeVars (L _ (HsCase _ of_ MG{mg_alts=(L _ ms)})) = freeVars of_ ^+ free (allVars ms) -- Case expr.
+@@ -180,7 +180,7 @@ instance FreeVars (LocatedA (HsFieldBind (LocatedAn NoEpAnns (FieldLabelStrings
+ 
+ instance AllVars (LocatedA (Pat GhcPs)) where
+   allVars (L _ (VarPat _ (L _ x))) = Vars (Set.singleton $ rdrNameOcc x) Set.empty -- Variable pattern.
+-  allVars (L _ (AsPat _  n x)) = allVars (noLocA $ VarPat noExtField n :: LocatedA (Pat GhcPs)) <> allVars x -- As pattern.
++  allVars (L _ (AsPat _  n _ x)) = allVars (noLocA $ VarPat noExtField n :: LocatedA (Pat GhcPs)) <> allVars x -- As pattern.
+   allVars (L _ (ConPat _ _ (RecCon (HsRecFields flds _)))) = allVars flds
+   allVars (L _ (NPlusKPat _ n _ _ _ _)) = allVars (noLocA $ VarPat noExtField n :: LocatedA (Pat GhcPs)) -- n+k pattern.
+   allVars (L _ (ViewPat _ e p)) = freeVars_ e <> allVars p -- View pattern.
+@@ -231,7 +231,7 @@ instance AllVars (LocatedA (HsBindLR GhcPs GhcPs)) where
+   allVars (L _ (PatSynBind _ PSB{})) = mempty -- Come back to it.
+ 
+ instance AllVars (MatchGroup GhcPs (LocatedA (HsExpr GhcPs))) where
+-  allVars (MG _ _alts@(L _ alts) _) = inVars (foldMap (allVars . m_pats) ms) (allVars (map m_grhss ms))
++  allVars (MG _ _alts@(L _ alts)) = inVars (foldMap (allVars . m_pats) ms) (allVars (map m_grhss ms))
+     where ms = map unLoc alts
+ 
+ instance AllVars (LocatedA (Match GhcPs (LocatedA (HsExpr GhcPs)))) where
+diff --git a/src/GHC/Util/HsExpr.hs b/src/GHC/Util/HsExpr.hs
+index 030668949..211502d17 100644
+--- a/src/GHC/Util/HsExpr.hs
++++ b/src/GHC/Util/HsExpr.hs
+@@ -58,7 +58,7 @@ dotApps (x : xs) = dotApp x (dotApps xs)
+ 
+ -- | @lambda [p0, p1..pn] body@ makes @\p1 p1 .. pn -> body@
+ lambda :: [LPat GhcPs] -> LHsExpr GhcPs -> LHsExpr GhcPs
+-lambda vs body = noLocA $ HsLam noExtField (MG noExtField (noLocA [noLocA $ Match EpAnnNotUsed LambdaExpr vs (GRHSs emptyComments [noLocA $ GRHS EpAnnNotUsed [] body] (EmptyLocalBinds noExtField))]) Generated)
++lambda vs body = noLocA $ HsLam noExtField (MG Generated (noLocA [noLocA $ Match EpAnnNotUsed LambdaExpr vs (GRHSs emptyComments [noLocA $ GRHS EpAnnNotUsed [] body] (EmptyLocalBinds noExtField))]))
+ 
+ -- | 'paren e' wraps 'e' in parens if 'e' is non-atomic.
+ paren :: LHsExpr GhcPs -> LHsExpr GhcPs
+@@ -125,7 +125,7 @@ simplifyExp (L l (OpApp _ x op y)) | isDol op = L l (HsApp EpAnnNotUsed x (nlHsP
+ simplifyExp e@(L _ (HsLet _ _ ((HsValBinds _ (ValBinds _ binds []))) _ z)) =
+   -- An expression of the form, 'let x = y in z'.
+   case bagToList binds of
+-    [L _ (FunBind _ _ (MG _ (L _ [L _ (Match _(FunRhs (L _ x) _ _) [] (GRHSs _[L _ (GRHS _ [] y)] ((EmptyLocalBinds _))))]) _) _)]
++    [L _ (FunBind _ _ (MG _ (L _ [L _ (Match _(FunRhs (L _ x) _ _) [] (GRHSs _[L _ (GRHS _ [] y)] ((EmptyLocalBinds _))))])))]
+          -- If 'x' is not in the free variables of 'y', beta-reduce to
+          -- 'z[(y)/x]'.
+       | occNameStr x `notElem` vars y && length [() | Unqual a <- universeBi z, a == rdrNameOcc x] <= 1 ->
+@@ -242,7 +242,7 @@ niceLambdaR ss e =
+   let grhs = noLocA $ GRHS EpAnnNotUsed [] e :: LGRHS GhcPs (LHsExpr GhcPs)
+       grhss = GRHSs {grhssExt = emptyComments, grhssGRHSs=[grhs], grhssLocalBinds=EmptyLocalBinds noExtField}
+       match = noLocA $ Match {m_ext=EpAnnNotUsed, m_ctxt=LambdaExpr, m_pats=map strToPat ss, m_grhss=grhss} :: LMatch GhcPs (LHsExpr GhcPs)
+-      matchGroup = MG {mg_ext=noExtField, mg_origin=Generated, mg_alts=noLocA [match]}
++      matchGroup = MG {mg_ext=Generated, mg_alts=noLocA [match]}
+   in (noLocA $ HsLam noExtField matchGroup, const [])
+ 
+ 
+@@ -251,8 +251,8 @@ niceLambdaR ss e =
+ replaceBranches :: LHsExpr GhcPs -> ([LHsExpr GhcPs], [LHsExpr GhcPs] -> LHsExpr GhcPs)
+ replaceBranches (L l (HsIf _ a b c)) = ([b, c], \[b, c] -> L l (HsIf EpAnnNotUsed a b c))
+ 
+-replaceBranches (L s (HsCase _ a (MG _ (L l bs) FromSource))) =
+-  (concatMap f bs, \xs -> L s (HsCase EpAnnNotUsed a (MG noExtField (L l (g bs xs)) Generated)))
++replaceBranches (L s (HsCase _ a (MG FromSource (L l bs)))) =
++  (concatMap f bs, L s . HsCase EpAnnNotUsed a . MG Generated . L l . g bs)
+   where
+     f :: LMatch GhcPs (LHsExpr GhcPs) -> [LHsExpr GhcPs]
+     f (L _ (Match _ CaseAlt _ (GRHSs _ xs _))) = [x | (L _ (GRHS _ _ x)) <- xs]
+diff --git a/src/GHC/Util/Scope.hs b/src/GHC/Util/Scope.hs
+index 79fe9a2d7..289bee630 100644
+--- a/src/GHC/Util/Scope.hs
++++ b/src/GHC/Util/Scope.hs
+@@ -10,7 +10,6 @@ module GHC.Util.Scope (
+ import GHC.Hs
+ import GHC.Types.SrcLoc
+ import GHC.Types.SourceText
+-import GHC.Unit.Module
+ import GHC.Data.FastString
+ import GHC.Types.Name.Reader
+ import GHC.Types.Name.Occurrence
+@@ -21,6 +20,7 @@ import Language.Haskell.GhclibParserEx.GHC.Utils.Outputable
+ 
+ import Data.List.Extra
+ import Data.Maybe
++import Data.Bifunctor
+ 
+ -- A scope is a list of import declarations.
+ newtype Scope = Scope [LImportDecl GhcPs]
+@@ -30,7 +30,7 @@ instance Show Scope where
+     show (Scope x) = unsafePrettyPrint x
+ 
+ -- Create a 'Scope from a module's import declarations.
+-scopeCreate :: HsModule -> Scope
++scopeCreate :: HsModule GhcPs -> Scope
+ scopeCreate xs = Scope $ [prelude | not $ any isPrelude res] ++ res
+   where
+     -- Package qualifier of an import declaration.
+@@ -116,7 +116,7 @@ possImport (L _ i) (L _ (Qual mod x)) =
+   where ms = map unLoc $ ideclName i : maybeToList (ideclAs i)
+ possImport (L _ i) (L _ (Unqual x)) =
+   if ideclQualified i == NotQualified
+-    then maybe PossiblyImported f (ideclHiding i)
++    then maybe PossiblyImported (f . first (== EverythingBut)) (ideclImportList i)
+     else NotImported
+   where
+     f :: (Bool, LocatedL [LIE GhcPs]) -> IsImported
+@@ -137,6 +137,6 @@ possImport (L _ i) (L _ (Unqual x)) =
+     g (L _ (IEThingWith _ y _wildcard ys)) = Just $ tag `elem` unwrapName y : map unwrapName ys
+     g _ = Just False
+ 
+-    unwrapName :: LIEWrappedName RdrName -> String
++    unwrapName :: LIEWrappedName GhcPs -> String
+     unwrapName x = occNameString (rdrNameOcc $ ieWrappedName (unLoc x))
+ possImport _ _ = NotImported
+diff --git a/src/GHC/Util/Unify.hs b/src/GHC/Util/Unify.hs
+index 831e44f31..d3e183c76 100644
+--- a/src/GHC/Util/Unify.hs
++++ b/src/GHC/Util/Unify.hs
+@@ -95,7 +95,7 @@ substitute (Subst bind) = transformBracketOld exp . transformBi pat . transformB
+     typ :: LHsType GhcPs -> LHsType GhcPs
+     -- Type variables.
+     typ (L _ (HsTyVar _ _ x))
+-      | Just (L _ (HsAppType _ _ (HsWC _ y))) <- lookup (rdrNameStr x) bind = y
++      | Just (L _ (HsAppType _ _ _ (HsWC _ y))) <- lookup (rdrNameStr x) bind = y
+     typ x = x :: LHsType GhcPs
+ 
+ 
+@@ -288,7 +288,7 @@ unifyPat' nm x y =
+ unifyType' :: NameMatch -> LHsType GhcPs -> LHsType GhcPs -> Maybe (Subst (LHsExpr GhcPs))
+ unifyType' nm (L loc (HsTyVar _ _ x)) y =
+   let wc = HsWC noExtField y :: LHsWcType (NoGhcTc GhcPs)
+-      unused = strToVar "__unused__" :: LHsExpr GhcPs
+-      appType = L loc (HsAppType noSrcSpan unused wc) :: LHsExpr GhcPs
++      unused = strToVar "__unused__"
++      appType = L loc (HsAppType noExtField unused noHsTok wc)
+  in Just $ Subst [(rdrNameStr x, appType)]
+ unifyType' nm x y = unifyDef' nm x y
+diff --git a/src/GHC/Util/View.hs b/src/GHC/Util/View.hs
+index 07903136f..0481de3d4 100644
+--- a/src/GHC/Util/View.hs
++++ b/src/GHC/Util/View.hs
+@@ -32,8 +32,8 @@ data App2  = NoApp2  | App2 (LocatedA (HsExpr GhcPs)) (LocatedA (HsExpr GhcPs))
+ data LamConst1 = NoLamConst1 | LamConst1 (LocatedA (HsExpr GhcPs))
+ 
+ instance View (LocatedA (HsExpr GhcPs)) LamConst1 where
+-  view (fromParen -> (L _ (HsLam _ (MG _ (L _ [L _ (Match _ LambdaExpr [L _ WildPat {}]
+-    (GRHSs _ [L _ (GRHS _ [] x)] ((EmptyLocalBinds _))))]) FromSource)))) = LamConst1 x
++  view (fromParen -> (L _ (HsLam _ (MG FromSource (L _ [L _ (Match _ LambdaExpr [L _ WildPat {}]
++    (GRHSs _ [L _ (GRHS _ [] x)] ((EmptyLocalBinds _))))]))))) = LamConst1 x
+   view _ = NoLamConst1
+ 
+ instance View (LocatedA (HsExpr GhcPs)) RdrName_ where
+@@ -62,4 +62,4 @@ instance View (LocatedA (Pat GhcPs)) PApp_ where
+ 
+ -- A lambda with no guards and no where clauses
+ pattern SimpleLambda :: [LocatedA (Pat GhcPs)] -> LocatedA (HsExpr GhcPs) -> LocatedA (HsExpr GhcPs)
+-pattern SimpleLambda vs body <- L _ (HsLam _ (MG _ (L _ [L _ (Match _ _ vs (GRHSs _ [L _ (GRHS _ [] body)] ((EmptyLocalBinds _))))]) _))
++pattern SimpleLambda vs body <- L _ (HsLam _ (MG _ (L _ [L _ (Match _ _ vs (GRHSs _ [L _ (GRHS _ [] body)] ((EmptyLocalBinds _))))])))
+diff --git a/src/Hint/Bracket.hs b/src/Hint/Bracket.hs
+index 1da5002ac..6455e1e61 100644
+--- a/src/Hint/Bracket.hs
++++ b/src/Hint/Bracket.hs
+@@ -169,12 +169,15 @@ remParens' = fmap go . remParen
+   where
+     go e = maybe e go (remParen e)
+ 
++-- note(sf, 2022-06-02): i've completely bluffed my way through this.
++-- see
++-- https://gitlab.haskell.org/ghc/ghc/-/commit/7975202ba9010c581918413808ee06fbab9ac85f
++-- for where splice expressions were refactored.
+ isPartialAtom :: Maybe (LHsExpr GhcPs) -> LHsExpr GhcPs -> Bool
+ -- Might be '$x', which was really '$ x', but TH enabled misparsed it.
+-isPartialAtom _ (L _ (HsSpliceE _ (HsTypedSplice _ DollarSplice _ _) )) = True
+-isPartialAtom _ (L _ (HsSpliceE _ (HsUntypedSplice _ DollarSplice _ _) )) = True
++isPartialAtom _ (L _ (HsUntypedSplice _ HsUntypedSpliceExpr{})) = True
+ -- Might be '$(x)' where the brackets are required in GHC 8.10 and below
+-isPartialAtom (Just (L _ HsSpliceE{})) _ = True
++isPartialAtom (Just (L _ HsUntypedSplice{})) _ = True
+ isPartialAtom _ x = isRecConstr x || isRecUpdate x
+ 
+ bracket :: forall a . (Data a, Outputable a, Brackets (LocatedA a)) => (LocatedA a -> String) -> (Maybe (LocatedA a) -> LocatedA a -> Bool) -> Bool -> LocatedA a -> [Idea]
+diff --git a/src/Hint/Export.hs b/src/Hint/Export.hs
+index f17e9079c..5f08dfc89 100644
+--- a/src/Hint/Export.hs
++++ b/src/Hint/Export.hs
+@@ -16,7 +16,6 @@ module Hint.Export(exportHint) where
+ import Hint.Type(ModuHint, ModuleEx(..),ideaNote,ignore,Note(..))
+ 
+ import GHC.Hs
+-import GHC.Unit.Module
+ import GHC.Types.SrcLoc
+ import GHC.Types.Name.Occurrence
+ import GHC.Types.Name.Reader
+@@ -33,11 +32,11 @@ exportHint _ (ModuleEx (L s m@HsModule {hsmodName = Just name, hsmodExports = ex
+   , exports' <- [x | x <- xs, not (matchesModName modName x)]
+   , modName `elem` names =
+       let dots = mkRdrUnqual (mkVarOcc " ... ")
+-          r = o{ hsmodExports = Just (noLocA (noLocA (IEVar noExtField (noLocA (IEName (noLocA dots)))) : exports') )}
++          r = o{ hsmodExports = Just (noLocA (noLocA (IEVar noExtField (noLocA (IEName noExtField (noLocA dots)))) : exports') )}
+       in
+         [ignore "Use explicit module export list" (L s o) (noLoc r) []]
+       where
+-          o = m{hsmodImports=[], hsmodDecls=[], hsmodDeprecMessage=Nothing, hsmodHaddockModHeader=Nothing }
++          o = m{hsmodImports=[], hsmodDecls=[] }
+           isMod (L _ (IEModuleContents _ _)) = True
+           isMod _ = False
+ 
+diff --git a/src/Hint/Extensions.hs b/src/Hint/Extensions.hs
+index 2b0626755..bcfa770be 100644
+--- a/src/Hint/Extensions.hs
++++ b/src/Hint/Extensions.hs
+@@ -98,7 +98,7 @@ deriving instance Show Bar -- {-# LANGUAGE StandaloneDeriving #-}
+ {-# LANGUAGE DeriveGeneric, GeneralizedNewtypeDeriving #-} \
+ newtype Micro = Micro Int deriving Generic -- {-# LANGUAGE DeriveGeneric #-}
+ {-# LANGUAGE DeriveGeneric, TypeFamilies #-} \
+-data family Bar a; data instance Bar Foo = Foo deriving (Generic)
++data family Bar a; data instance Bar Foo = Foo deriving Generic
+ {-# LANGUAGE GeneralizedNewtypeDeriving #-} \
+ instance Class Int where {newtype MyIO a = MyIO a deriving NewClass}
+ {-# LANGUAGE UnboxedTuples #-} \
+@@ -248,13 +248,18 @@ f = (. foo) -- @NoRefactor: refactor requires GHC >= 9.2.1
+ foo = [|| x ||]
+ {-# LANGUAGE TemplateHaskell #-} \
+ foo = $bar
++{-# LANGUAGE TypeData # -} \
++type data Nat = Zero | Succ Nat  -- @NoRefactor: refactor requires GHC >= 9.6.1
++{-# LANGUAGE TypeData #-} \
++data T = MkT -- @NoRefactor: refactor requires GHC >= 9.6.1
+ </TEST>
+ -}
+ 
+ 
++
+ module Hint.Extensions(extensionsHint) where
+ 
+-import Hint.Type(ModuHint,rawIdea,Severity(Warning),Note(..),toSSAnc,ghcModule,modComments)
++import Hint.Type(ModuHint,rawIdea,Severity(Warning),Note(..),toSSAnc,ghcModule,modComments,firstDeclComments)
+ import Extension
+ 
+ import Data.Generics.Uniplate.DataOnly
+@@ -299,7 +304,13 @@ extensionsHint _ x =
+             [ Note $ "Extension " ++ s ++ " is " ++ reason x
+             | (s, Just x) <- explainedRemovals])
+         [ModifyComment (toSSAnc (mkLanguagePragmas sl exts)) newPragma]
+-    | (L sl _,  exts) <- languagePragmas $ pragmas (modComments x)
++    | (L sl _,  exts) <-
++      -- Comments appearing without an empty line before the first
++      -- declaration in a module are now associated with the
++      -- declaration not the module so to be safe, look also at
++      -- `firstDeclComments x`
++      -- (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++      languagePragmas $ pragmas (modComments x) ++ pragmas (firstDeclComments x)
+     , let before = [(x, readExtension x) | x <- exts]
+     , let after = filter (maybe True (`Set.member` keep) . snd) before
+     , before /= after
+@@ -320,7 +331,12 @@ extensionsHint _ x =
+     -- All the extensions defined to be used.
+     extensions :: Set.Set Extension
+     extensions = Set.fromList $ mapMaybe readExtension $
+-        concatMap snd $ languagePragmas (pragmas (modComments x))
++      -- Comments appearing without an empty line before the first
++      -- declaration in a module are now associated with the
++      -- declaration not the module so to be safe, look also at
++      -- `firstDeclComments x`
++      -- (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++        concatMap snd $ languagePragmas (pragmas (modComments x) ++ pragmas (firstDeclComments x))
+ 
+     -- Those extensions we detect to be useful.
+     useful :: Set.Set Extension
+@@ -370,7 +386,7 @@ noDeriveNewtype =
+ deriveStock :: [String]
+ deriveStock = deriveHaskell ++ deriveGenerics ++ deriveCategory
+ 
+-usedExt :: Extension -> Located HsModule -> Bool
++usedExt :: Extension -> Located (HsModule GhcPs) -> Bool
+ usedExt NumDecimals = hasS isWholeFrac
+   -- Only whole number fractions are permitted by NumDecimals
+   -- extension.  Anything not-whole raises an error.
+@@ -378,23 +394,30 @@ usedExt DeriveLift = hasDerive ["Lift"]
+ usedExt DeriveAnyClass = not . null . derivesAnyclass . derives
+ usedExt x = used x
+ 
+-used :: Extension -> Located HsModule -> Bool
++used :: Extension -> Located (HsModule GhcPs) -> Bool
+ 
+ used RecursiveDo = hasS isMDo ||^ hasS isRecStmt
+ used ParallelListComp = hasS isParComp
+ used FunctionalDependencies = hasT (un :: FunDep GhcPs)
+ used ImplicitParams = hasT (un :: HsIPName)
++
+ used TypeApplications = hasS isTypeApp ||^ hasS isKindTyApp
++
+ used EmptyDataDecls = hasS f
+   where
+     f :: HsDataDefn GhcPs -> Bool
+-    f (HsDataDefn _ _ _ _ _ [] _) = True
++    f (HsDataDefn _ _ _ _ (DataTypeCons _ []) _) = True
++    f _ = False
++used TypeData  = hasS f
++  where
++    f :: HsDataDefn GhcPs -> Bool
++    f (HsDataDefn _ _ _ _ (DataTypeCons True _) _) = True
+     f _ = False
+ used EmptyCase = hasS f
+   where
+     f :: HsExpr GhcPs -> Bool
+-    f (HsCase _ _ (MG _ (L _ []) _)) = True
+-    f (HsLamCase _ _ (MG _ (L _ []) _)) = True
++    f (HsCase _ _ (MG _ (L _ []))) = True
++    f (HsLamCase _ _ (MG _ (L _ []))) = True
+     f _ = False
+ used KindSignatures = hasT (un :: HsKind GhcPs)
+ used BangPatterns = hasS isPBangPat ||^ hasS isStrictMatch
+@@ -497,7 +520,7 @@ used OverloadedRecordDot = hasT (un :: DotFieldOcc GhcPs)
+ 
+ used _= const True
+ 
+-hasDerive :: [String] -> Located HsModule -> Bool
++hasDerive :: [String] -> Located (HsModule GhcPs) -> Bool
+ hasDerive want = any (`elem` want) . derivesStock' . derives
+ 
+ -- Derivations can be implemented using any one of 3 strategies, so for each derivation
+@@ -526,14 +549,14 @@ addDerives nt _ xs = mempty
+     ,derivesNewtype' = if maybe True isNewType nt then filter (`notElem` noDeriveNewtype) xs else []}
+     where (stock, other) = partition (`elem` deriveStock) xs
+ 
+-derives :: Located HsModule -> Derives
++derives :: Located (HsModule GhcPs) -> Derives
+ derives (L _ m) =  mconcat $ map decl (childrenBi m) ++ map idecl (childrenBi m)
+   where
+     idecl :: DataFamInstDecl GhcPs -> Derives
+-    idecl (DataFamInstDecl FamEqn {feqn_rhs=HsDataDefn {dd_ND=dn, dd_derivs=ds}}) = g dn ds
++    idecl (DataFamInstDecl FamEqn {feqn_rhs=HsDataDefn {dd_cons=data_defn_cons, dd_derivs=ds}}) = g (dataDefnConsNewOrData data_defn_cons) ds
+ 
+     decl :: LHsDecl GhcPs -> Derives
+-    decl (L _ (TyClD _ (DataDecl _ _ _ _ HsDataDefn {dd_ND=dn, dd_derivs=ds}))) = g dn ds -- Data declaration.
++    decl (L _ (TyClD _ (DataDecl _ _ _ _ HsDataDefn {dd_cons=data_defn_cons, dd_derivs=ds}))) = g (dataDefnConsNewOrData data_defn_cons) ds -- Data declaration.
+     decl (L _ (DerivD _ (DerivDecl _ (HsWC _ sig) strategy _))) = addDerives Nothing (fmap unLoc strategy) [derivedToStr sig] -- A deriving declaration.
+     decl _ = mempty
+ 
+diff --git a/src/Hint/Import.hs b/src/Hint/Import.hs
+index 8b49020d4..dd46ab2d8 100644
+--- a/src/Hint/Import.hs
++++ b/src/Hint/Import.hs
+@@ -51,7 +51,6 @@ import GHC.Data.FastString
+ import GHC.Types.SourceText
+ import GHC.Hs
+ import GHC.Types.SrcLoc
+-import GHC.Unit.Types -- for 'NotBoot'
+ import GHC.Types.PkgQual
+ 
+ import Language.Haskell.GhclibParserEx.GHC.Utils.Outputable
+@@ -107,15 +106,15 @@ combine x@(L loc x') y@(L _ y')
+     -- Both (un/)qualified, common 'as', different names : Merge the
+     -- second into the first and delete it.
+   | qual, as
+-  , Just (False, xs) <- ideclHiding x'
+-  , Just (False, ys) <- ideclHiding y' =
+-      let newImp = L loc x'{ideclHiding = Just (False, noLocA (unLoc xs ++ unLoc ys))}
++  , Just (False, xs) <- first (== EverythingBut) <$> ideclImportList x'
++  , Just (False, ys) <- first (== EverythingBut) <$> ideclImportList y' =
++      let newImp = L loc x'{ideclImportList = Just (Exactly, noLocA (unLoc xs ++ unLoc ys))}
+       in Just (newImp, [Replace Import (toSSA x) [] (unsafePrettyPrint (unLoc newImp))
+                        , Delete Import (toSSA y)])
+   -- Both (un/qualified), common 'as', one has names the other doesn't
+   -- : Delete the one with names.
+-  | qual, as, isNothing (ideclHiding x') || isNothing (ideclHiding y') =
+-       let (newImp, toDelete) = if isNothing (ideclHiding x') then (x, y) else (y, x)
++  | qual, as, isNothing (ideclImportList x') || isNothing (ideclImportList y') =
++       let (newImp, toDelete) = if isNothing (ideclImportList x') then (x, y) else (y, x)
+        in Just (newImp, [Delete Import (toSSA toDelete)])
+   -- Both unqualified, same names, one (and only one) has an 'as'
+   -- clause : Delete the one without an 'as'.
+@@ -133,8 +132,8 @@ combine x@(L loc x') y@(L _ y')
+         qual = ideclQualified x' == ideclQualified y'
+         as = ideclAs x' `eqMaybe` ideclAs y'
+         ass = mapMaybe ideclAs [x', y']
+-        specs = transformBi (const noSrcSpan) (ideclHiding x') ==
+-                    transformBi (const noSrcSpan) (ideclHiding y')
++        specs = transformBi (const noSrcSpan) (ideclImportList x') ==
++                    transformBi (const noSrcSpan) (ideclImportList y')
+ 
+ stripRedundantAlias :: LImportDecl GhcPs -> [Idea]
+ stripRedundantAlias x@(L _ i@ImportDecl {..})
+diff --git a/src/Hint/Lambda.hs b/src/Hint/Lambda.hs
+index 33396319f..dd429a08c 100644
+--- a/src/Hint/Lambda.hs
++++ b/src/Hint/Lambda.hs
+@@ -169,7 +169,7 @@ lambdaBind
+     where
+           reform :: [LPat GhcPs] -> LHsExpr GhcPs -> Located (HsDecl GhcPs)
+           reform ps b = L (combineSrcSpans (locA loc1) (locA loc2)) $ ValD noExtField $
+-             origBind {fun_matches = MG noExtField (noLocA [noLocA $ Match EpAnnNotUsed ctxt ps $ GRHSs emptyComments [noLocA $ GRHS EpAnnNotUsed [] b] $ EmptyLocalBinds noExtField]) Generated}
++             origBind {fun_matches = MG Generated (noLocA [noLocA $ Match EpAnnNotUsed ctxt ps $ GRHSs emptyComments [noLocA $ GRHS EpAnnNotUsed [] b] $ EmptyLocalBinds noExtField])}
+ 
+           mkSubtsAndTpl newPats newBody = (sub, tpl)
+             where
+@@ -265,7 +265,7 @@ lambdaExp _ o@(SimpleLambda [view -> PVar_ x] (L _ expr)) =
+                  -- we need to
+                  --     * add brackets to the match, because matches in lambdas require them
+                  --     * mark match as being in a lambda context so that it's printed properly
+-                 oldMG@(MG _ (L _ [L _ oldmatch]) _)
++                 oldMG@(MG _ (L _ [L _ oldmatch]))
+                    | all (\(L _ (GRHS _ stmts _)) -> null stmts) (grhssGRHSs (m_grhss oldmatch)) ->
+                      let patLocs = fmap (locA . getLoc) (m_pats oldmatch)
+                          bodyLocs = concatMap (\case L _ (GRHS _ _ body) -> [locA (getLoc body)])
+@@ -293,7 +293,7 @@ lambdaExp _ o@(SimpleLambda [view -> PVar_ x] (L _ expr)) =
+                          ]
+ 
+                  -- otherwise we should use @LambdaCase@
+-                 MG _ (L _ _) _ ->
++                 MG _ (L _ _) ->
+                      [(suggestN "Use lambda-case" (reLoc o) $ noLoc $ HsLamCase EpAnnNotUsed LamCase matchGroup)
+                          {ideaNote=[RequiresExtension "LambdaCase"]}]
+         _ -> []
+diff --git a/src/Hint/List.hs b/src/Hint/List.hs
+index 8b1c3d40e..69a00f8ea 100644
+--- a/src/Hint/List.hs
++++ b/src/Hint/List.hs
+@@ -47,14 +47,13 @@ import Data.List.Extra
+ import Data.Maybe
+ import Prelude
+ 
+-import Hint.Type(DeclHint,Idea,suggest,ignore,substVars,toRefactSrcSpan,toSSA,modComments)
++import Hint.Type(DeclHint,Idea,suggest,ignore,substVars,toRefactSrcSpan,toSSA,modComments,firstDeclComments)
+ 
+ import Refact.Types hiding (SrcSpan)
+ import qualified Refact.Types as R
+ 
+ import GHC.Hs
+ import GHC.Types.SrcLoc
+-import GHC.Types.Basic hiding (Pattern)
+ import GHC.Types.SourceText
+ import GHC.Types.Name.Reader
+ import GHC.Data.FastString
+@@ -72,7 +71,11 @@ import Language.Haskell.GhclibParserEx.GHC.Types.Name.Reader
+ listHint :: DeclHint
+ listHint _ modu = listDecl overloadedListsOn
+   where
+-    exts = concatMap snd (languagePragmas (pragmas (modComments modu)))
++    -- Comments appearing without a line-break before the first
++    -- declaration in a module are now associated with the declaration
++    -- not the module so to be safe, look also at `firstDeclComments
++    -- modu` (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++    exts = concatMap snd (languagePragmas (pragmas (modComments modu) ++ pragmas (firstDeclComments modu)))
+     overloadedListsOn = "OverloadedLists" `elem` exts
+ 
+ listDecl :: Bool -> LHsDecl GhcPs -> [Idea]
+diff --git a/src/Hint/ListRec.hs b/src/Hint/ListRec.hs
+index 8def8b35f..f3de15526 100644
+--- a/src/Hint/ListRec.hs
++++ b/src/Hint/ListRec.hs
+@@ -135,7 +135,7 @@ asDo :: LHsExpr GhcPs -> [LStmt GhcPs (LHsExpr GhcPs)]
+ asDo (view ->
+        App2 bind lhs
+          (L _ (HsLam _ MG {
+-              mg_origin=FromSource
++              mg_ext=FromSource
+             , mg_alts=L _ [
+                  L _ Match {  m_ctxt=LambdaExpr
+                             , m_pats=[v@(L _ VarPat{})]
+@@ -157,7 +157,7 @@ findCase :: LHsDecl GhcPs -> Maybe (ListCase, LHsExpr GhcPs -> LHsDecl GhcPs)
+ findCase x = do
+   -- Match a function binding with two alternatives.
+   (L _ (ValD _ FunBind {fun_matches=
+-              MG{mg_origin=FromSource, mg_alts=
++              MG{mg_ext=FromSource, mg_alts=
+                      (L _
+                             [ x1@(L _ Match{..}) -- Match fields.
+                             , x2]), ..} -- Match group fields.
+@@ -176,7 +176,7 @@ findCase x = do
+       gRHS e = noLocA $ GRHS EpAnnNotUsed [] e :: LGRHS GhcPs (LHsExpr GhcPs) -- Guarded rhs.
+       gRHSSs e = GRHSs emptyComments [gRHS e] emptyLocalBinds -- Guarded rhs set.
+       match e = Match{m_ext=EpAnnNotUsed,m_pats=ps12, m_grhss=gRHSSs e, ..} -- Match.
+-      matchGroup e = MG{mg_alts=noLocA [noLocA $ match e], mg_origin=Generated, ..} -- Match group.
++      matchGroup e = MG{mg_alts=noLocA [noLocA $ match e], mg_ext=Generated, ..} -- Match group.
+       funBind e = FunBind {fun_matches=matchGroup e, ..} :: HsBindLR GhcPs GhcPs -- Fun bind.
+ 
+   pure (ListCase ps b1 (x, xs, b2), noLocA . ValD noExtField . funBind)
+diff --git a/src/Hint/Monad.hs b/src/Hint/Monad.hs
+index 8e134d01e..5ab05fabd 100644
+--- a/src/Hint/Monad.hs
++++ b/src/Hint/Monad.hs
+@@ -189,7 +189,7 @@ modifyAppHead :: forall a. (LIdP GhcPs -> (LIdP GhcPs, a)) -> LHsExpr GhcPs -> (
+ modifyAppHead f = go id
+   where
+     go :: (LHsExpr GhcPs -> LHsExpr GhcPs) -> LHsExpr GhcPs -> (LHsExpr GhcPs, Maybe a)
+-    go wrap (L l (HsPar _ p x q )) = go (wrap . L l . \x -> HsPar EpAnnNotUsed p x q) x
++    go wrap (L l (HsPar _ p x q)) = go (wrap . L l . \y -> HsPar EpAnnNotUsed p y q) x
+     go wrap (L l (HsApp _ x y)) = go (\x -> wrap $ L l (HsApp EpAnnNotUsed x y)) x
+     go wrap (L l (OpApp _ x op y)) | isDol op = go (\x -> wrap $ L l (OpApp EpAnnNotUsed x op y)) x
+     go wrap (L l (HsVar _ x)) = (wrap (L l (HsVar NoExtField x')), Just a)
+@@ -297,7 +297,7 @@ monadLet xs = mapMaybe mkLet xs
+             grhs = noLocA (GRHS EpAnnNotUsed [] rhs)
+             grhss = GRHSs emptyComments [grhs] (EmptyLocalBinds noExtField)
+             match = noLocA $ Match EpAnnNotUsed (FunRhs p Prefix NoSrcStrict) [] grhss
+-            fb = noLocA $ FunBind noExtField p (MG noExtField (noLocA [match]) Generated) []
++            fb = noLocA $ FunBind noExtField p (MG Generated (noLocA [match]))
+             binds = unitBag fb
+             valBinds = ValBinds NoAnnSortKey binds []
+             localBinds = HsValBinds EpAnnNotUsed valBinds
+diff --git a/src/Hint/Naming.hs b/src/Hint/Naming.hs
+index a0f3f1adf..5e9cbc888 100644
+--- a/src/Hint/Naming.hs
++++ b/src/Hint/Naming.hs
+@@ -44,6 +44,7 @@ module Hint.Naming(namingHint) where
+ import Hint.Type (Idea,DeclHint,suggest,ghcModule)
+ import Data.Generics.Uniplate.DataOnly
+ import Data.List.Extra (nubOrd, isPrefixOf)
++import Data.List.NonEmpty (toList)
+ import Data.Data
+ import Data.Char
+ import Data.Maybe
+@@ -85,9 +86,9 @@ naming seen originalDecl =
+         replacedDecl = replaceNames suggestedNames originalDecl
+ 
+ shorten :: LHsDecl GhcPs -> LHsDecl GhcPs
+-shorten (L locDecl (ValD ttg0 bind@(FunBind _ _ matchGroup@(MG _ (L locMatches matches) FromSource) _))) =
++shorten (L locDecl (ValD ttg0 bind@(FunBind _ _ matchGroup@(MG FromSource (L locMatches matches))))) =
+     L locDecl (ValD ttg0 bind {fun_matches = matchGroup {mg_alts = L locMatches $ map shortenMatch matches}})
+-shorten (L locDecl (ValD ttg0 bind@(PatBind _ _ grhss@(GRHSs _ rhss _) _))) =
++shorten (L locDecl (ValD ttg0 bind@(PatBind _ _ grhss@(GRHSs _ rhss _)))) =
+     L locDecl (ValD ttg0 bind {pat_rhs = grhss {grhssGRHSs = map shortenLGRHS rhss}})
+ shorten x = x
+ 
+@@ -106,14 +107,17 @@ getNames :: LHsDecl GhcPs -> [String]
+ getNames decl = maybeToList (declName decl) ++ getConstructorNames (unLoc decl)
+ 
+ getConstructorNames :: HsDecl GhcPs -> [String]
+-getConstructorNames (TyClD _ (DataDecl _ _ _ _ (HsDataDefn _ _ _ _ _ cons _))) =
+-    concatMap (map unsafePrettyPrint . getConNames' . unLoc) cons
+-    where
+-      getConNames' ConDeclH98  {con_name  = name}  = [name]
+-      getConNames' ConDeclGADT {con_names = names} = names
+-      getConNames' XConDecl{} = []
+-
+-getConstructorNames _ = []
++getConstructorNames tycld = case tycld of
++    (TyClD _ (DataDecl _ _ _ _ (HsDataDefn _ _ _ _ (NewTypeCon con) _))) -> conNames [con]
++    (TyClD _ (DataDecl _ _ _ _ (HsDataDefn _ _ _ _ (DataTypeCons _ cons) _))) -> conNames cons
++    _ -> []
++  where
++    conNames :: [LConDecl GhcPs] -> [String]
++    conNames =  concatMap (map unsafePrettyPrint . conNamesInDecl . unLoc)
++
++    conNamesInDecl :: ConDecl GhcPs -> [LIdP GhcPs]
++    conNamesInDecl ConDeclH98  {con_name  = name}  = [name]
++    conNamesInDecl ConDeclGADT {con_names = names} = Data.List.NonEmpty.toList names
+ 
+ isSym :: String -> Bool
+ isSym (x:_) = not $ isAlpha x || x `elem` "_'"
+diff --git a/src/Hint/NewType.hs b/src/Hint/NewType.hs
+index 0b5afd924..b63109862 100644
+--- a/src/Hint/NewType.hs
++++ b/src/Hint/NewType.hs
+@@ -72,12 +72,11 @@ shouldSuggestStrategies :: HsDataDefn GhcPs -> Bool
+ shouldSuggestStrategies dataDef = not (isData dataDef) && not (hasAllStrategies dataDef)
+ 
+ hasAllStrategies :: HsDataDefn GhcPs -> Bool
+-hasAllStrategies (HsDataDefn _ NewType _ _ _ _  xs) = all hasStrategyClause xs
+-hasAllStrategies _ = False
++hasAllStrategies (HsDataDefn _ _ _ _ _  xs) = all hasStrategyClause xs
+ 
+ isData :: HsDataDefn GhcPs -> Bool
+-isData (HsDataDefn _ NewType _ _ _ _ _) = False
+-isData (HsDataDefn _ DataType _ _ _ _ _) = True
++isData (HsDataDefn _ _ _ _ (NewTypeCon _) _) = False
++isData (HsDataDefn _ _ _ _ (DataTypeCons _ _) _) = True
+ 
+ hasStrategyClause :: LHsDerivingClause GhcPs -> Bool
+ hasStrategyClause (L _ (HsDerivingClause _ (Just _) _)) = True
+@@ -98,31 +97,39 @@ data WarnNewtype = WarnNewtype
+ singleSimpleField :: LHsDecl GhcPs -> Maybe WarnNewtype
+ singleSimpleField (L loc (TyClD ext decl@(DataDecl _ _ _ _ dataDef)))
+     | Just inType <- simpleHsDataDefn dataDef =
+-        Just WarnNewtype
++        case dropBangs dataDef of
++          DataTypeCons False [con] ->
++            Just WarnNewtype
+               { newDecl = L loc $ TyClD ext decl {tcdDataDefn = dataDef
+-                  { dd_ND = NewType
+-                  , dd_cons = dropBangs dataDef
+-                  }}
++                  { dd_cons = NewTypeCon con }}
+               , insideType = inType
+               }
++          DataTypeCons True [_] -> Nothing -- Extension "TypeData": `type data T x = ...`
++          _ -> Nothing
+ singleSimpleField (L loc (InstD ext (DataFamInstD instExt (DataFamInstDecl famEqn@(FamEqn _ _ _ _ _ dataDef)))))
+     | Just inType <- simpleHsDataDefn dataDef =
+-        Just WarnNewtype
+-          { newDecl = L loc $ InstD ext $ DataFamInstD instExt $ DataFamInstDecl $ famEqn {feqn_rhs = dataDef
+-                  { dd_ND = NewType
+-                  , dd_cons = dropBangs dataDef
+-                  }}
++        case dropBangs dataDef of
++          DataTypeCons False [con] ->
++            Just WarnNewtype
++              { newDecl = L loc $ InstD ext $ DataFamInstD instExt $ DataFamInstDecl $ famEqn {feqn_rhs = dataDef
++                      { dd_cons = NewTypeCon con }}
+               , insideType = inType
+               }
++          DataTypeCons True [_] -> Nothing --  -- Extension "TypeData": `type data T x = ...`
++          _ -> Nothing
+ singleSimpleField _ = Nothing
+ 
+-dropBangs :: HsDataDefn GhcPs -> [LConDecl GhcPs]
+-dropBangs = map (fmap dropConsBang) . dd_cons
++dropBangs :: HsDataDefn GhcPs -> DataDefnCons (LConDecl GhcPs)
++dropBangs def =
++  case dd_cons def of
++    NewTypeCon a -> NewTypeCon (dropConsBang <$> a)
++    DataTypeCons isTypeData as -> DataTypeCons isTypeData (map (dropConsBang <$>) as)
+ 
+--- | Checks whether its argument is a \"simple\" data definition (see 'singleSimpleField')
+--- returning the type inside its constructor if it is.
++-- | Checks whether its argument is a \"simple\" data definition (see
++-- 'singleSimpleField') returning the single thing under its
++-- constructor if it is.
+ simpleHsDataDefn :: HsDataDefn GhcPs -> Maybe (HsType GhcPs)
+-simpleHsDataDefn (HsDataDefn _ DataType _ _ _ [L _ constructor] _) = simpleCons constructor
++simpleHsDataDefn (HsDataDefn _ _ _ _ (DataTypeCons _ [L _ constructor]) _) = simpleCons constructor
+ simpleHsDataDefn _ = Nothing
+ 
+ -- | Checks whether its argument is a \"simple\" constructor (see criteria in 'singleSimpleField')
+diff --git a/src/Hint/NumLiteral.hs b/src/Hint/NumLiteral.hs
+index 374b5406a..c740f76ac 100644
+--- a/src/Hint/NumLiteral.hs
++++ b/src/Hint/NumLiteral.hs
+@@ -28,15 +28,21 @@ import GHC.Types.SourceText
+ import GHC.Util.ApiAnnotation (extensions)
+ import Data.Char (isDigit, isOctDigit, isHexDigit)
+ import Data.List (intercalate)
++import Data.Set (union)
+ import Data.Generics.Uniplate.DataOnly (universeBi)
+ import Refact.Types
+ 
+-import Hint.Type (DeclHint, toSSA, modComments)
++import Hint.Type (DeclHint, toSSA, modComments, firstDeclComments)
+ import Idea (Idea, suggest)
+ 
+ numLiteralHint :: DeclHint
+ numLiteralHint _ modu =
+-  if NumericUnderscores `elem` extensions (modComments modu) then
++  -- Comments appearing without an empty line before the first
++  -- declaration in a module are now associated with the declaration
++  -- not the module so to be safe, look also at `firstDeclComments
++  -- modu` (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++  let exts = union (extensions (modComments modu)) (extensions (firstDeclComments modu)) in
++  if NumericUnderscores `elem` exts then
+      concatMap suggestUnderscore . universeBi
+   else
+      const []
+@@ -46,12 +52,14 @@ suggestUnderscore x@(L _ (HsOverLit _ ol@(OverLit _ (HsIntegral intLit@(IL (Sour
+   [ suggest "Use underscore" (reLoc x) (reLoc y) [r] | '_' `notElem` srcTxt, srcTxt /= underscoredSrcTxt ]
+   where
+     underscoredSrcTxt = addUnderscore srcTxt
++    y :: LocatedAn an (HsExpr GhcPs)
+     y = noLocA $ HsOverLit EpAnnNotUsed $ ol{ol_val = HsIntegral intLit{il_text = SourceText underscoredSrcTxt}}
+     r = Replace Expr (toSSA x) [("a", toSSA y)] "a"
+ suggestUnderscore x@(L _ (HsOverLit _ ol@(OverLit _ (HsFractional fracLit@(FL (SourceText srcTxt) _ _ _ _))))) =
+   [ suggest "Use underscore" (reLoc x) (reLoc y) [r] | '_' `notElem` srcTxt, srcTxt /= underscoredSrcTxt ]
+   where
+     underscoredSrcTxt = addUnderscore srcTxt
++    y :: LocatedAn an (HsExpr GhcPs)
+     y = noLocA $ HsOverLit EpAnnNotUsed $ ol{ol_val = HsFractional fracLit{fl_text = SourceText underscoredSrcTxt}}
+     r = Replace Expr (toSSA x) [("a", toSSA y)] "a"
+ suggestUnderscore _ = mempty
+diff --git a/src/Hint/Pattern.hs b/src/Hint/Pattern.hs
+index 1f827a12c..81944ea03 100644
+--- a/src/Hint/Pattern.hs
++++ b/src/Hint/Pattern.hs
+@@ -58,7 +58,7 @@ otherwise = True
+ 
+ module Hint.Pattern(patternHint) where
+ 
+-import Hint.Type(DeclHint,Idea,modComments,ideaTo,toSSA,toRefactSrcSpan,suggest,suggestRemove,warn)
++import Hint.Type(DeclHint,Idea,modComments,firstDeclComments,ideaTo,toSSA,toRefactSrcSpan,suggest,suggestRemove,warn)
+ import Data.Generics.Uniplate.DataOnly
+ import Data.Function
+ import Data.List.Extra
+@@ -87,11 +87,16 @@ patternHint _scope modu x =
+     concatMap (uncurry hints . swap) (asPattern x) ++
+     -- PatBind (used in 'let' and 'where') contains lazy-by-default
+     -- patterns, everything else is strict.
+-    concatMap (patHint strict False) [p | PatBind _ p _ _ <- universeBi x :: [HsBind GhcPs]] ++
++    concatMap (patHint strict False) [p | PatBind _ p _ <- universeBi x :: [HsBind GhcPs]] ++
+     concatMap (patHint strict True) (universeBi $ transformBi noPatBind x) ++
+     concatMap expHint (universeBi x)
+   where
+-    exts = nubOrd $ concatMap snd (languagePragmas (pragmas (modComments modu))) -- language extensions enabled at source
++    -- Comments appearing without an empty line before the first
++    -- declaration in a module are now associated with the declaration
++    -- not the module so to be safe, look also at `firstDeclComments
++    -- modu`
++    -- (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++    exts = nubOrd $ concatMap snd (languagePragmas (pragmas (modComments modu) ++ pragmas (firstDeclComments modu))) -- language extensions enabled at source
+     strict = "Strict" `elem` exts
+ 
+     noPatBind :: LHsBind GhcPs -> LHsBind GhcPs
+@@ -184,8 +189,8 @@ asPattern :: LHsDecl GhcPs  -> [(Pattern, String -> Pattern -> [Refactoring R.Sr
+ asPattern (L loc x) = concatMap decl (universeBi x)
+   where
+     decl :: HsBind GhcPs -> [(Pattern, String -> Pattern -> [Refactoring R.SrcSpan] -> Idea)]
+-    decl o@(PatBind _ pat rhs _) = [(Pattern (locA loc) Bind [pat] rhs, \msg (Pattern _ _ [pat] rhs) rs -> suggest msg (noLoc o :: Located (HsBind GhcPs)) (noLoc (PatBind EpAnnNotUsed pat rhs ([], [])) :: Located (HsBind GhcPs)) rs)]
+-    decl (FunBind _ _ (MG _ (L _ xs) _) _) = map match xs
++    decl o@(PatBind _ pat rhs) = [(Pattern (locA loc) Bind [pat] rhs, \msg (Pattern _ _ [pat] rhs) rs -> suggest msg (noLoc o :: Located (HsBind GhcPs)) (noLoc (PatBind EpAnnNotUsed pat rhs) :: Located (HsBind GhcPs)) rs)]
++    decl (FunBind _ _ (MG _ (L _ xs))) = map match xs
+     decl _ = []
+ 
+     match :: LMatch GhcPs (LHsExpr GhcPs) -> (Pattern, String -> Pattern -> [Refactoring R.SrcSpan] -> Idea)
+@@ -208,7 +213,7 @@ patHint lang strict o@(L _ (BangPat _ pat@(L _ x)))
+   where
+     f :: Pat GhcPs -> Bool
+     f (ParPat _ _ (L _ x) _) = f x
+-    f (AsPat _ _ (L _ x)) = f x
++    f (AsPat _ _ _ (L _ x)) = f x
+     f LitPat {} = True
+     f NPat {} = True
+     f ConPat {} = True
+@@ -222,22 +227,22 @@ patHint False _ o@(L _ (LazyPat _ pat@(L _ x)))
+   where
+     f :: Pat GhcPs -> Bool
+     f (ParPat _ _ (L _ x) _) = f x
+-    f (AsPat _ _ (L _ x)) = f x
++    f (AsPat _ _ _ (L _ x)) = f x
+     f WildPat{} = True
+     f VarPat{} = True
+     f _ = False
+     r = Replace R.Pattern (toSSA o) [("x", toSSA pat)] "x"
+-patHint _ _ o@(L _ (AsPat _ v (L _ (WildPat _)))) =
++patHint _ _ o@(L _ (AsPat _ v _ (L _ (WildPat _)))) =
+   [warn "Redundant as-pattern" (reLoc o) (reLoc v) [Replace R.Pattern (toSSA o) [] (rdrNameStr v)]]
+ patHint _ _ _ = []
+ 
+ expHint :: LHsExpr GhcPs -> [Idea]
+  -- Note the 'FromSource' in these equations (don't warn on generated match groups).
+-expHint o@(L _ (HsCase _ _ (MG _ (L _ [L _ (Match _ CaseAlt [L _ (WildPat _)] (GRHSs _ [L _ (GRHS _ [] e)] (EmptyLocalBinds _))) ]) FromSource ))) =
++expHint o@(L _ (HsCase _ _ (MG FromSource (L _ [L _ (Match _ CaseAlt [L _ (WildPat _)] (GRHSs _ [L _ (GRHS _ [] e)] (EmptyLocalBinds _))) ])))) =
+   [suggest "Redundant case" (reLoc o) (reLoc e) [r]]
+   where
+     r = Replace Expr (toSSA o) [("x", toSSA e)] "x"
+-expHint o@(L _ (HsCase _ (L _ (HsVar _ (L _ x))) (MG _ (L _ [L _ (Match _ CaseAlt [L _ (VarPat _ (L _ y))] (GRHSs _ [L _ (GRHS _ [] e)] (EmptyLocalBinds _))) ]) FromSource )))
++expHint o@(L _ (HsCase _ (L _ (HsVar _ (L _ x))) (MG FromSource (L _ [L _ (Match _ CaseAlt [L _ (VarPat _ (L _ y))] (GRHSs _ [L _ (GRHS _ [] e)] (EmptyLocalBinds _))) ]))))
+   | occNameStr x == occNameStr y =
+       [suggest "Redundant case" (reLoc o) (reLoc e) [r]]
+   where
+diff --git a/src/Hint/Pragma.hs b/src/Hint/Pragma.hs
+index c7afe2105..9a3799ee7 100644
+--- a/src/Hint/Pragma.hs
++++ b/src/Hint/Pragma.hs
+@@ -32,7 +32,7 @@
+ 
+ module Hint.Pragma(pragmaHint) where
+ 
+-import Hint.Type(ModuHint,Idea(..),Severity(..),toSSAnc,rawIdea,modComments)
++import Hint.Type(ModuHint,Idea(..),Severity(..),toSSAnc,rawIdea,modComments,firstDeclComments)
+ import Data.List.Extra
+ import qualified Data.List.NonEmpty as NE
+ import Data.Maybe
+@@ -48,7 +48,11 @@ import GHC.Driver.Session
+ 
+ pragmaHint :: ModuHint
+ pragmaHint _ modu =
+-  let ps = pragmas (modComments modu)
++  -- Comments appearing without a line-break before the first
++  -- declaration in a module are now associated with the declaration
++  -- not the module so to be safe, look also at `firstDeclComments
++  -- modu` (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++  let ps = pragmas (modComments modu) ++ pragmas (firstDeclComments modu)
+       opts = flags ps
+       lang = languagePragmas ps in
+     languageDupes lang ++ optToPragma opts lang
+diff --git a/src/Hint/Restrict.hs b/src/Hint/Restrict.hs
+index fb34c481d..eeb707f08 100644
+--- a/src/Hint/Restrict.hs
++++ b/src/Hint/Restrict.hs
+@@ -20,7 +20,7 @@ foo = nub s
+ </TEST>
+ -}
+ 
+-import Hint.Type(ModuHint,ModuleEx(..),Idea(..),Severity(..),warn,rawIdea,modComments)
++import Hint.Type(ModuHint,ModuleEx(..),Idea(..),Severity(..),warn,rawIdea,modComments,firstDeclComments)
+ import Config.Type
+ import Util
+ 
+@@ -41,7 +41,6 @@ import Prelude
+ 
+ import GHC.Hs
+ import GHC.Types.Name.Reader
+-import GHC.Unit.Module
+ import GHC.Types.SrcLoc
+ import GHC.Types.Name.Occurrence
+ import Language.Haskell.GhclibParserEx.GHC.Hs
+@@ -51,8 +50,14 @@ import GHC.Util
+ -- FIXME: The settings should be partially applied, but that's hard to orchestrate right now
+ restrictHint :: [Setting] -> ModuHint
+ restrictHint settings scope m =
+-    let anns = modComments m
+-        ps   = pragmas anns
++    -- Comments appearing without an empty line before the first
++    -- declaration in a module are now associated with the declaration
++    -- not the module so to be safe, look also at `firstDeclComments
++    -- modu`
++    -- (https://gitlab.haskell.org/ghc/ghc/-/merge_requests/9517).
++    let annsMod = modComments m
++        annsFirstDecl = firstDeclComments m
++        ps   = pragmas annsMod ++ pragmas annsFirstDecl
+         opts = flags ps
+         exts = languagePragmas ps in
+     checkPragmas modu opts exts rOthers ++
+@@ -162,7 +167,7 @@ checkImports modu lImportDecls (def, mp) = mapMaybe getImportHint lImportDecls
+           Left $ ideaNoTo $ warn "Avoid restricted module" (reLoc i) (reLoc i) []
+ 
+         let importedIdents = Set.fromList $
+-              case ideclHiding of
++              case first (== EverythingBut) <$> ideclImportList of
+                 Just (False, lxs) -> concatMap (importListToIdents . unLoc) (unLoc lxs)
+                 _ -> []
+             invalidIdents = case riRestrictIdents of
+@@ -187,15 +192,15 @@ checkImports modu lImportDecls (def, mp) = mapMaybe getImportHint lImportDecls
+                   | otherwise -> (second (<> " or unqualified") <$> expectedQualStyle, Nothing)
+                 ImportStyleQualified -> (expectedQualStyleDef, Nothing)
+                 ImportStyleExplicitOrQualified
+-                  | Just (False, _) <- ideclHiding -> (Nothing, Nothing)
++                  | Just (False, _) <- first (== EverythingBut) <$> ideclImportList -> (Nothing, Nothing)
+                   | otherwise ->
+                       ( second (<> " or with an explicit import list") <$> expectedQualStyleDef
+                       , Nothing )
+                 ImportStyleExplicit
+-                  | Just (False, _) <- ideclHiding -> (Nothing, Nothing)
++                  | Just (False, _) <- first (== EverythingBut) <$> ideclImportList -> (Nothing, Nothing)
+                   | otherwise ->
+                       ( Just (NotQualified, "unqualified")
+-                      , Just $ Just (False, noLocA []) )
++                      , Just $ Just (Exactly, noLocA []) )
+                 ImportStyleUnqualified -> (Just (NotQualified, "unqualified"), Nothing)
+             expectedQualStyleDef = expectedQualStyle <|> Just (QualifiedPre, "qualified")
+             expectedQualStyle =
+@@ -208,7 +213,7 @@ checkImports modu lImportDecls (def, mp) = mapMaybe getImportHint lImportDecls
+               | otherwise = expectedQual
+         whenJust qualIdea $ \(qual, hint) -> do
+           let i' = noLoc $ (unLoc i){ ideclQualified = qual
+-                                    , ideclHiding = fromMaybe ideclHiding expectedHiding }
++                                    , ideclImportList = fromMaybe ideclImportList expectedHiding }
+               msg = moduleNameString (unLoc ideclName) <> " should be imported " <> hint
+           Left $ warn msg (reLoc i) i' []
+ 
+@@ -237,10 +242,10 @@ importListToIdents =
+         (IEThingWith _ n _ ns)   -> fromName n : map fromName ns
+         _                        -> []
+   where
+-    fromName :: LIEWrappedName (IdP GhcPs) -> Maybe String
++    fromName :: LIEWrappedName GhcPs -> Maybe String
+     fromName wrapped =
+       case unLoc wrapped of
+-        IEName      n -> fromId (unLoc n)
++        IEName    _ n -> fromId (unLoc n)
+         IEPattern _ n -> ("pattern " ++) <$> fromId (unLoc n)
+         IEType    _ n -> ("type " ++) <$> fromId (unLoc n)
+ 
+diff --git a/src/Hint/Smell.hs b/src/Hint/Smell.hs
+index da04d83a6..8ad4db142 100644
+--- a/src/Hint/Smell.hs
++++ b/src/Hint/Smell.hs
+@@ -128,7 +128,7 @@ declSpans :: LHsDecl GhcPs -> [(SrcSpan, Idea)]
+ declSpans
+    (L _ (ValD _
+      FunBind {fun_matches=MG {
+-                   mg_origin=FromSource
++                   mg_ext=FromSource
+                  , mg_alts=(L _ [L _ Match {
+                        m_ctxt=ctx
+                      , m_grhss=GRHSs{grhssGRHSs=[locGrhs]
+diff --git a/src/Hint/Unsafe.hs b/src/Hint/Unsafe.hs
+index 4a5bb1c8f..5ee3add10 100644
+--- a/src/Hint/Unsafe.hs
++++ b/src/Hint/Unsafe.hs
+@@ -54,7 +54,7 @@ unsafeHint _ (ModuleEx (L _ m)) = \ld@(L loc d) ->
+      -- 'x' does not declare a new function.
+      | d@(ValD _
+            FunBind {fun_id=L _ (Unqual x)
+-                      , fun_matches=MG{mg_origin=FromSource,mg_alts=L _ [L _ Match {m_pats=[]}]}}) <- [d]
++                      , fun_matches=MG{mg_ext=FromSource,mg_alts=L _ [L _ Match {m_pats=[]}]}}) <- [d]
+      -- 'x' is a synonym for an appliciation involing 'unsafePerformIO'
+      , isUnsafeDecl d
+      -- 'x' is not marked 'NOINLINE'.
+@@ -70,7 +70,7 @@ unsafeHint _ (ModuleEx (L _ m)) = \ld@(L loc d) ->
+         ) <- hsmodDecls m]
+ 
+ isUnsafeDecl :: HsDecl GhcPs -> Bool
+-isUnsafeDecl (ValD _ FunBind {fun_matches=MG {mg_origin=FromSource,mg_alts=L _ alts}}) =
++isUnsafeDecl (ValD _ FunBind {fun_matches=MG {mg_ext=FromSource,mg_alts=L _ alts}}) =
+   any isUnsafeApp (childrenBi alts) || any isUnsafeDecl (childrenBi alts)
+ isUnsafeDecl _ = False
+ 
+diff --git a/tests/cpp.test b/tests/cpp.test
+index 0fb203d1d..63ce76658 100644
+--- a/tests/cpp.test
++++ b/tests/cpp.test
+@@ -44,7 +44,8 @@ FILE tests/cpp-ext-enable.hs
+ main = undefined
+ EXIT 1
+ OUTPUT
+-tests/cpp-ext-enable.hs:1:1: Error: Parse error: tests/cpp-ext-enable.hs:3:14: error: Unsupported extension: Foo
++tests/cpp-ext-enable.hs:1:1: Error: Parse error: tests/cpp-ext-enable.hs:3:14: error: [GHC-46537]
++    Unsupported extension: Foo
+ Found:
+   {-# LANGUAGE CPP #-}
+ 
+diff --git a/tests/parse-error.test b/tests/parse-error.test
+index 7a93fd13b..413ee100c 100644
+--- a/tests/parse-error.test
++++ b/tests/parse-error.test
+@@ -25,7 +25,7 @@ RUN tests/ignore-parse-error3.hs
+ FILE tests/ignore-parse-error3.hs
+ {-# LANGUAGE InvalidExtension #-}
+ OUTPUT
+-tests/ignore-parse-error3.hs:1:1: Error: Parse error: tests/ignore-parse-error3.hs:1:14: error:
++tests/ignore-parse-error3.hs:1:1: Error: Parse error: tests/ignore-parse-error3.hs:1:14: error: [GHC-46537]
+     Unsupported extension: InvalidExtension
+ Found:
+   {-# LANGUAGE InvalidExtension #-}
+diff --git a/tests/serialise.test b/tests/serialise.test
+index 70ce5b4fb..b0ed2d91e 100644
+--- a/tests/serialise.test
++++ b/tests/serialise.test
+@@ -40,7 +40,6 @@ OUTPUT
+ [("tests/serialise-four.hs:2:1-20: Warning: Use fewer LANGUAGE pragmas\nFound:\n  {-# LANGUAGE CPP #-}\n  {-# LANGUAGE CPP #-}\nPerhaps:\n  {-# LANGUAGE CPP #-}\n",[ModifyComment {pos = SrcSpan {startLine = 2, startCol = 1, endLine = 2, endCol = 21}, newComment = "{-# LANGUAGE CPP #-}"},ModifyComment {pos = SrcSpan {startLine = 1, startCol = 1, endLine = 1, endCol = 21}, newComment = ""}])]
+ 
+ 
+-
+ ---------------------------------------------------------------------
+ RUN tests/serialise-five.hs --serialise
+ FILE tests/serialise-five.hs

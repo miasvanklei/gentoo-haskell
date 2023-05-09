@@ -20,14 +20,14 @@ RESTRICT="!test? ( test )"
 RDEPEND="
 	>=dev-haskell/aeson-1.3:=[profile?]
 	>=dev-haskell/ansi-terminal-0.8.1:=[profile?]
-	>=dev-haskell/cmdargs-0.10:=[profile?]
+	>=dev-haskell/cmdargs-0.10.22:=[profile?]
 	>=dev-haskell/cpphs-1.20.1:=[profile?]
 	>=dev-haskell/data-default-0.3:=[profile?]
 	>=dev-haskell/deriving-aeson-0.2:=[profile?]
 	>=dev-haskell/extra-1.7.3:=[profile?]
 	dev-haskell/file-embed:=[profile?]
 	>=dev-haskell/filepattern-0.1.1:=[profile?]
-	>=dev-haskell/ghc-lib-parser-ex-9.4.0.0:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.4.1:=[profile?]
+	>=dev-haskell/ghc-lib-parser-ex-9.6.0.0:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.6.1:=[profile?]
 	>=dev-haskell/refact-0.3:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-haskell/uniplate-1.5:=[profile?]
@@ -36,10 +36,10 @@ RDEPEND="
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/ghc-8.8.1:=[profile?]
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?]
 	)
 	!ghc-lib? (
-		>=dev-lang/ghc-9.4:= <dev-lang/ghc-9.5:=
+		>=dev-lang/ghc-9.4:= <dev-lang/ghc-9.7:=
 	)
 	gpl? (
 		>=dev-haskell/hscolour-1.21:=[profile?]
@@ -55,6 +55,10 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
 "
+
+PATCHES=(
+	"${FILESDIR}/ghc-9.6.patch"
+)
 
 SITEFILE="60${PN}-gentoo.el"
 
