@@ -7,7 +7,6 @@ EAPI=8
 #hackport: flags: aeson,assoc,quickcheck,semigroupoids,+assoc
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
-CABAL_HACKAGE_REVISION="6"
 
 inherit haskell-cabal
 
@@ -18,7 +17,7 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-RDEPEND=">=dev-haskell/assoc-1:=[profile?] <dev-haskell/assoc-1.1:=[profile?]
+RDEPEND=">=dev-haskell/assoc-1.1:=[profile?] <dev-haskell/assoc-1.2:=[profile?]
 	>=dev-haskell/hashable-1.2.7.0:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
 	>=dev-lang/ghc-8.4.3:=[profile?]
 "
