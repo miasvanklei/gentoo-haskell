@@ -32,10 +32,3 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/quickcheck-text-0.1.2.1 <dev-haskell/quickcheck-text-0.2
 		>=dev-haskell/rerebase-1 <dev-haskell/rerebase-2 )
 "
-
-src_prepare() {
-	default
-
-	cabal_chdeps \
-		'HTF ==0.13.*' 'HTF >=0.13'
-}
