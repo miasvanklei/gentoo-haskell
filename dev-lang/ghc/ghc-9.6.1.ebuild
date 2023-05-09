@@ -112,16 +112,18 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-8.10.1-allow-cross-bootstrap.patch
 
 	# build ghc and libraries only the dynamic way
-	eapply "${FILESDIR}"/${P}-cabal-dynamic-by-default.patch
+	eapply "${FILESDIR}"/${PN}-9.4.4-cabal-dynamic-by-default.patch
 
 	# build libraries dynamic by default
-	eapply "${FILESDIR}"/${P}-hadrian-build-dynamic-only.patch
+	eapply "${FILESDIR}"/${PN}-9.4.4-hadrian-build-dynamic-only.patch
 
 	# let portage strip libraries
-	eapply "${FILESDIR}"/${P}-hadrian-disable-stripping.patch
+	eapply "${FILESDIR}"/${PN}-9.4.4-hadrian-disable-stripping.patch
 
 	# don't set --target, it is wrong anyhow
-	eapply "${FILESDIR}"/${P}-dont-set-target.patch
+	eapply "${FILESDIR}"/${PN}-9.4.4-dont-set-target.patch
+
+	eapply "${FILESDIR}"/ghc-9.6.1-disable-merge-objects.patch
 
 	./boot.source
 

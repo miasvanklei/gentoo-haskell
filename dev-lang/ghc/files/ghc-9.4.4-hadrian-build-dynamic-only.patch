@@ -3,7 +3,7 @@
 @@ -436,7 +436,7 @@
    rtsways <- interpretInContext (vanillaContext Stage1 ghc) getRtsWays
    traverse (fmap (\p -> (iserv, p)) . programPath)
-       [ Context Stage1 iserv w
+       [ Context Stage1 iserv w Final
 -      | w <- [vanilla, profiling, dynamic]
 +      | w <- [profiling, dynamic]
        , w `elem` rtsways
@@ -65,22 +65,22 @@
 --- a/hadrian/src/Rules/Dependencies.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/Dependencies.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -20,7 +20,7 @@
-     root <- buildRootRules
      root -/- "**/.dependencies.mk" %> \mk -> do
          DepMkFile stage pkgpath <- getDepMkFile root mk
--        let context = Context stage (unsafeFindPackageByPath pkgpath) vanilla
-+        let context = Context stage (unsafeFindPackageByPath pkgpath) dynamic
+         let pkg = unsafeFindPackageByPath pkgpath
+-            context = Context stage pkg vanilla Inplace
++            context = Context stage pkg dynamic Inplace
+         extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
          srcs <- hsSources context
          gens <- interpretInContext context generatedDependencies
-         need (srcs ++ gens)
 --- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/Register.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -37,7 +37,7 @@
      root -/- "**/setup-config" %> \out -> do
          (stage, path) <- parsePath (parseSetupConfig root) "<setup config path parser>" out
          let pkg = unsafeFindPackageByPath path
--        let ctx = Context stage pkg vanilla
-+        let ctx = Context stage pkg dynamic
+-        let ctx = Context stage pkg vanilla Inplace
++        let ctx = Context stage pkg dynamic Inplace
          buildP <- buildPath ctx
          when (pkg == ghcBignum) $ do
            isGmp <- (== "gmp") <$> interpretInContext ctx getBignumBackend
@@ -88,34 +88,43 @@
      root -/- "**/autogen/cabal_macros.h" %> \out -> do
          (stage, path) <- parsePath (parseToBuildSubdirectory root) "<cabal macros path parser>" out
          let pkg = unsafeFindPackageByPath path
--        Cabal.buildAutogenFiles (Context stage pkg vanilla)
-+        Cabal.buildAutogenFiles (Context stage pkg dynamic)
+-        Cabal.buildAutogenFiles (Context stage pkg vanilla Inplace)
++        Cabal.buildAutogenFiles (Context stage pkg dynamic Inplace)
  
      root -/- "**/autogen/Paths_*.hs" %> \out ->
          need [takeDirectory out -/- "cabal_macros.h"]
-@@ -104,7 +104,7 @@
+@@ -96,7 +96,7 @@
+         -- a package gets registered but there's not a package.cache file (which
+         -- leads to errors in GHC).
+         buildWithResources rs $
+-            target (Context stage compiler vanilla iplace) (GhcPkg Recache stage) [] []
++            target (Context stage compiler dynamic iplace) (GhcPkg Recache stage) [] []
+         writeFileLines stamp []
  
-         isBoot <- (pkg `notElem`) <$> stagePackages Stage0
+     -- Register a package.
+@@ -111,7 +111,7 @@
+         -- Only used in guard when Stage0 {} but can be GlobalLibs or InTreeLibs
+         isBoot <- (pkg `notElem`) <$> stagePackages stage
  
--        let ctx = Context stage pkg vanilla
-+        let ctx = Context stage pkg dynamic
+-        let ctx = Context stage pkg vanilla iplace
++        let ctx = Context stage pkg dynamic iplace
          case stage of
-             Stage0 | isBoot -> copyConf  rs ctx conf
-             _               -> buildConf rs ctx conf
+             Stage0 _ | isBoot -> copyConf  rs ctx conf
+             _               ->
 --- a/hadrian/src/Rules/SourceDist.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/SourceDist.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -132,7 +132,7 @@
  
      copyAlexHappyFiles =
        forM_ alexHappyFiles $ \(stg, pkg, inp, out) -> do
--        let ctx = Context stg pkg vanilla
-+        let ctx = Context stg pkg dynamic
+-        let ctx = Context stg pkg vanilla Inplace
++        let ctx = Context stg pkg dynamic Inplace
              srcInputFile = dest -/- pkgPath pkg -/- inp
              generatedFile = dest -/- pkgPath pkg -/- out
              Just builder = determineBuilder stg inp
 --- a/hadrian/src/Settings/Default.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Settings/Default.hs	2022-06-24 17:22:47.066945724 +0200
-@@ -159,25 +159,18 @@
+@@ -170,31 +170,21 @@
  testsuitePackages = return ([ timeout | windowsHost ] ++ [ checkPpr, checkExact, countDeps, ghcConfig ])
  
  -- | Default build ways for library packages:
@@ -124,27 +133,34 @@
 --- * We build 'dynamic' way when stage > Stage0 and the platform supports it.
 +-- * We build 'dynamic' way when the platform supports it.
  defaultLibraryWays :: Ways
- defaultLibraryWays = mconcat
+ defaultLibraryWays = Set.fromList <$>
+     mconcat
 -    [ pure [vanilla]
 -    , notStage0 ? pure [profiling]
 -    , notStage0 ? platformSupportsSharedLibs ? pure [dynamic]
-+    [ notStage0 ? pure [profiling]
++    [ pure [profiling]
 +    , platformSupportsSharedLibs ? pure [dynamic]
      ]
  
  -- | Default build ways for the RTS.
  defaultRtsWays :: Ways
- defaultRtsWays = mconcat
--  [ pure [vanilla, threaded]
+ defaultRtsWays = Set.fromList <$>
+   mconcat
+-  [ pure [vanilla]
 -  , notStage0 ? pure
--      [ profiling, threadedProfiling, debugProfiling, threadedDebugProfiling
--      , debug, threadedDebug
+-      [ profiling, debugProfiling
+-      , debug
 -      ]
+-  , notStage0 ? targetSupportsThreadedRts ? pure [threaded, threadedProfiling, threadedDebugProfiling, threadedDebug]
 -  , notStage0 ? platformSupportsSharedLibs ? pure
-+  [ platformSupportsSharedLibs ? pure
-       [ dynamic, threadedDynamic, debugDynamic, threadedDebugDynamic
-       ]
+-      [ dynamic, debugDynamic
+-      ]
+-  , notStage0 ? platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
++  [ platformSupportsSharedLibs ? pure [ dynamic, debugDynamic ]
++  , platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
    ]
+ 
+ -- TODO: Move C source arguments here
 --- a/hadrian/src/Settings/Program.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Settings/Program.hs	2022-06-24 17:22:47.066945724 +0200
 @@ -20,5 +20,5 @@
