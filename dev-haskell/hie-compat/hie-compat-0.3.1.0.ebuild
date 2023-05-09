@@ -22,6 +22,14 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
 "
 
+CABAL_CHDEPS=(
+	'base < 4.18' 'base < 4.19'
+)
+
+PATCHES=(
+	"${FILESDIR}"/ghc-9.6-bound.patch
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-ghc-lib
