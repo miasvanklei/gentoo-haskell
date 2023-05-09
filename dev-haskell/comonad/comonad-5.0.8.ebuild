@@ -18,6 +18,8 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="+indexed-traversable"
 
+transformers        >= 0.3 && < 0.6
+
 RDEPEND=">=dev-haskell/distributive-0.5.2:=[profile?] <dev-haskell/distributive-1:=[profile?]
 	>=dev-haskell/semigroups-0.18.5:=[profile?] <dev-haskell/semigroups-1:=[profile?]
 	>=dev-haskell/tagged-0.8.6.1:=[profile?] <dev-haskell/tagged-1:=[profile?]
@@ -28,6 +30,10 @@ RDEPEND=">=dev-haskell/distributive-0.5.2:=[profile?] <dev-haskell/distributive-
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.18.1.3
 "
+
+CABAL_CHDEPS=(
+	'transformers        >= 0.3 && < 0.6' 'transformers        >= 0.3 && < 0.7'
+)
 
 src_configure() {
 	haskell-cabal_src_configure \

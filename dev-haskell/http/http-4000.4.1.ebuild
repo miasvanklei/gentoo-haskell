@@ -7,7 +7,7 @@ EAPI=8
 #hackport: flags: -warp-tests,-mtl1,-warn-as-error,-old-base,-network23,+network-uri,-conduit10
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-CABAL_HACKAGE_REVISION=1
+CABAL_HACKAGE_REVISION=2
 CABAL_PN="HTTP"
 
 inherit haskell-cabal

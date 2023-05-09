@@ -19,7 +19,7 @@ KEYWORDS="~amd64"
 PATCHES=( "${FILESDIR}/${P}-fix-tests.diff" )
 
 RDEPEND=">=dev-haskell/free-4.12.0:=[profile?] <dev-haskell/free-5.2:=[profile?]
-	>=dev-haskell/mtl-2.2.0:=[profile?] <dev-haskell/mtl-2.3:=[profile?]
+	>=dev-haskell/mtl-2.2.0:=[profile?] <dev-haskell/mtl-2.4:=[profile?]
 	>=dev-haskell/psqueues-0.2.0.0:=[profile?] <dev-haskell/psqueues-0.3:=[profile?]
 	>=dev-lang/ghc-8.4.3:=[profile?]
 "
@@ -30,3 +30,8 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-hspec
 		dev-haskell/hspec )
 "
+
+CABAL_CHDEPS=(
+	'transformers >= 0.4.2.0 && < 0.6' 'transformers >= 0.4.2.0 && < 0.7'
+	'mtl >= 2.2.0 && < 2.3' 'mtl >= 2.2.0 && < 2.4'
+)

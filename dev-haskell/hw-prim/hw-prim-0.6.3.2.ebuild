@@ -16,6 +16,10 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="bounds-checking-enabled"
 
+CABAL_CHDEPS=(
+	'ghc-prim                   >= 0.5        && < 0.10' 'ghc-prim                   >= 0.5        && < 0.11'
+)
+
 RDEPEND="
 	>=dev-haskell/mmap-0.5:=[profile?] <dev-haskell/mmap-0.6:=[profile?]
 	>=dev-haskell/unliftio-core-0.1.2.0:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]

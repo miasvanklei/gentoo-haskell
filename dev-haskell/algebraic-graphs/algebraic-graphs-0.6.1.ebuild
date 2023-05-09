@@ -16,6 +16,7 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
+	'transformers >= 0.4     && < 0.6' 'transformers >= 0.4     && < 0.7'
 	'inspection-testing >= 0.4.6.0 && < 0.5' 'inspection-testing >= 0.4.6.0'
 )
 

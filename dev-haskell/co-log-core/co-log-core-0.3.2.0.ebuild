@@ -30,6 +30,13 @@ DEPEND="${RDEPEND}
 	)
 "
 
+src_prepare() {
+       default
+
+       cabal_chdeps \
+               'base >= 4.10.1.0 && < 4.18' 'base          >=4.10'
+}
+
 src_configure() {
 	use test && export GHC_BOOTSTRAP_PACKAGES=(cabal-doctest)
 

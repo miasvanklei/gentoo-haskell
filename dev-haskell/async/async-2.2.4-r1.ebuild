@@ -7,7 +7,7 @@ EAPI=8
 #hackport: flags: -bench
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-CABAL_HACKAGE_REVISION="2"
+CABAL_HACKAGE_REVISION="3"
 
 inherit haskell-cabal
 

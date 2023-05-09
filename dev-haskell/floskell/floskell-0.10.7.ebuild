@@ -19,7 +19,7 @@ IUSE="executable"
 PATCHES=( "${FILESDIR}/${PN}-0.10.5-add-executable-flag.patch" )
 
 RDEPEND="
-	>=dev-haskell/aeson-0.11.3.0:=[profile?] <dev-haskell/aeson-2.1:=[profile?]
+	>=dev-haskell/aeson-0.11.3.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/attoparsec-0.13.1.0:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
 	>=dev-haskell/data-default-0.7.1.1:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
 	>=dev-haskell/haskell-src-exts-1.19:=[profile?] <dev-haskell/haskell-src-exts-1.24:=[profile?]
@@ -39,3 +39,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-2.2.4
 	)
 "
+
+CABAL_CHDEPS=(
+	'base >=4.9 && <4.18' 'base >=4.9 && <4.19'
+)

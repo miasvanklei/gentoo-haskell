@@ -8,7 +8,7 @@ EAPI=8
 CABAL_PN="HsYAML-aeson"
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
-CABAL_HACKAGE_REVISION=5
+CABAL_HACKAGE_REVISION=6
 
 inherit haskell-cabal
 

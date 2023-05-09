@@ -27,6 +27,10 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-2 <dev-haskell/hspec-3 )
 "
 
+CABAL_CHDEPS=(
+	'transformers        >= 0.3 && < 0.6' 'transformers        >= 0.3 && < 0.7'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=semigroups \
