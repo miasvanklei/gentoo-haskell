@@ -18,8 +18,8 @@ KEYWORDS="~amd64"
 IUSE="ghc-lib"
 
 RDEPEND="
-	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?] )
-	!ghc-lib? ( =dev-lang/ghc-9.4*:= )
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.6:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?] )
+	!ghc-lib? ( =dev-lang/ghc-9.6*:= )
 	>=dev-haskell/uniplate-1.5:=[profile?]
 	>=dev-lang/ghc-8.8.1:=[profile?]
 "
