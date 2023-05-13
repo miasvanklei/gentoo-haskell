@@ -28,7 +28,7 @@ RDEPEND="
 	>=dev-haskell/strict-0.3:=[profile?] <dev-haskell/strict-0.5:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-2.1:=[profile?]
-	>=dev-lang/ghc-8.8.1:=[profile?]
+	>=dev-lang/ghc-8.8.1:=
 	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?] )
 	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.7:= )
 "

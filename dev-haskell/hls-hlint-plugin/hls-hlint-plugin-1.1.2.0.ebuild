@@ -43,7 +43,7 @@ RDEPEND="
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.8.1:=[profile?]
+	>=dev-lang/ghc-8.8.1:=
 	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?] )
 	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.7:= )
 "

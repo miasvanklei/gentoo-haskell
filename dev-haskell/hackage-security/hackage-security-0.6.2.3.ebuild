@@ -28,7 +28,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-b
 	>=dev-haskell/parsec-3.1:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-haskell/tar-0.5:=[profile?] <dev-haskell/tar-0.6:=[profile?]
 	>=dev-haskell/zlib-0.5:=[profile?] <dev-haskell/zlib-0.7:=[profile?]
-	>=dev-lang/ghc-8.4.3:=[profile?]
+	>=dev-lang/ghc-8.4.3:=
 	cabal-syntax? ( >=dev-haskell/cabal-syntax-3.7:=[profile?] <dev-haskell/cabal-syntax-3.12:=[profile?] )
 	!cabal-syntax? ( >=dev-haskell/cabal-3.2:=[profile?] <dev-haskell/cabal-3.7:=[profile?] )
 	>=dev-haskell/network-2.6:=[profile?] <dev-haskell/network-3.2:=[profile?]

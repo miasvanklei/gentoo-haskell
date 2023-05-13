@@ -34,7 +34,7 @@ RDEPEND="
 	dev-haskell/unordered-containers:=[profile?]
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-lang/ghc-8.8.1:=[profile?]
+	>=dev-lang/ghc-8.8.1:=
 	ghc-lib? (
 		>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?]
 	)

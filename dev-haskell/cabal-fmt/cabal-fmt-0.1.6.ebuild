@@ -17,7 +17,7 @@ KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/optparse-applicative-0.14.3.0:= <dev-haskell/optparse-applicative-0.18:=
 	>=dev-haskell/parsec-3.1.13.0:= <dev-haskell/parsec-3.2:=
-	>=dev-lang/ghc-9.6.1:=[profile?]
+	>=dev-lang/ghc-8.8.1:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0

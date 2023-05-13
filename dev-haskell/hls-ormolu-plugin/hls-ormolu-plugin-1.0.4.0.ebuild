@@ -21,7 +21,7 @@ RDEPEND="
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	>=dev-haskell/ormolu-0.5:=[profile?] <dev-haskell/ormolu-0.7
-	>=dev-lang/ghc-8.6.3:=[profile?]
+	>=dev-lang/ghc-8.6.3:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.4.0.1
