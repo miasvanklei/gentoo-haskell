@@ -23,3 +23,8 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/hunit-1.6 <dev-haskell/hunit-1.7
 		>=dev-haskell/quickcheck-2.11 <dev-haskell/quickcheck-2.15 )
 "
+
+CABAL_CHDEPS=(
+	'base >= 4.5 && < 4.17' 'base >= 4.5'
+	'transformers < 0.6' 'transformers < 0.7'
+)
