@@ -24,7 +24,9 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/quickcheck-2.11 <dev-haskell/quickcheck-2.15 )
 "
 
-CABAL_CHDEPS=(
-	'base >= 4.5 && < 4.17' 'base >= 4.5'
-	'transformers < 0.6' 'transformers < 0.7'
-)
+src_prepare() {
+	default
+
+	cabal_chdeps \
+		'base >= 4.5 && < 4.17' 'base >= 4.5 && < 5'
+}
