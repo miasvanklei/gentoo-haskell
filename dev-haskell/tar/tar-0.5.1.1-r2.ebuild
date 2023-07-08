@@ -7,7 +7,6 @@ EAPI=8
 
 CABAL_HACKAGE_REVISION=6
 
-CABAL_HACKAGE_REVISION="6"
 CABAL_FEATURES="lib profile haddock hoogle hscolour" # test-suite
 inherit haskell-cabal
 RESTRICT="test" # Test deps need porting
@@ -18,7 +17,6 @@ HOMEPAGE="https://hackage.haskell.org/package/tar"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="test"
 
 RDEPEND="
 	>=dev-lang/ghc-8.8.1:=
