@@ -16,7 +16,7 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 LICENSE="BSD-2"
 SLOT="0/${PV}"
 # Keep in sync with ghc-9.4
-#KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux"
 
 RDEPEND="
 	>=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]

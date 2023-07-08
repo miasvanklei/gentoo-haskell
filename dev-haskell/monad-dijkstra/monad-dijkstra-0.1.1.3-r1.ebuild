@@ -15,10 +15,6 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-CABAL_CHDEPS=(
-	'free >= 4.12.0 && < 5.2' 'free >= 4.12.0'
-)
-
 PATCHES=( "${FILESDIR}/${P}-fix-tests.diff" )
 
 RDEPEND="
@@ -38,4 +34,5 @@ DEPEND="${RDEPEND}
 CABAL_CHDEPS=(
 	'transformers >= 0.4.2.0 && < 0.6' 'transformers >= 0.4.2.0 && < 0.7'
 	'mtl >= 2.2.0 && < 2.3' 'mtl >= 2.2.0 && < 2.4'
+	'free >= 4.12.0 && < 5.2' 'free >= 4.12.0'
 )
