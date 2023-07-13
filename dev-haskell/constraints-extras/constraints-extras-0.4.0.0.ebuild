@@ -9,8 +9,6 @@ EAPI=8
 CABAL_HACKAGE_REVISION=1
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
-CABAL_HACKAGE_REVISION=1
-
 inherit haskell-cabal
 
 DESCRIPTION="Utility package for constraints"
@@ -27,11 +25,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
 "
-
-CABAL_CHDEPS=(
-	'base >=4.9 && <4.18' 'base >=4.9 && <4.19'
-	'template-haskell >=2.11 && <2.20' 'template-haskell >=2.11 && <2.21'
-)
 
 src_configure() {
 	haskell-cabal_src_configure \

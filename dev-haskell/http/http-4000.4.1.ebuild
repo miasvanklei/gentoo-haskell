@@ -10,8 +10,7 @@ CABAL_HACKAGE_REVISION=2
 CABAL_PN="HTTP"
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-CABAL_HACKAGE_REVISION=2
-CABAL_PN="HTTP"
+inherit haskell-cabal
 
 DESCRIPTION="A library for client-side HTTP"
 HOMEPAGE="https://github.com/haskell/HTTP"
