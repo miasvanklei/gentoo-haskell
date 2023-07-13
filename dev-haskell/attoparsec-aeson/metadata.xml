@@ -5,11 +5,8 @@
 		<email>haskell@gentoo.org</email>
 		<name>Gentoo Haskell</name>
 	</maintainer>
-	<use>
-		<flag name="system-cmark">use </flag>
-	</use>
 	<upstream>
-		<remote-id type="hackage">cmark</remote-id>
-		<remote-id type="github">jgm/cmark-hs</remote-id>
+		<remote-id type="hackage">attoparsec-aeson</remote-id>
+		<remote-id type="github">haskell/aeson</remote-id>
 	</upstream>
 </pkgmetadata>
