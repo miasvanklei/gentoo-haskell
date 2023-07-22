@@ -69,6 +69,15 @@
  flag pedantic
    description: Enable -Werror
    default:     False
+@@ -30,8 +30,6 @@ flag pedantic
+   manual:      True
+ 
+ library
+-  if impl(ghc >= 9.5)
+-    buildable: False
+   exposed-modules:    Ide.Plugin.Hlint
+   hs-source-dirs:     src
+   build-depends:
 @@ -59,11 +64,9 @@
      , text
      , transformers
