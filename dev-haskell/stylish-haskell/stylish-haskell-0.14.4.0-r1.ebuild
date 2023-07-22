@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/haskell/stylish-haskell"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="ghc-lib"
+IUSE="+ghc-lib"
 
 CABAL_CHDEPS=(
 	'strict               >= 0.3  && < 0.5' 'strict >= 0.3'
@@ -24,7 +24,8 @@ RDEPEND="
 	>=dev-haskell/aeson-0.6:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
 	>=dev-haskell/cabal-3.4:=[profile?] <dev-haskell/cabal-4.0:=[profile?]
 	>=dev-haskell/file-embed-0.0.10:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
-	>=dev-haskell/ghc-lib-parser-ex-9.6:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.7:=[profile?]
+	>=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.5:=[profile?]
+	>=dev-haskell/ghc-lib-parser-ex-9.4:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.5:=[profile?]
 	>=dev-haskell/hsyaml-0.2.0:=[profile?] <dev-haskell/hsyaml-0.3:=[profile?]
 	>=dev-haskell/hsyaml-aeson-0.2.0:=[profile?] <dev-haskell/hsyaml-aeson-0.3:=[profile?]
 	>=dev-haskell/optparse-applicative-0.12:=[profile?] <dev-haskell/optparse-applicative-0.18:=[profile?]
@@ -33,8 +34,6 @@ RDEPEND="
 	>=dev-haskell/syb-0.3:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-2.1:=[profile?]
 	>=dev-lang/ghc-8.8.1:=
-	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?] )
-	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.7:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
