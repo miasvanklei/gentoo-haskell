@@ -33,3 +33,7 @@ DEPEND="${RDEPEND}
 		~dev-haskell/hls-test-utils-2.0.0.1
 	)
 "
+
+PATCHES=(
+	"${FILESDIR}/buildable-ghc-9.4.patch"
+)
