@@ -1,5 +1,5 @@
---- a/hadrian/src/Rules/BinaryDist.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Rules/BinaryDist.hs	2022-06-24 17:22:47.065945710 +0200
+--- a/src/Rules/BinaryDist.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Rules/BinaryDist.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -436,7 +436,7 @@
    rtsways <- interpretInContext (vanillaContext Stage1 ghc) getRtsWays
    traverse (fmap (\p -> (iserv, p)) . programPath)
@@ -9,8 +9,8 @@
        , w `elem` rtsways
        ]
  
---- a/hadrian/src/Rules/Compile.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Rules/Compile.hs	2022-06-24 17:22:47.065945710 +0200
+--- a/src/Rules/Compile.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Rules/Compile.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -51,38 +51,14 @@
        -- All else is haskell.
        -- These come last as they overlap with the above rules' file patterns.
@@ -62,8 +62,8 @@
  
  -- | > <file>.<way prefix>_<o|hi|o-boot|hi-boot>
  data HsObject = HsObject Basename Extension deriving (Eq, Show)
---- a/hadrian/src/Rules/Dependencies.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Rules/Dependencies.hs	2022-06-24 17:22:47.065945710 +0200
+--- a/src/Rules/Dependencies.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Rules/Dependencies.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -20,7 +20,7 @@
      root -/- "**/.dependencies.mk" %> \mk -> do
          DepMkFile stage pkgpath <- getDepMkFile root mk
@@ -73,8 +73,8 @@
          extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
          srcs <- hsSources context
          gens <- interpretInContext context generatedDependencies
---- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Rules/Register.hs	2022-06-24 17:22:47.065945710 +0200
+--- a/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Rules/Register.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -37,7 +37,7 @@
      root -/- "**/setup-config" %> \out -> do
          (stage, path) <- parsePath (parseSetupConfig root) "<setup config path parser>" out
@@ -111,8 +111,8 @@
          case stage of
              Stage0 _ | isBoot -> copyConf  rs ctx conf
              _               ->
---- a/hadrian/src/Rules/SourceDist.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Rules/SourceDist.hs	2022-06-24 17:22:47.065945710 +0200
+--- a/src/Rules/SourceDist.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Rules/SourceDist.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -132,7 +132,7 @@
  
      copyAlexHappyFiles =
@@ -122,8 +122,8 @@
              srcInputFile = dest -/- pkgPath pkg -/- inp
              generatedFile = dest -/- pkgPath pkg -/- out
              Just builder = determineBuilder stg inp
---- a/hadrian/src/Settings/Default.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Settings/Default.hs	2022-06-24 17:22:47.066945724 +0200
+--- a/src/Settings/Default.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Settings/Default.hs	2022-06-24 17:22:47.066945724 +0200
 @@ -170,31 +170,21 @@
  testsuitePackages = return ([ timeout | windowsHost ] ++ [ checkPpr, checkExact, countDeps, ghcConfig ])
  
@@ -161,8 +161,8 @@
    ]
  
  -- TODO: Move C source arguments here
---- a/hadrian/src/Settings/Program.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Settings/Program.hs	2022-06-24 17:22:47.066945724 +0200
+--- a/src/Settings/Program.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Settings/Program.hs	2022-06-24 17:22:47.066945724 +0200
 @@ -20,5 +20,5 @@
              | prof && dyn                          =
                  error "programContext: profiling+dynamic not supported"

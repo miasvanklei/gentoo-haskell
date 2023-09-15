@@ -1,5 +1,5 @@
---- a/hadrian/src/Flavour.hs	2022-05-27 12:33:31.000000000 +0200
-+++ b/hadrian/src/Flavour.hs	2022-06-22 16:19:05.813781530 +0200
+--- a/src/Flavour.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/src/Flavour.hs	2022-06-22 16:19:05.813781530 +0200
 @@ -8,6 +8,7 @@
    , splitSections, splitSectionsIf
    , enableThreadSanitizer

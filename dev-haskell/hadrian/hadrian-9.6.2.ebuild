@@ -19,6 +19,15 @@ SLOT="0"
 IUSE="static test +threaded"
 RESTRICT="!test? ( test )"
 
+PATCHES=(
+	"${FILESDIR}/${P}-build-dynamic-only.patch"
+	"${FILESDIR}/${P}-disable-stripping.patch"
+)
+
+CABAL_CHDEPS=(
+        'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
+)
+
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=
 	>=dev-haskell/extra-1.4.7:=
