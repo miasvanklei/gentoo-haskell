@@ -27,9 +27,12 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-2 <dev-haskell/hspec-3 )
 "
 
-CABAL_CHDEPS=(
-	'transformers        >= 0.3 && < 0.6' 'transformers        >= 0.3 && < 0.7'
-)
+src_prepare() {
+	default
+
+	cabal_chdeps \
+		'transformers        >= 0.3 && < 0.6' 'transformers        >= 0.3'
+}
 
 src_configure() {
 	haskell-cabal_src_configure \
