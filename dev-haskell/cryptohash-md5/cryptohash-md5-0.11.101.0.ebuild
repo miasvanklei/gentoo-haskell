@@ -8,7 +8,6 @@ EAPI=8
 CABAL_HACKAGE_REVISION=2
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-
 inherit haskell-cabal
 
 DESCRIPTION="Fast, pure and practical MD5 implementation"
