@@ -24,7 +24,7 @@ RDEPEND="
 	~dev-haskell/hls-plugin-api-2.0.0.1:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
-	>=dev-haskell/ormolu-0.1.2:=[profile?] <dev-haskell/ormolu-0.7.0:=[profile?]
+	>=dev-haskell/ormolu-0.1.2:=[profile?] <dev-haskell/ormolu-0.7.2:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-lang/ghc-8.8.1:=
 "
