@@ -8,8 +8,6 @@ EAPI=8
 CABAL_PN="HsYAML"
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
-CABAL_HACKAGE_REVISION=2
-CABAL_PN="HsYAML"
 inherit haskell-cabal
 
 DESCRIPTION="Pure Haskell YAML 1.2 processor"
