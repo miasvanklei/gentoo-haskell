@@ -1,14 +1,3 @@
---- a/hls-ormolu-plugin.cabal	2023-02-13 17:27:53.609771525 +0100
-+++ b/hls-ormolu-plugin.cabal	2023-02-13 17:28:02.272880599 +0100
-@@ -23,8 +23,6 @@
-     location: https://github.com/haskell/haskell-language-server.git
- 
- library
--  if impl(ghc >= 9.5)
--    buildable: False
-   exposed-modules:  Ide.Plugin.Ormolu
-   hs-source-dirs:   src
-   build-depends:
 --- a/src/Ide/Plugin/Ormolu.hs
 +++ b/src/Ide/Plugin/Ormolu.hs
 @@ -56,9 +56,14 @@ provider ideState typ contents fp _ = withIndefiniteProgress title Cancellable $
