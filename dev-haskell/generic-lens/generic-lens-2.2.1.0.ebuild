@@ -36,3 +36,26 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/inspection-testing-0.2
 		dev-haskell/lens )
 "
+
+# Workaround for GHC panics when installing over a previous version of the same
+# package. See: <https://github.com/gentoo-haskell/gentoo-haskell/issues/1270>
+src_configure() {
+	local local_pkgdb="${S}/package.conf.d"
+
+	local ghc_pkg=( "/usr/bin/ghc-pkg" "--global-package-db=${local_pkgdb}" )
+
+	cp -a "$(ghc-libdir)"/{package.conf.d,settings} "${S}" || die
+
+	# Work around base attempting relative access for dynamic libraries
+	ln -s "$(ghc-libdir)" "${WORKDIR}" || die
+
+	"${ghc_pkg[@]}" unregister "${PN}" &>/dev/null
+	"${ghc_pkg[@]}" recache || die
+
+	local config_opts=(
+		"--package-db=clear"
+		"--package-db=${local_pkgdb}"
+	)
+
+	haskell-cabal_src_configure "${config_opts[@]}"
+}

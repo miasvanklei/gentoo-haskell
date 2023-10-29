@@ -41,7 +41,7 @@ ghc_binaries() {
 # Differentiate glibc/musl
 
 #glibc_binaries="$glibc_binaries alpha? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-alpha.tbz2 )"
-glibc_binaries+=" amd64? ( $(ghc_binaries x86_64-pc-linux-gnu) )"
+#glibc_binaries+=" amd64? ( $(ghc_binaries x86_64-pc-linux-gnu) )"
 #glibc_binaries="$glibc_binaries arm? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-armv7a-hardfloat-linux-gnueabi.tbz2 )"
 #glibc_binaries="$glibc_binaries arm64? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-aarch64-unknown-linux-gnu.tbz2 )"
 #glibc_binaries="$glibc_binaries ia64?  ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-ia64-fixed-fiw.tbz2 )"
@@ -52,7 +52,7 @@ glibc_binaries+=" amd64? ( $(ghc_binaries x86_64-pc-linux-gnu) )"
 #glibc_binaries="$glibc_binaries x86? ( https://eidetic.codes/ghc-bin-${PV}-i686-pc-linux-gnu.tbz2 )"
 
 #musl_binaries="$musl_binaries alpha? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-alpha.tbz2 )"
-musl_binaries+=" amd64? ( $(ghc_binaries x86_64-gentoo-linux-musl) )"
+#musl_binaries+=" amd64? ( $(ghc_binaries x86_64-gentoo-linux-musl) )"
 #musl_binaries="$musl_binaries arm? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-armv7a-hardfloat-linux-musl.tbz2 )"
 #musl_binaries="$musl_binaries arm64? ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-aarch64-unknown-linux-musl.tbz2 )"
 #musl_binaries="$musl_binaries ia64?  ( https://slyfox.uni.cx/~slyfox/distfiles/ghc-bin-${PV}-ia64-fixed-fiw.tbz2 )"
@@ -532,7 +532,7 @@ src_prepare() {
 		if [[ ${CHOST} != *-darwin* && ${CHOST} != *-solaris* ]]; then
 			# Modify the wrapper script from the binary tarball to use GHC_PERSISTENT_FLAGS.
 			# See bug #313635.
-			sed -i -e "s|\"\$topdir\"|\"\$topdir\" ${GHC_PERSISTENT_FLAGS}|" \
+			sed -i -e "s|\"\$libdir\"|\"\$libdir\" ${GHC_PERSISTENT_FLAGS}|" \
 				"${WORKDIR}/usr/bin/ghc-${BIN_PV}"
 
 			# allow hardened users use vanilla binary to bootstrap ghc
@@ -542,14 +542,14 @@ src_prepare() {
 		fi
 
 		# Make GHC's settings file comply with user's settings
-        GHC_SETTINGS="${WORKDIR}/usr/$(get_libdir)/${PN}-${BIN_PV}/lib/settings"
-        sed -i "s/,(\"C compiler command\", \".*\")/,(\"C compiler command\", \"$(tc-getCC)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"C++ compiler command\", \".*\")/,(\"C++ compiler command\", \"$(tc-getCXX)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"Haskell CPP command\", \".*\")/,(\"Haskell CPP command\", \"$(tc-getCC)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"ld command\", \".*\")/,(\"ld command\", \"$(tc-getLD)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"Merge objects command\", \".*\")/,(\"Merge objects command\", \"$(tc-getLD)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"ar command\", \".*\")/,(\"ar command\", \"$(tc-getAR)\")/" "${GHC_SETTINGS}" || die
-        sed -i "s/,(\"ranlib command\", \".*\")/,(\"ranlib command\", \"$(tc-getRANLIB)\")/" "${GHC_SETTINGS}" || die
+		GHC_SETTINGS="${WORKDIR}/usr/$(get_libdir)/${PN}-${BIN_PV}/lib/settings"
+		sed -i "s/,(\"C compiler command\", \".*\")/,(\"C compiler command\", \"$(tc-getCC)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"C++ compiler command\", \".*\")/,(\"C++ compiler command\", \"$(tc-getCXX)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"Haskell CPP command\", \".*\")/,(\"Haskell CPP command\", \"$(tc-getCC)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"ld command\", \".*\")/,(\"ld command\", \"$(tc-getLD)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"Merge objects command\", \".*\")/,(\"Merge objects command\", \"$(tc-getLD)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"ar command\", \".*\")/,(\"ar command\", \"$(tc-getAR)\")/" "${GHC_SETTINGS}"
+		sed -i "s/,(\"ranlib command\", \".*\")/,(\"ranlib command\", \"$(tc-getRANLIB)\")/" "${GHC_SETTINGS}"
 	fi
 
 	use llvm && ! use ghcbootstrap && llvmize "${WORKDIR}/usr/bin"
@@ -675,7 +675,6 @@ src_prepare() {
 
 		# https://gitlab.haskell.org/ghc/ghc/-/issues/22965
 		#eapply "${FILESDIR}/${PN}-9.2.6-fix-alignment-of-capability.patch"
-		eapply "${FILESDIR}"/${PN}-9.0.2-sphinx-6.patch
 
 		# FIXME: A hack that allows dev-python/sphinx-7 to build the docs
 		#

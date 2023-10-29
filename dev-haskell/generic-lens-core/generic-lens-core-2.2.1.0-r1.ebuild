@@ -7,6 +7,7 @@ EAPI=8
 
 CABAL_HACKAGE_REVISION=1
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
+CABAL_HACKAGE_REVISION=1
 inherit haskell-cabal
 
 DESCRIPTION="Generically derive traversals, lenses and prisms"

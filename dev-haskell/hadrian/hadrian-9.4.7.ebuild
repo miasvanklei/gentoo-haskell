@@ -21,14 +21,6 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/ghc-${PV}/hadrian"
 CABAL_FILE="${S}/hadrian.cabal"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-9.4.4-cabal-3_8.patch"
-)
-
-CABAL_CHDEPS=(
-	'Cabal                >= 3.2     && < 3.7' 'Cabal >= 3.2'
-)
-
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=
 	>=dev-haskell/extra-1.4.7:=
