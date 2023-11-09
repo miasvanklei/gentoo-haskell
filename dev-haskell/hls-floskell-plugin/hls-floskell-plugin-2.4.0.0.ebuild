@@ -29,3 +29,7 @@ DEPEND="${RDEPEND}
 		~dev-haskell/hls-test-utils-2.4.0.0
 	)
 "
+
+PATCHES=(
+	"${FILESDIR}/fix-buildable-condition.patch"
+)
