@@ -19,7 +19,7 @@ IUSE="examples executable ghc-lib +internal-bundle-fixities"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
-	"${FILESDIR}/${PV}-use-system-ghc.patch"
+	"${FILESDIR}/0.7.1.0-use-system-ghc.patch"
 )
 
 CABAL_CHDEPS=(
