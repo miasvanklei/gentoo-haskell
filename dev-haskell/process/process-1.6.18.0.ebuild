@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/process"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-# keep in sync with ghc-9.6
+# keep in sync with ghc-9.4
 #KEYWORDS="~amd64"
 
 RDEPEND="
@@ -22,4 +22,4 @@ RDEPEND="
 DEPEND="${RDEPEND}
 "
 
-CABAL_CORE_LIB_GHC_PV="9.4.7 9.6.2 9.6.3"
+CABAL_CORE_LIB_GHC_PV="9.4.8"

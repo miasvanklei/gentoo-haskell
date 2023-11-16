@@ -78,7 +78,7 @@ yet_binary() {
 				#alpha) return 0 ;;
 				#arm64) return 0 ;;
 				#arm) return 0 ;;
-				amd64) return 0 ;;
+				#amd64) return 0 ;;
 				#ia64) return 0 ;;
 				#ppc) return 0 ;;
 				#ppc64) return 0 ;;
@@ -93,7 +93,7 @@ yet_binary() {
 				#alpha) return 0 ;;
 				#arm64) return 0 ;;
 				#arm) return 0 ;;
-				amd64) return 0 ;;
+				#amd64) return 0 ;;
 				#ia64) return 0 ;;
 				#ppc) return 0 ;;
 				#ppc64)
@@ -665,12 +665,6 @@ src_prepare() {
 		# Fix issue caused by non-standard "musleabi" target in
 		# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
 		eapply "${FILESDIR}"/${PN}-9.4.5-musl-target.patch
-
-		# build ghc and libraries only the dynamic way
-		eapply "${FILESDIR}"/${PN}-9.4.4-cabal-dynamic-by-default.patch
-
-		# fix undefined symbols
-		eapply "${FILESDIR}"/ghc-9.6.1-disable-merge-objects.patch
 
 		# a bunch of crosscompiler patches
 		# needs newer version:

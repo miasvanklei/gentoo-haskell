@@ -1,3 +1,11 @@
+# hololeap <hololeap@protonmail.com> (2023-11-12)
+# No reverse dependencies, internal GHC lib that should not be exposed
+# as a Gentoo package. Mask for removal.
+# See: <https://github.com/gentoo-haskell/gentoo-haskell/issues/1386>
+#
+# Removal: 2023-12-12
+dev-haskell/terminfo
+
 # hololeap <hololeap@protonmail.com> (2023-10-15)
 # This package currently depends on an outdated version of
 # lsp-test.
@@ -22,18 +30,6 @@ dev-haskell/hls-tactics-plugin
 # Removal: 2023-11-14
 dev-haskell/brittany
 dev-haskell/stan
-
-# hololeap <hololeap@protonmail.com> (2023-10-11)
-# Mask old GHC for removal. These are losing support quickly and have
-# not been tested in a long time.
-#
-# Removal: 2023-11-10
-<dev-lang/ghc-9
-<dev-haskell/ghc-api-compat-9
-<dev-haskell/haddock-api-2.25
-<dev-haskell/haddock-2.25
-<dev-haskell/cabal-3.3
-<dev-haskell/cabal-install-3.3
 
 # hololeap <hololeap@protonmail.com> (2023-03-01)
 # Not buildable on ghc-9.2
