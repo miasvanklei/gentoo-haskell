@@ -21,6 +21,15 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/ghc-${PV}/hadrian"
 CABAL_FILE="${S}/hadrian.cabal"
 
+PATCHES=(
+	"${FILESDIR}/${PN}-9.6.2-build-dynamic-only.patch"
+	"${FILESDIR}/${PN}-9.6.2-disable-stripping.patch"
+)
+
+CABAL_CHDEPS=(
+        'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
+)
+
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=
 	>=dev-haskell/extra-1.4.7:=
@@ -38,12 +47,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
 "
-
-src_prepare() {
-	default
-	cabal_chdeps \
-		'Cabal                >= 3.2     && < 3.9' 'Cabal                >= 3.2'
-}
 
 src_configure() {
 	local configure_flags=(

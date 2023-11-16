@@ -21,15 +21,6 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/ghc-${PV}/hadrian"
 CABAL_FILE="${S}/hadrian.cabal"
 
-PATCHES=(
-	"${FILESDIR}/${P}-build-dynamic-only.patch"
-	"${FILESDIR}/${P}-disable-stripping.patch"
-)
-
-CABAL_CHDEPS=(
-        'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
-)
-
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=
 	>=dev-haskell/extra-1.4.7:=
