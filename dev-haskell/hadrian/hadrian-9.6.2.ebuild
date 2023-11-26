@@ -21,15 +21,6 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/ghc-${PV}/hadrian"
 CABAL_FILE="${S}/hadrian.cabal"
 
-PATCHES=(
-	"${FILESDIR}/${P}-build-dynamic-only.patch"
-	"${FILESDIR}/${P}-disable-stripping.patch"
-)
-
-CABAL_CHDEPS=(
-        'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
-)
-
 RDEPEND="
 	>=dev-haskell/cabal-3.2:=
 	>=dev-haskell/extra-1.4.7:=
@@ -41,7 +32,7 @@ RDEPEND="
 		dev-libs/gmp[static-libs]
 	)
 	test? (
-		>=dev-haskell/quickcheck-2.6:2= <dev-haskell/quickcheck-2.15:2=
+		>=dev-haskell/quickcheck-2.6:= <dev-haskell/quickcheck-2.15:=
 	)
 "
 DEPEND="${RDEPEND}

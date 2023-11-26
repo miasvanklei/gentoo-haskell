@@ -36,5 +36,5 @@ DEPEND="${RDEPEND}
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-auto \
-		$(cabal_flag ghc-lib ghc-lib)
+		$(cabal_flag !ghc-lib no-ghc-lib)
 }

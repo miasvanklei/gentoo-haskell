@@ -669,7 +669,10 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-9.4.4-cabal-dynamic-by-default.patch
 
 		# fix undefined symbols
-		eapply "${FILESDIR}"/ghc-9.6.1-disable-merge-objects.patch
+		eapply "${FILESDIR}"/${PN}-9.6.1-disable-merge-objects.patch
+
+		# atomic definition arguments must be Atomic
+		eapply "${FILESDIR}"/${PN}-9.6.3-fix-atomic-builtin-definitions.patch
 
 		# a bunch of crosscompiler patches
 		# needs newer version:
