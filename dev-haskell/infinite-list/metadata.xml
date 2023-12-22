@@ -6,7 +6,7 @@
 		<name>Gentoo Haskell</name>
 	</maintainer>
 	<upstream>
-		<remote-id type="hackage">arithmoi</remote-id>
-		<remote-id type="github">Bodigrim/arithmoi</remote-id>
+		<remote-id type="hackage">infinite-list</remote-id>
+		<remote-id type="github">Bodigrim/infinite-list</remote-id>
 	</upstream>
 </pkgmetadata>
