@@ -18,27 +18,23 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="examples executable"
 
-CABAL_CHDEPS=(
-	'ansi-terminal >= 0.10.3 && < 0.12' 'ansi-terminal >= 0.10.3'
-	'optparse-applicative >= 0.15.1 && < 0.18' 'optparse-applicative >= 0.15.1'
-)
-
 PATCHES=(
 	"${FILESDIR}/${PN}-1.1.0.0-modify-flags.patch"
+	"${FILESDIR}/ghc-9.8-support.patch"
 )
 
 RDEPEND="
 	>=dev-haskell/ansi-terminal-0.10.3:=[profile?]
 	>=dev-haskell/async-2.2.2:=[profile?] <dev-haskell/async-2.3:=[profile?]
 	>=dev-haskell/data-default-0.7.1:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
-	>=dev-haskell/ghc-exactprint-1.5.0:=[profile?] <dev-haskell/ghc-exactprint-1.8:=[profile?]
+	>=dev-haskell/ghc-exactprint-1.5.0:=[profile?] <dev-haskell/ghc-exactprint-1.9:=[profile?]
 	>=dev-haskell/list-t-1.0.4:=[profile?] <dev-haskell/list-t-1.1:=[profile?]
 	>=dev-haskell/optparse-applicative-0.15.1:=[profile?]
 	>=dev-haskell/random-shuffle-0.0.4:=[profile?] <dev-haskell/random-shuffle-0.1:=[profile?]
 	>=dev-haskell/syb-0.7.1:=[profile?] <dev-haskell/syb-0.8:=[profile?]
-	>=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.1:=[profile?]
+	>=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
-	>=dev-lang/ghc-9.2:=[profile?] <dev-lang/ghc-9.7:=[profile?]
+	>=dev-lang/ghc-9.2:=[profile?] <dev-lang/ghc-9.9:=[profile?]
 	examples? (
 		dev-haskell/ghc-paths:=[profile?]
 		>=dev-haskell/haskell-src-exts-1.23.0:=[profile?] <dev-haskell/haskell-src-exts-1.24:=[profile?]
