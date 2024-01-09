@@ -16,7 +16,7 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	>=dev-haskell/aeson-1.2.2.0:=[profile?] <dev-haskell/aeson-2.2
+	>=dev-haskell/aeson-1.2.2.0:=[profile?] <dev-haskell/aeson-2.3
 	dev-haskell/data-default:=[profile?]
 	>=dev-haskell/diff-0.2:=[profile?]
 	dev-haskell/dlist:=[profile?]
