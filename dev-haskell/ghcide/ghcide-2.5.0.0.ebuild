@@ -51,16 +51,16 @@ RDEPEND="
 	dev-haskell/glob:=[profile?]
 	>=dev-haskell/haddock-library-1.8:=[profile?] <dev-haskell/haddock-library-1.12:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hie-bios-0.12.0:=[profile?]
+	~dev-haskell/hie-bios-0.12.1:=[profile?]
 	>=dev-haskell/hie-compat-0.3.0.0:=[profile?] <dev-haskell/hie-compat-0.4:=[profile?]
-	>=dev-haskell/hiedb-0.4.3:=[profile?] <dev-haskell/hiedb-0.4.4:=[profile?]
-	~dev-haskell/hls-graph-2.4.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
-	<dev-haskell/implicit-hie-0.1.3:=[profile?]
+	>=dev-haskell/hiedb-0.4.4:=[profile?] <dev-haskell/hiedb-0.4.5:=[profile?]
+	~dev-haskell/hls-graph-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	>=dev-haskell/implicit-hie-0.1.2.7:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/list-t:=[profile?]
-	>=dev-haskell/lsp-2.2.0.0:=[profile?] <dev-haskell/lsp-2.3:=[profile?]
-	>=dev-haskell/lsp-types-2.0.2.0:=[profile?] <dev-haskell/lsp-types-2.1:=[profile?]
+	>=dev-haskell/lsp-2.3.0.0:=[profile?] <dev-haskell/lsp-2.4:=[profile?]
+	>=dev-haskell/lsp-types-2.1.0.0:=[profile?] <dev-haskell/lsp-types-2.2:=[profile?]
 	>=dev-haskell/opentelemetry-0.6.1:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/parallel:=[profile?]
@@ -81,10 +81,6 @@ RDEPEND="
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/ghc-9.0:=
-	|| (
-		( >=dev-haskell/implicit-hie-cradle-0.3.0.5 <dev-haskell/implicit-hie-cradle-0.4 )
-		( >=dev-haskell/implicit-hie-cradle-0.5 <dev-haskell/implicit-hie-cradle-0.6 )
-	)
 	dev-haskell/implicit-hie-cradle:=[profile?]
 	executable? (
 		dev-haskell/gitrev:=[profile?]
