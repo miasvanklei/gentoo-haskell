@@ -19,12 +19,7 @@ IUSE="examples executable ghc-lib +internal-bundle-fixities"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
-	"${FILESDIR}/0.7.1.0-use-system-ghc.patch"
-)
-
-CABAL_CHDEPS=(
-	'Cabal-syntax >=3.10 && <3.11' 'Cabal-syntax >=3.8 && <3.11'
-	'text >=2.0 && <3.0' 'text >=1.0 && <3.0'
+	"${FILESDIR}/0.7.3.0-use-system-ghc.patch"
 )
 
 RDEPEND="
@@ -42,10 +37,10 @@ RDEPEND="
 		>=dev-haskell/th-env-0.1.1:=[profile?] <dev-haskell/th-env-0.2:=[profile?]
 	)
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.6:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
 	)
 	!ghc-lib? (
-		=dev-lang/ghc-9.6*:=
+		=dev-lang/ghc-9.8*:=
 	)
 "
 DEPEND="${RDEPEND}
