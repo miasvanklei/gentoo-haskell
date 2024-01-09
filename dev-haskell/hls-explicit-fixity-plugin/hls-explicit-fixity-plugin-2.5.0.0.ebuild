@@ -22,9 +22,9 @@ KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	>=dev-haskell/lsp-2.2:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
@@ -32,6 +32,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 	)
 "
