@@ -15,7 +15,7 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-RDEPEND=">=dev-haskell/aeson-1.4.1.0:=[profile?] <dev-haskell/aeson-2.2:=[profile?]
+RDEPEND=">=dev-haskell/aeson-1.4.1.0:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-lang/ghc-8.8.1:=
 "
 DEPEND="${RDEPEND}
