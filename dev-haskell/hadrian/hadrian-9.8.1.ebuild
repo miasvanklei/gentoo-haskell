@@ -21,12 +21,19 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/ghc-${PV}/hadrian"
 CABAL_FILE="${S}/hadrian.cabal"
 
+PATCHES=(
+	"${FILESDIR}/${PN}-9.8.1-build-dynamic-only.patch"
+	"${FILESDIR}/${PN}-9.6.2-disable-stripping.patch"
+)
+
 CABAL_CHDEPS=(
         'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
 )
 
 RDEPEND="
+	>=dev-haskell/base16-bytestring-0.1.1:= <dev-haskell/base16-bytestring-1.1.0.0:=
 	>=dev-haskell/cabal-3.2:=
+	>=dev-haskell/cryptohash-sha256-0.11 <dev-haskell/cryptohash-sha256-0.12
 	>=dev-haskell/extra-1.4.7:=
 	>=dev-haskell/unordered-containers-0.2.1:= <dev-haskell/unordered-containers-0.3:=
 	>=dev-lang/ghc-8.4.3:=
