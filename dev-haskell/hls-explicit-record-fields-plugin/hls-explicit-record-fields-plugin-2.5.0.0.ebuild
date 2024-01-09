@@ -18,9 +18,9 @@ KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/syb:=[profile?]
