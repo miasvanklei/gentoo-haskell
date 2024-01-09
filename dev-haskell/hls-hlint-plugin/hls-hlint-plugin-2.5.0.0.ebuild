@@ -30,10 +30,10 @@ RDEPEND="
 	dev-haskell/extra:=[profile?]
 	>=dev-haskell/ghc-exactprint-0.6.3.4:=[profile?]
 	dev-haskell/ghc-lib-parser-ex:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
 	<dev-haskell/hlint-3.7:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/refact:=[profile?]
@@ -42,18 +42,22 @@ RDEPEND="
 	dev-haskell/text:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
-	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.4:=[profile?] <dev-haskell/ghc-lib-parser-9.7:=[profile?] )
-	!ghc-lib? ( >=dev-lang/ghc-9.4:= <dev-lang/ghc-9.7:= )
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?] )
+	!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
 		dev-haskell/hls-plugin-api
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 		dev-haskell/lsp-types
 		dev-haskell/row-types
 	)
 "
+
+CABAL_CHDEPS=(
+        'ghc >= 9.8' 'ghc >= 9.10'
+)
 
 PATCHES=(
 	"${FILESDIR}/support-ghc-9.6.patch"

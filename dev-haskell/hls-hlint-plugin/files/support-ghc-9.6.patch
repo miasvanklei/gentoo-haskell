@@ -88,9 +88,9 @@
    if flag(pedantic)
      ghc-options: -Werror
  
-+  if ((!flag(ghc-lib) && impl(ghc >=9.6)) && impl(ghc <9.7))
++  if ((!flag(ghc-lib) && impl(ghc >=9.8)) && impl(ghc <9.9))
 +    build-depends:
-+      ghc ==9.6.*
++      ghc ==9.8.*
 +  else
 +    cpp-options:   -DHLINT_ON_GHC_LIB
 +    build-depends:
