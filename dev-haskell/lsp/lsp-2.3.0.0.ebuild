@@ -26,7 +26,7 @@ RDEPEND="
 	dev-haskell/hashable:=[profile?]
 	>=dev-haskell/lens-4.15.2:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
-	>=dev-haskell/lsp-types-2.0.1:=[profile?] <dev-haskell/lsp-types-2.1
+	>=dev-haskell/lsp-types-2.1.0.0:=[profile?] <dev-haskell/lsp-types-2.2
 	dev-haskell/prettyprinter:=[profile?]
 	dev-haskell/random:=[profile?]
 	dev-haskell/row-types:=[profile?]
