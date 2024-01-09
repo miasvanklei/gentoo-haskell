@@ -22,9 +22,9 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/parser-combinators:=[profile?]
@@ -58,3 +58,7 @@ DEPEND="${RDEPEND}
 #		dev-haskell/tasty-rerun
 #		dev-util/shake
 #	)
+
+PATCHES=(
+	"${FILESDIR}"/ghc-9.8.patch
+)
