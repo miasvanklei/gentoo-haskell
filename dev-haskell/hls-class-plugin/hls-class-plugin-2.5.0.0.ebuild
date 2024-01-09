@@ -19,9 +19,9 @@ RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
 	>=dev-haskell/ghc-exactprint-1.5:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/text:=[profile?]
@@ -32,8 +32,16 @@ DEPEND="${RDEPEND}
 	test? (
 		dev-haskell/ghcide
 		dev-haskell/hls-plugin-api
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 		dev-haskell/lsp-types
 		dev-haskell/row-types
 	)
 "
+
+CABAL_CHDEPS=(
+        'ghc >= 9.8' 'ghc >= 9.10'
+)
+
+PATCHES=(
+	"${FILESDIR}"/ghc-9.8.patch
+)
