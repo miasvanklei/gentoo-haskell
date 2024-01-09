@@ -20,8 +20,8 @@ RDEPEND=">=dev-haskell/cereal-0.5.5:=[profile?] <dev-haskell/cereal-0.6:=[profil
 	>=dev-haskell/focus-1:=[profile?] <dev-haskell/focus-1.1:=[profile?]
 	>=dev-haskell/foldl-1:=[profile?] <dev-haskell/foldl-2:=[profile?]
 	>=dev-haskell/list-t-1.0.1:=[profile?] <dev-haskell/list-t-1.1:=[profile?]
-	>=dev-haskell/primitive-0.7:=[profile?] <dev-haskell/primitive-0.8:=[profile?]
-	>=dev-haskell/primitive-unlifted-0.1.3.1:=[profile?] <dev-haskell/primitive-unlifted-0.2:=[profile?]
+	>=dev-haskell/primitive-0.7:=[profile?] <dev-haskell/primitive-0.10:=[profile?]
+	>=dev-haskell/primitive-unlifted-0.1.3.1:=[profile?] <dev-haskell/primitive-unlifted-2.2:=[profile?]
 	>=dev-haskell/profunctors-5:=[profile?] <dev-haskell/profunctors-6:=[profile?]
 	>=dev-haskell/vector-0.12:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-lang/ghc-8.4.3:=
