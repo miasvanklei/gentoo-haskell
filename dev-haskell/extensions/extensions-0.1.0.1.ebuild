@@ -21,14 +21,13 @@ CABAL_CHBINS=(
 )
 
 CABAL_CHDEPS=(
-	'hedgehog >= 1.0 && < 1.3' 'hedgehog >= 1.0'
 	'optparse-applicative >= 0.15 && < 0.18' 'optparse-applicative >= 0.15'
 )
 
 RDEPEND="
-	>=dev-haskell/cabal-3.0:=[profile?] <dev-haskell/cabal-3.9:=[profile?]
+	>=dev-haskell/cabal-3.10:=[profile?] <dev-haskell/cabal-3.12:=[profile?]
 	>=dev-haskell/parsec-3.1:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
-	>=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.1:=[profile?]
+	>=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
 	executable? (
 		>=dev-haskell/colourista-0.1:=[profile?] <dev-haskell/colourista-0.3:=[profile?]
