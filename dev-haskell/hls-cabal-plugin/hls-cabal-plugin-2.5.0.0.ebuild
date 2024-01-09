@@ -23,13 +23,13 @@ KEYWORDS="~amd64"
 RDEPEND="
 	>=dev-haskell/cabal-syntax-3.7:=[profile?]
 	>=dev-haskell/extra-1.7.4:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hls-graph-2.4.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
-	>=dev-haskell/lsp-2.2:=[profile?] <dev-haskell/lsp-2.3:=[profile?]
-	>=dev-haskell/lsp-types-2.0.2:=[profile?] <dev-haskell/lsp-types-2.1:=[profile?]
+	>=dev-haskell/lsp-2.3:=[profile?] <dev-haskell/lsp-2.5:=[profile?]
+	>=dev-haskell/lsp-types-2.0.2:=[profile?] <dev-haskell/lsp-types-2.2:=[profile?]
 	>=dev-haskell/regex-tdfa-1.3.1:=[profile?] <dev-haskell/regex-tdfa-1.4:=[profile?]
 	dev-haskell/text:=[profile?]
 	dev-haskell/text-rope:=[profile?]
@@ -40,7 +40,7 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
 		dev-haskell/ghcide
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 		dev-haskell/row-types
 		dev-haskell/tasty-hunit
 	)
