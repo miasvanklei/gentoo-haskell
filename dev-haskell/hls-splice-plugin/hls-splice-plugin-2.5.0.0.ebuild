@@ -21,8 +21,8 @@ RDEPEND="
 	dev-haskell/extra:=[profile?]
 	dev-haskell/foldl:=[profile?]
 	dev-haskell/ghc-exactprint:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/hls-refactor-plugin:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
@@ -37,7 +37,11 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 		dev-haskell/row-types
 	)
 "
+
+CABAL_CHDEPS=(
+        'ghc >= 9.8' 'ghc >= 9.10'
+)
