@@ -1,0 +1,130 @@
+diff --git a/lib/Language/Haskell/Stylish/Printer.hs b/lib/Language/Haskell/Stylish/Printer.hs
+index 4d6970e2..08c30c98 100644
+--- a/lib/Language/Haskell/Stylish/Printer.hs
++++ b/lib/Language/Haskell/Stylish/Printer.hs
+@@ -239,7 +239,7 @@ putType ltp = case GHC.unLoc ltp of
+     putOutputable ltp
+   GHC.HsQualTy {} ->
+     putOutputable ltp
+-  GHC.HsAppKindTy _ _ _ ->
++  GHC.HsAppKindTy _ _ _ _ ->
+     putOutputable ltp
+   GHC.HsListTy _ _ ->
+     putOutputable ltp
+diff --git a/lib/Language/Haskell/Stylish/Step/Data.hs b/lib/Language/Haskell/Stylish/Step/Data.hs
+index fd18d4da..0a99b0aa 100644
+--- a/lib/Language/Haskell/Stylish/Step/Data.hs
++++ b/lib/Language/Haskell/Stylish/Step/Data.hs
+@@ -313,10 +313,10 @@ putName decl@MkDataDecl{..} =
+     maybePutKindSig
+ 
+   where
+-    firstTvar :: Maybe (GHC.LHsTyVarBndr () GHC.GhcPs)
++    firstTvar :: Maybe (GHC.LHsTyVarBndr (GHC.HsBndrVis GHC.GhcPs) GHC.GhcPs)
+     firstTvar = listToMaybe $ GHC.hsq_explicit dataTypeVars
+ 
+-    secondTvar :: Maybe (GHC.LHsTyVarBndr () GHC.GhcPs)
++    secondTvar :: Maybe (GHC.LHsTyVarBndr (GHC.HsBndrVis GHC.GhcPs) GHC.GhcPs)
+     secondTvar = listToMaybe . drop 1 $ GHC.hsq_explicit dataTypeVars
+ 
+     maybePutKindSig :: Printer ()
+diff --git a/lib/Language/Haskell/Stylish/Step/Imports.hs b/lib/Language/Haskell/Stylish/Step/Imports.hs
+index 3ec67eea..fc69b2f7 100644
+--- a/lib/Language/Haskell/Stylish/Step/Imports.hs
++++ b/lib/Language/Haskell/Stylish/Step/Imports.hs
+@@ -594,8 +594,8 @@ importModuleNameLength imp =
+ --------------------------------------------------------------------------------
+ stringLiteral :: GHC.StringLiteral -> String
+ stringLiteral sl = case GHC.sl_st sl of
+-    GHC.NoSourceText -> show . GHC.unpackFS $ GHC.sl_fs sl
+-    GHC.SourceText s -> s
++    GHC.NoSourceText -> GHC.unpackFS $ GHC.sl_fs sl
++    GHC.SourceText s -> GHC.unpackFS $ s
+ 
+ 
+ --------------------------------------------------------------------------------
+diff --git a/stylish-haskell.cabal b/stylish-haskell.cabal
+index b4da8708..73fd5656 100644
+--- a/stylish-haskell.cabal
++++ b/stylish-haskell.cabal
+@@ -34,9 +34,9 @@ Common depends
+   Default-language: Haskell2010
+ 
+   Build-depends:
+-    aeson             >= 0.6    && < 2.2,
++    aeson             >= 0.6    && < 2.3,
+     base              >= 4.8    && < 5,
+-    bytestring        >= 0.9    && < 0.12,
++    bytestring        >= 0.9    && < 0.13,
+     Cabal             >= 3.4    && < 4.0,
+     containers        >= 0.3    && < 0.7,
+     directory         >= 1.2.3  && < 1.4,
+@@ -45,7 +45,7 @@ Common depends
+     mtl               >= 2.0    && < 2.4,
+     regex-tdfa        >= 1.3    && < 1.4,
+     syb               >= 0.3    && < 0.8,
+-    text              >= 1.2    && < 2.1,
++    text              >= 1.2    && < 2.2,
+     HsYAML-aeson      >=0.2.0   && < 0.3,
+     HsYAML            >=0.2.0   && < 0.3,
+ 
+@@ -57,17 +57,17 @@ Common depends
+   -- and we have a new enough GHC. Note that 
+   -- this will only work if the user's 
+   -- compiler is of the matching major version!
+-  if impl(ghc >= 9.4.1) && (!flag(ghc-lib))
++  if !flag(ghc-lib) && impl(ghc >= 9.8) && impl(ghc < 9.9)
+     Build-depends:
+-      ghc >= 9.6 && < 9.7,
++      ghc >= 9.8 && < 9.9,
+       ghc-boot,
+       ghc-boot-th
+   else
+     Build-depends:
+-      ghc-lib-parser >= 9.6 && < 9.7
++      ghc-lib-parser >= 9.8 && < 9.9
+ 
+   Build-depends:
+-    ghc-lib-parser-ex >= 9.6 && < 9.7
++    ghc-lib-parser-ex >= 9.8 && < 9.9
+ 
+ Library
+   Import:         depends
+diff --git a/tests/Language/Haskell/Stylish/Step/LanguagePragmas/Tests.hs b/tests/Language/Haskell/Stylish/Step/LanguagePragmas/Tests.hs
+index ecb6a7f9..5e5d92da 100644
+--- a/tests/Language/Haskell/Stylish/Step/LanguagePragmas/Tests.hs
++++ b/tests/Language/Haskell/Stylish/Step/LanguagePragmas/Tests.hs
+@@ -61,10 +61,12 @@ case02 = assertSnippet
+     (step (Just 80) Vertical True True lANG)
+     [ "{-# LANGUAGE BangPatterns #-}"
+     , "{-# LANGUAGE ViewPatterns #-}"
++    , "module Main where"
+     , "increment ((+ 1) -> x) = x"
+     ]
+ 
+     [ "{-# LANGUAGE ViewPatterns #-}"
++    , "module Main where"
+     , "increment ((+ 1) -> x) = x"
+     ]
+ 
+@@ -75,10 +77,12 @@ case03 = assertSnippet
+     (step (Just 80) Vertical True True lANG)
+     [ "{-# LANGUAGE BangPatterns #-}"
+     , "{-# LANGUAGE ViewPatterns #-}"
++    , "module Main where"
+     , "increment x = case x of !_ -> x + 1"
+     ]
+ 
+     [ "{-# LANGUAGE BangPatterns #-}"
++    , "module Main where"
+     , "increment x = case x of !_ -> x + 1"
+     ]
+ 
+@@ -226,6 +230,7 @@ case13 = assertSnippet
+     input =
+         [ "{-# LANGUAGE BangPatterns  #-}"
+         , "{-# LANGUAGE DeriveFunctor #-}"
++        , "module Main where"
+         , "main = let !x = 1 + 1 in print x"
+         ]
+ 
