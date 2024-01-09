@@ -17,8 +17,8 @@ KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.4.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.4.0.0:=[profile?]
+	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	>=dev-haskell/ormolu-0.1.2:=[profile?] <dev-haskell/ormolu-0.8:=[profile?]
@@ -31,7 +31,11 @@ DEPEND="${RDEPEND}
 	test? (
 		dev-haskell/aeson
 		dev-haskell/hls-plugin-api
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.5.0.0
 		dev-haskell/lsp-types
 	)
 "
+
+CABAL_CHDEPS=(
+        'ghc >= 9.7' 'ghc >= 9.10'
+)
