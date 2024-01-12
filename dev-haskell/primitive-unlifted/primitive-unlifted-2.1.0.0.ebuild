@@ -24,3 +24,7 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
 	test? ( dev-haskell/stm )
 "
+
+CABAL_CHDEPS=(
+	'bytestring >=0.10.8.2 && <0.12' 'bytestring >=0.10.8.2 && <0.13'
+)
