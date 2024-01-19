@@ -22,9 +22,9 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
 	dev-haskell/parser-combinators:=[profile?]
@@ -48,7 +48,7 @@ DEPEND="${RDEPEND}
 #	test? (
 #		dev-haskell/async
 #		dev-haskell/ghcide-test-utils
-#		~dev-haskell/hls-test-utils-2.4.0.0
+#		~dev-haskell/hls-test-utils-2.6.0.0
 #		dev-haskell/lsp-test
 #		dev-haskell/lsp-types
 #		dev-haskell/network-uri

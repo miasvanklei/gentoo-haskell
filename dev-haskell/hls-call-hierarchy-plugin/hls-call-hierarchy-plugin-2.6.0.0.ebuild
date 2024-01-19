@@ -20,9 +20,9 @@ KEYWORDS="~amd64"
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hiedb:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-2.2.0.0:=[profile?]
 	dev-haskell/sqlite-simple:=[profile?]
@@ -35,6 +35,6 @@ DEPEND="${RDEPEND}
 "
 #	test? (
 #		dev-haskell/ghcide-test-utils
-#		~dev-haskell/hls-test-utils-2.5.0.0
+#		~dev-haskell/hls-test-utils-2.6.0.0
 #		dev-haskell/lsp-test
 #	)

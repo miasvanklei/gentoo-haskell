@@ -18,9 +18,9 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/hie-compat:=[profile?]
 	>=dev-haskell/lsp-2.3:=[profile?] <dev-haskell/lsp-2.4:=[profile?]
 	>=dev-haskell/lsp-types-2.0.2:=[profile?] <dev-haskell/lsp-types-2.2:=[profile?]
@@ -33,7 +33,7 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
 		dev-haskell/ghcide
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 		dev-haskell/row-types
 		dev-haskell/tasty-hunit
 	)

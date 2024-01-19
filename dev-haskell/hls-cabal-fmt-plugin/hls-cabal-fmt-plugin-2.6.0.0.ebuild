@@ -12,26 +12,13 @@ inherit haskell-cabal
 DESCRIPTION="Integration with the cabal-fmt code formatter"
 HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins/hls-cabal-fmt-plugin#readme"
 
-GIT_REPO_NAME="haskell-language-server"
-GIT_REPO="https://github.com/haskell/${GIT_REPO_NAME}"
-GIT_COMMIT="362fdd1293efb4b82410b676ab1273479f6d17ee" # tag 2.4.0.0
-GIT_P="${GIT_REPO_NAME}-${GIT_COMMIT}"
-
-# Assets needed for tests only exist in the git repo
-SRC_URI+="
-	test? (
-		${GIT_REPO}/archive/${GIT_COMMIT}.tar.gz
-			-> ${GIT_P}.tar.gz
-	)
-"
-
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	dev-haskell/process-extras:=[profile?]
@@ -41,7 +28,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 	)
 "
 BDEPEND="test? (
@@ -49,12 +36,6 @@ BDEPEND="test? (
 )"
 
 src_prepare() {
-	if use test; then
-		# a partial test directory already exists in the hackage release tarball
-		rm -rv "${S}/test/" || die
-		# move the complete test directory from the github snapshot
-		mv -v "${WORKDIR}/${GIT_P}/plugins/${PN}/test/" "${S}" || die
-	fi
 	haskell-cabal_src_prepare
 }
 

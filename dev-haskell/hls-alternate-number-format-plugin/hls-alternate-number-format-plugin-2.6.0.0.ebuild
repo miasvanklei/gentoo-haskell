@@ -18,10 +18,10 @@ KEYWORDS="~amd64"
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hie-compat:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-2.3.0.0:=[profile?] <dev-haskell/lsp-2.5:=[profile?]
 	dev-haskell/regex-tdfa:=[profile?]
@@ -33,7 +33,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.4.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 		dev-haskell/quickcheck
 		dev-haskell/tasty-quickcheck
 	)

@@ -36,6 +36,7 @@ IUSE_HLS_PLUGINS="
 	+hls_plugins_qualify-imported-names
 	+hls_plugins_rename
 	+hls_plugins_retrie
+	+hls_plugins_semantic-tokens
 	+hls_plugins_splice
 	+hls_plugins_stan
 "
@@ -60,7 +61,7 @@ CABAL_TEST_REQUIRED_BINS=(
 )
 
 # Disabled:
-# hls_formatters_fourmolu? ( ~dev-haskell/hls-fourmolu-plugin-2.5.0.0:=[profile?] )
+# hls_formatters_fourmolu? ( ~dev-haskell/hls-fourmolu-plugin-2.6.0.0:=[profile?] )
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/aeson-pretty:=[profile?]
@@ -70,14 +71,14 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-paths:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/gitrev:=[profile?]
 	dev-haskell/githash:=[profile?]
 	dev-haskell/hashable:=[profile?]
 	dev-haskell/hie-bios:=[profile?]
 	dev-haskell/hiedb:=[profile?]
 	>dev-haskell/hls-graph-1.7.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-2.2.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
@@ -92,31 +93,32 @@ RDEPEND="
 	dev-haskell/unliftio-core:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-lang/ghc-8.6.3:=
-	hls_formatters_cabal-fmt? ( ~dev-haskell/hls-cabal-fmt-plugin-2.5.0.0:=[profile?] )
-	hls_formatters_floskell? ( ~dev-haskell/hls-floskell-plugin-2.5.0.0:=[profile?] )
-	hls_formatters_ormolu? ( ~dev-haskell/hls-ormolu-plugin-2.5.0.0:=[profile?] )
-	hls_formatters_refactor? ( ~dev-haskell/hls-refactor-plugin-2.5.0.0:=[profile?] )
-	hls_formatters_stylish-haskell? ( ~dev-haskell/hls-stylish-haskell-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_alternate-number-format? ( ~dev-haskell/hls-alternate-number-format-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_cabal? ( ~dev-haskell/hls-cabal-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_call-hierarchy? ( ~dev-haskell/hls-call-hierarchy-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_change-type-signature? ( ~dev-haskell/hls-change-type-signature-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_class? ( ~dev-haskell/hls-class-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_code-range? ( ~dev-haskell/hls-code-range-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_eval? ( ~dev-haskell/hls-eval-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_explicit-fields? ( ~dev-haskell/hls-explicit-record-fields-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_explicit-fixity? ( ~dev-haskell/hls-explicit-fixity-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_gadt? ( ~dev-haskell/hls-gadt-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_hlint? ( ~dev-haskell/hls-hlint-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_import-lens? ( ~dev-haskell/hls-explicit-imports-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_module-name? ( ~dev-haskell/hls-module-name-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_overloaded-record-dot? ( ~dev-haskell/hls-overloaded-record-dot-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_pragmas? ( ~dev-haskell/hls-pragmas-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_qualify-imported-names? ( ~dev-haskell/hls-qualify-imported-names-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_rename? ( ~dev-haskell/hls-rename-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_retrie? ( ~dev-haskell/hls-retrie-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_splice? ( ~dev-haskell/hls-splice-plugin-2.5.0.0:=[profile?] )
-	hls_plugins_stan? ( ~dev-haskell/hls-stan-plugin-2.5.0.0:=[profile?] )
+	hls_formatters_cabal-fmt? ( ~dev-haskell/hls-cabal-fmt-plugin-2.6.0.0:=[profile?] )
+	hls_formatters_floskell? ( ~dev-haskell/hls-floskell-plugin-2.6.0.0:=[profile?] )
+	hls_formatters_ormolu? ( ~dev-haskell/hls-ormolu-plugin-2.6.0.0:=[profile?] )
+	hls_formatters_refactor? ( ~dev-haskell/hls-refactor-plugin-2.6.0.0:=[profile?] )
+	hls_formatters_stylish-haskell? ( ~dev-haskell/hls-stylish-haskell-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_alternate-number-format? ( ~dev-haskell/hls-alternate-number-format-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_cabal? ( ~dev-haskell/hls-cabal-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_call-hierarchy? ( ~dev-haskell/hls-call-hierarchy-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_change-type-signature? ( ~dev-haskell/hls-change-type-signature-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_class? ( ~dev-haskell/hls-class-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_code-range? ( ~dev-haskell/hls-code-range-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_eval? ( ~dev-haskell/hls-eval-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_explicit-fields? ( ~dev-haskell/hls-explicit-record-fields-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_explicit-fixity? ( ~dev-haskell/hls-explicit-fixity-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_gadt? ( ~dev-haskell/hls-gadt-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_hlint? ( ~dev-haskell/hls-hlint-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_import-lens? ( ~dev-haskell/hls-explicit-imports-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_module-name? ( ~dev-haskell/hls-module-name-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_overloaded-record-dot? ( ~dev-haskell/hls-overloaded-record-dot-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_pragmas? ( ~dev-haskell/hls-pragmas-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_qualify-imported-names? ( ~dev-haskell/hls-qualify-imported-names-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_rename? ( ~dev-haskell/hls-rename-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_retrie? ( ~dev-haskell/hls-retrie-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_semantic-tokens? ( ~dev-haskell/hls-semantic-tokens-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_splice? ( ~dev-haskell/hls-splice-plugin-2.6.0.0:=[profile?] )
+	hls_plugins_stan? ( ~dev-haskell/hls-stan-plugin-2.6.0.0:=[profile?] )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.5.0.1
@@ -124,7 +126,7 @@ DEPEND="${RDEPEND}
 #	test? (
 #		dev-haskell/ghcide
 #		dev-haskell/ghcide-test-utils
-#		~dev-haskell/hls-test-utils-2.5.0.0
+#		~dev-haskell/hls-test-utils-2.6.0.0
 #		dev-haskell/hspec-expectations
 #		dev-haskell/lens-aeson
 #		dev-haskell/lsp-test
@@ -157,6 +159,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_qualify-imported-names qualifyImportedNames)
 		$(cabal_flag hls_plugins_rename rename)
 		$(cabal_flag hls_plugins_retrie retrie)
+		$(cabal_flag hls_plugins_semantic-tokens semanticTokens)
 		$(cabal_flag hls_plugins_splice splice)
 		$(cabal_flag hls_plugins_stan stan)
 		--flag=-fourmolu

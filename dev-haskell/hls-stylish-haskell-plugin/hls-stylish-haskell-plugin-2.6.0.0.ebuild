@@ -16,8 +16,8 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
@@ -30,7 +30,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 	)
 "
 

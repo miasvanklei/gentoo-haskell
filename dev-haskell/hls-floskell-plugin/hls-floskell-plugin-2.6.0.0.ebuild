@@ -17,8 +17,8 @@ KEYWORDS="~amd64"
 
 RDEPEND="
 	>=dev-haskell/floskell-0.11:=[profile?] <dev-haskell/floskell-0.12:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	>=dev-haskell/lsp-types-2.0.2.0:=[profile?] <dev-haskell/lsp-types-2.2:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
@@ -26,15 +26,10 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 	)
 "
 
 CABAL_CHDEPS=(
-        'ghc >= 9.5' 'ghc >= 9.10'
-	'floskell        ^>=0.10' 'floskell        ^>=0.11'
-)
-
-PATCHES=(
-	"${FILESDIR}"/floskell-0.11.patch
+        'ghc >= 9.7' 'ghc >= 9.9'
 )

@@ -24,8 +24,8 @@ RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-exactprint:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/hls-refactor-plugin:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-2.2.0.0:=[profile?]
@@ -36,11 +36,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
 		dev-haskell/lsp-test
 	)
 "
-
-CABAL_CHDEPS=(
-	'ghc >= 9.8' 'ghc >= 9.10'
-)

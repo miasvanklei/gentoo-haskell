@@ -12,49 +12,59 @@ inherit haskell-cabal
 # TODO: Multiple test failures
 # See: <https://github.com/haskell/haskell-language-server/issues/3221>
 #      <https://github.com/haskell/haskell-language-server/issues/3126#issuecomment-1256998713>
-RESTRICT="test" # 8 out of 65 tests failed
+RESTRICT="test" # 1 out of 30 tests failed
 
-DESCRIPTION="Eval plugin for Haskell Language Server"
-HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins/hls-eval-plugin#readme"
+DESCRIPTION="Hlint integration plugin with Haskell Language Server"
+HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins/hls-hlint-plugin#readme"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
+IUSE="ghc-lib"
 KEYWORDS="~amd64"
 
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
+	dev-haskell/apply-refact:=[profile?]
 	dev-haskell/data-default:=[profile?]
 	>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
-	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
-	dev-haskell/ghc-paths:=[profile?]
-	~dev-haskell/ghcide-2.5.0.0:=[profile?]
+	>=dev-haskell/ghc-exactprint-0.6.3.4:=[profile?]
+	dev-haskell/ghc-lib-parser-ex:=[profile?]
+	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	dev-haskell/hls-graph:=[profile?]
-	~dev-haskell/hls-plugin-api-2.5.0.0:=[profile?]
+	<dev-haskell/hlint-3.7:=[profile?]
+	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lsp:=[profile?]
-	dev-haskell/lsp-types:=[profile?]
-	>=dev-haskell/megaparsec-9.0:=[profile?]
-	>=dev-haskell/parser-combinators-1.2:=[profile?]
-	dev-haskell/pretty-simple:=[profile?]
-	dev-haskell/quickcheck:=[profile?]
-	dev-haskell/safe-exceptions:=[profile?]
+	dev-haskell/refact:=[profile?]
+	dev-haskell/regex-tdfa:=[profile?]
+	dev-haskell/temporary:=[profile?]
 	dev-haskell/text:=[profile?]
-	dev-haskell/unliftio:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
+	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?] )
+	!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.2.1.0
 	test? (
 		dev-haskell/hls-plugin-api
-		~dev-haskell/hls-test-utils-2.5.0.0
+		~dev-haskell/hls-test-utils-2.6.0.0
+		dev-haskell/lsp-types
 		dev-haskell/row-types
 	)
 "
 
+CABAL_CHDEPS=(
+        'ghc >= 9.8' 'ghc >= 9.10'
+)
+
+PATCHES=(
+	"${FILESDIR}/support-ghc-9.6.patch"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
+		$(cabal_flag ghc-lib ghc-lib) \
 		--flag=-pedantic
 }

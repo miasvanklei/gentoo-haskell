@@ -27,7 +27,7 @@ RDEPEND="
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hls-graph-2.5.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
 	>=dev-haskell/lsp-2.3:=[profile?] <dev-haskell/lsp-2.4:=[profile?]
