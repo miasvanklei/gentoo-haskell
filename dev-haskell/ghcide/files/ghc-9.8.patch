@@ -1,0 +1,20 @@
+diff --git a/src/Development/IDE/GHC/Compat/Core.hs b/src/Development/IDE/GHC/Compat/Core.hs
+index caee9d5685..9f35fb6bf6 100644
+--- a/src/Development/IDE/GHC/Compat/Core.hs
++++ b/src/Development/IDE/GHC/Compat/Core.hs
+@@ -408,6 +408,7 @@ module Development.IDE.GHC.Compat.Core (
+ #endif
+     groupOrigin,
+     isVisibleFunArg,
++    lookupGlobalRdrEnv,
+     ) where
+ 
+ import qualified GHC
+@@ -825,3 +826,7 @@ mkSimpleTarget df fp = Target (TargetFile fp Nothing) True (homeUnitId_ df) Noth
+ #else
+ mkSimpleTarget _ fp = Target (TargetFile fp Nothing) True Nothing
+ #endif
++
++#if MIN_VERSION_ghc(9,7,0)
++lookupGlobalRdrEnv gre_env occ = lookupGRE gre_env (LookupOccName occ AllRelevantGREs)
++#endif
