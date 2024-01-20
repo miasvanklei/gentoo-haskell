@@ -40,3 +40,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/lsp-test
 	)
 "
+
+CABAL_CHDEPS=(
+	'ghc >= 9.8' 'ghc >= 9.10'
+)

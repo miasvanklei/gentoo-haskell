@@ -37,3 +37,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/row-types
 	)
 "
+
+PATCHES=(
+	"${FILESDIR}"/ghc-9.8.patch
+)
