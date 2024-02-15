@@ -75,11 +75,7 @@ RDEPEND="
 	dev-haskell/unliftio-core:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
 	dev-haskell/vector:=[profile?]
-<<<<<<< HEAD
-	>=dev-lang/ghc-9.0:=
-=======
 	>=dev-lang/ghc-9.0.2:=
->>>>>>> 9099bcb31e4e520e6148c60a0ae96e8fcacca938
 	executable? (
 		dev-haskell/gitrev:=[profile?]
 	)

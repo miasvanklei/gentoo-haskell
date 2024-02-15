@@ -35,10 +35,6 @@ BDEPEND="test? (
 	dev-haskell/cabal-fmt
 )"
 
-src_prepare() {
-	haskell-cabal_src_prepare
-}
-
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-isolatetests
