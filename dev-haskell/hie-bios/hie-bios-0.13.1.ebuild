@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,7 +9,7 @@ CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
 inherit haskell-cabal
 
 DESCRIPTION="Set up a GHC API session"
-HOMEPAGE="https://github.com/mpickering/hie-bios"
+HOMEPAGE="https://github.com/haskell/hie-bios"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
@@ -35,10 +35,10 @@ RDEPEND="
 	>=dev-haskell/unix-compat-0.5.1:=[profile?] <dev-haskell/unix-compat-0.8:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.9:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/yaml-0.10.0:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-8.10.1:=
+	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
-	>=dev-haskell/cabal-3.2.0.0
+	>=dev-haskell/cabal-3.4.1.0
 	test? (
 		dev-haskell/tasty
 		dev-haskell/tasty-expected-failure

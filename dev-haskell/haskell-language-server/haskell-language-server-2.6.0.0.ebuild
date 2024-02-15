@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-#hackport: flags: cabalfmt:hls_formatters_cabal-fmt,floskell:hls_formatters_floskell,fourmolu:hls_formatters_fourmolu,ormolu:hls_formatters_ormolu,refactor:hls_formatters_refactor,stylishhaskell:hls_formatters_stylish-haskell,alternateNumberFormat:hls_plugins_alternate-number-format,cabal:hls_plugins_cabal,callHierarchy:hls_plugins_call-hierarchy,changeTypeSignature:hls_plugins_change-type-signature,class:hls_plugins_class,codeRange:hls_plugins_code-range,eval:hls_plugins_eval,explicitFields:hls_plugins_explicit-fields,explicitFixity:hls_plugins_explicit-fixity,gadt:hls_plugins_gadt,hlint:hls_plugins_hlint,importLens:hls_plugins_import-lens,moduleName:hls_plugins_module-name,overloadedRecordDot:hls_plugins_overloaded-record-dot,pragmas:hls_plugins_pragmas,qualifyImportedNames:hls_plugins_qualify-imported-names,rename:hls_plugins_rename,retrie:hls_plugins_retrie,splice:hls_plugins_splice,-dynamic,+ignore-plugins-ghc-bounds,-pedantic
+#hackport: flags: cabalfmt:hls_formatters_cabal-fmt,floskell:hls_formatters_floskell,fourmolu:hls_formatters_fourmolu,ormolu:hls_formatters_ormolu,refactor:hls_formatters_refactor,stylishhaskell:hls_formatters_stylish-haskell,alternateNumberFormat:hls_plugins_alternate-number-format,cabal:hls_plugins_cabal,callHierarchy:hls_plugins_call-hierarchy,changeTypeSignature:hls_plugins_change-type-signature,class:hls_plugins_class,codeRange:hls_plugins_code-range,eval:hls_plugins_eval,explicitFields:hls_plugins_explicit-fields,explicitFixity:hls_plugins_explicit-fixity,gadt:hls_plugins_gadt,hlint:hls_plugins_hlint,importLens:hls_plugins_import-lens,moduleName:hls_plugins_module-name,overloadedRecordDot:hls_plugins_overloaded-record-dot,pragmas:hls_plugins_pragmas,qualifyImportedNames:hls_plugins_qualify-imported-names,rename:hls_plugins_rename,retrie:hls_plugins_retrie,semanticTokens:hls_plugins_semantic-tokens,splice:hls_plugins_splice,stan:hls_plugins_stan,-dynamic,+ignore-plugins-ghc-bounds,-pedantic
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour" # test-suite
 inherit haskell-cabal
@@ -80,7 +80,7 @@ RDEPEND="
 	>dev-haskell/hls-graph-1.7.0.0:=[profile?]
 	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
-	>=dev-haskell/lsp-2.2.0.0:=[profile?]
+	>=dev-haskell/lsp-2.3.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/optparse-simple:=[profile?]
@@ -92,7 +92,7 @@ RDEPEND="
 	dev-haskell/temporary:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.6.3:=
+	>=dev-lang/ghc-9.2:=
 	hls_formatters_cabal-fmt? ( ~dev-haskell/hls-cabal-fmt-plugin-2.6.0.0:=[profile?] )
 	hls_formatters_floskell? ( ~dev-haskell/hls-floskell-plugin-2.6.0.0:=[profile?] )
 	hls_formatters_ormolu? ( ~dev-haskell/hls-ormolu-plugin-2.6.0.0:=[profile?] )

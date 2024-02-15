@@ -5,8 +5,11 @@
 		<email>haskell@gentoo.org</email>
 		<name>Gentoo Haskell</name>
 	</maintainer>
+	<use>
+		<flag name="demos">Build demonstration programs</flag>
+	</use>
 	<upstream>
-		<remote-id type="hackage">stm-containers</remote-id>
-		<remote-id type="github">nikita-volkov/stm-containers</remote-id>
+		<remote-id type="hackage">purebred-email</remote-id>
+		<remote-id type="github">purebred-mua/purebred-email</remote-id>
 	</upstream>
 </pkgmetadata>
