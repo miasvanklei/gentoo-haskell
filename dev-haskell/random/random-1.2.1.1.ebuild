@@ -14,7 +14,7 @@ HOMEPAGE="https://hackage.haskell.org/package/random"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~amd64-linux ~ppc-macos ~sparc-solaris"
+KEYWORDS="~amd64 ~amd64-linux ~ppc-macos"
 
 # circular depend: random[test]->mwc-random->math-functions[test]->vector-th-unbox->vector->random
 RESTRICT=test
