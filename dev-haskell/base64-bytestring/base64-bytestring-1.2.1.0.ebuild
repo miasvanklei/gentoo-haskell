@@ -12,7 +12,6 @@ inherit haskell-cabal
 
 DESCRIPTION="Fast base64 encoding and decoding for ByteStrings"
 HOMEPAGE="https://github.com/haskell/base64-bytestring"
-SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
