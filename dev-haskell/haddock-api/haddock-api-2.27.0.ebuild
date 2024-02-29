@@ -13,7 +13,7 @@ HOMEPAGE="https://www.haskell.org/haddock/"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-# Keep in sync with ghc-9.6
+# Keep in sync with ghc-9.4
 #KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 
 CABAL_CHDEPS=(
