@@ -40,7 +40,3 @@ DEPEND="${RDEPEND}
 		dev-haskell/row-types
 	)
 "
-
-CABAL_CHDEPS=(
-	'ghc >= 9.8' 'ghc >= 9.10'
-)

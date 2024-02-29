@@ -11,6 +11,19 @@ inherit haskell-cabal
 DESCRIPTION="HLS Plugin to support smart selection range and Folding range"
 HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins/hls-code-range-plugin#readme"
 
+GIT_REPO_NAME="haskell-language-server"
+GIT_REPO="https://github.com/haskell/${GIT_REPO_NAME}"
+GIT_COMMIT="6e0b342fa0327e628610f2711f8c3e4eaaa08b1e" # tag 2.6.0.0
+GIT_P="${GIT_REPO_NAME}-${GIT_COMMIT}"
+
+# Assets needed for tests only exist in the git repo
+SRC_URI+="
+	test? (
+		${GIT_REPO}/archive/${GIT_COMMIT}.tar.gz
+			-> ${GIT_P}.tar.gz
+	)
+"
+
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
@@ -36,3 +49,13 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-hunit
 	)
 "
+
+src_prepare() {
+	if use test; then
+		# a partial testdata directory already exists in the hackage release tarball
+		rm -r "${S}/test/testdata/" || die
+		# move the complete testdata directory from the github snapshot
+		mv -v "${WORKDIR}/${GIT_P}/plugins/${PN}/test/testdata/" "${S}/test/" || die
+	fi
+	haskell-cabal_src_prepare
+}

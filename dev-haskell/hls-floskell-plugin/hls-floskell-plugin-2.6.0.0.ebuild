@@ -29,7 +29,3 @@ DEPEND="${RDEPEND}
 		~dev-haskell/hls-test-utils-2.6.0.0
 	)
 "
-
-CABAL_CHDEPS=(
-        'ghc >= 9.7' 'ghc >= 9.9'
-)

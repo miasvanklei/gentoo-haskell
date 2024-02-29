@@ -18,7 +18,7 @@ KEYWORDS="~amd64"
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/extra:=[profile?]
-	>=dev-haskell/ghc-exactprint-1.5:=[profile?]
+	>=dev-haskell/ghc-exactprint-0.6.4:=[profile?] <dev-haskell/ghc-exactprint-1.1:=[profile?]
 	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hls-graph:=[profile?]
 	~dev-haskell/hls-plugin-api-2.6.0.0:=[profile?]
@@ -37,7 +37,3 @@ DEPEND="${RDEPEND}
 		dev-haskell/row-types
 	)
 "
-
-PATCHES=(
-	"${FILESDIR}"/ghc-9.8.patch
-)

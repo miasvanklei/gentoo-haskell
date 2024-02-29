@@ -60,7 +60,3 @@ DEPEND="${RDEPEND}
 #		dev-haskell/tasty-rerun
 #		dev-util/shake
 #	)
-
-PATCHES=(
-	"${FILESDIR}"/ghc-9.8.patch
-)

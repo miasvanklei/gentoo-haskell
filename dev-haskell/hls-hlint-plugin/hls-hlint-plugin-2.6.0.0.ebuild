@@ -16,7 +16,6 @@ HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/plugins
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-IUSE="ghc-lib"
 KEYWORDS="~amd64"
 
 RDEPEND="
@@ -26,6 +25,7 @@ RDEPEND="
 	>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
 	dev-haskell/extra:=[profile?]
 	>=dev-haskell/ghc-exactprint-0.6.3.4:=[profile?]
+	dev-haskell/ghc-lib-parser:=[profile?]
 	dev-haskell/ghc-lib-parser-ex:=[profile?]
 	~dev-haskell/ghcide-2.6.0.0:=[profile?]
 	dev-haskell/hashable:=[profile?]
@@ -39,8 +39,6 @@ RDEPEND="
 	dev-haskell/text:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
-	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?] )
-	!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
@@ -52,16 +50,7 @@ DEPEND="${RDEPEND}
 	)
 "
 
-CABAL_CHDEPS=(
-        'ghc >= 9.8' 'ghc >= 9.10'
-)
-
-PATCHES=(
-	"${FILESDIR}/support-ghc-9.6.patch"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
-		$(cabal_flag ghc-lib ghc-lib) \
 		--flag=-pedantic
 }
