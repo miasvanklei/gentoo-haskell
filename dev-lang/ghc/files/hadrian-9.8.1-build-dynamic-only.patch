@@ -1,0 +1,174 @@
+--- a/hadrian/src/Rules/BinaryDist.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Rules/BinaryDist.hs	2022-06-24 17:22:47.065945710 +0200
+@@ -436,7 +436,7 @@
+   rtsways <- interpretInContext (vanillaContext Stage1 ghc) getRtsWays
+   traverse (fmap (\p -> (iserv, p)) . programPath)
+       [ Context Stage1 iserv w Final
+-      | w <- [vanilla, profiling, dynamic]
++      | w <- [profiling, dynamic]
+       , w `elem` rtsways
+       ]
+ 
+--- a/hadrian/src/Rules/Compile.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Rules/Compile.hs	2022-06-24 17:22:47.065945710 +0200
+@@ -51,38 +51,14 @@
+       -- All else is haskell.
+       -- These come last as they overlap with the above rules' file patterns.
+ 
+-      -- When building dynamically we depend on the static rule if shared libs
+-      -- are supported, because it will add the -dynamic-too flag when
+-      -- compiling to build the dynamic files alongside the static files
+-      ( root -/- "**/build/**/*.dyn_o" :& root -/- "**/build/**/*.dyn_hi" :& Nil )
+-        &%> \ ( dyn_o :& _dyn_hi :& _ ) -> do
+-          p <- platformSupportsSharedLibs
+-          if p
+-            then do
+-               -- We `need` ".o/.hi" because GHC is called with `-dynamic-too`
+-               -- and builds ".dyn_o/.dyn_hi" too.
+-               changed <- needHasChanged [dyn_o -<.> "o", dyn_o -<.> "hi"]
+-
+-               -- If for some reason a previous Hadrian execution has been
+-               -- interrupted after the rule for .o/.hi generation has completed
+-               -- but before the current rule for .dyn_o/.dyn_hi has completed,
+-               -- or if some of the dynamic artifacts have been removed by the
+-               -- user, "needing" the non dynamic artifacts is not enough as
+-               -- Shake won't execute the associated action. Hence we detect
+-               -- this case and we explicitly build the dynamic artifacts here:
+-               case changed of
+-                  [] -> compileHsObjectAndHi rs dyn_o
+-                  _  -> pure ()
+-
+-            else compileHsObjectAndHi rs dyn_o
+-
+       forM_ ((,) <$> hsExts <*> wayPats) $ \ ((oExt, hiExt), wayPat) ->
+         (  (root -/- "**/build/**/*." ++ wayPat ++ oExt)
+         :& (root -/- "**/build/**/*." ++ wayPat ++ hiExt)
+         :& Nil ) &%>
+           \ ( o :& _hi :& _ ) ->
+             compileHsObjectAndHi rs o
++
+   where
+-    hsExts = [ ("o", "hi")
+-             , ("o-boot", "hi-boot")
++    hsExts = [ ("dyn_o", "dyn_hi")
++             , ("dyn_o-boot", "dyn_hi-boot")
+              ]
+     wayPats = [ "", "*_" ]
+ 
+@@ -164,7 +140,7 @@
+ data Extension = Extension Way SuffixType deriving (Eq, Show)
+ 
+ parseExtension :: Parsec.Parsec String () Extension
+-parseExtension = Extension <$> parseWayPrefix vanilla <*> parseSuffixType
++parseExtension = Extension <$> parseWayPrefix dynamic <*> parseSuffixType
+ 
+ -- | > <file>.<way prefix>_<o|hi|o-boot|hi-boot>
+ data HsObject = HsObject Basename Extension deriving (Eq, Show)
+--- a/hadrian/src/Rules/Dependencies.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Rules/Dependencies.hs	2022-06-24 17:22:47.065945710 +0200
+@@ -20,7 +20,7 @@
+     root -/- "**/.dependencies.mk" %> \mk -> do
+         DepMkFile stage pkgpath <- getDepMkFile root mk
+         let pkg = unsafeFindPackageByPath pkgpath
+-            context = Context stage pkg vanilla Inplace
++            context = Context stage pkg dynamic Inplace
+         extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
+         srcs <- hsSources context
+         gens <- interpretInContext context generatedDependencies
+--- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Rules/Register.hs	2022-06-24 17:22:47.065945710 +0200
+@@ -37,7 +37,7 @@
+     root -/- "**/setup-config" %> \out -> do
+         (stage, path) <- parsePath (parseSetupConfig root) "<setup config path parser>" out
+         let pkg = unsafeFindPackageByPath path
+-        let ctx = Context stage pkg vanilla Inplace
++        let ctx = Context stage pkg dynamic Inplace
+         buildP <- buildPath ctx
+         when (pkg == ghcBignum) $ do
+           isGmp <- (== "gmp") <$> interpretInContext ctx getBignumBackend
+@@ -49,7 +49,7 @@
+     root -/- "**/autogen/cabal_macros.h" %> \out -> do
+         (stage, path) <- parsePath (parseToBuildSubdirectory root) "<cabal macros path parser>" out
+         let pkg = unsafeFindPackageByPath path
+-        Cabal.buildAutogenFiles (Context stage pkg vanilla Inplace)
++        Cabal.buildAutogenFiles (Context stage pkg dynamic Inplace)
+ 
+     root -/- "**/autogen/Paths_*.hs" %> \out ->
+         need [takeDirectory out -/- "cabal_macros.h"]
+@@ -96,7 +96,7 @@
+         -- a package gets registered but there's not a package.cache file (which
+         -- leads to errors in GHC).
+         buildWithResources rs $
+-            target (Context stage compiler vanilla iplace) (GhcPkg Recache stage) [] []
++            target (Context stage compiler dynamic iplace) (GhcPkg Recache stage) [] []
+         writeFileLines stamp []
+ 
+     -- Register a package.
+@@ -111,7 +111,7 @@
+         -- Only used in guard when Stage0 {} but can be GlobalLibs or InTreeLibs
+         isBoot <- (pkg `notElem`) <$> stagePackages stage
+ 
+-        let ctx = Context stage pkg vanilla iplace
++        let ctx = Context stage pkg dynamic iplace
+         case stage of
+             Stage0 _ | isBoot -> copyConf  rs ctx conf
+             _               ->
+--- a/hadrian/src/Rules/SourceDist.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Rules/SourceDist.hs	2022-06-24 17:22:47.065945710 +0200
+@@ -132,7 +132,7 @@
+ 
+     copyAlexHappyFiles =
+       forM_ alexHappyFiles $ \(stg, pkg, inp, out) -> do
+-        let ctx = Context stg pkg vanilla Inplace
++        let ctx = Context stg pkg dynamic Inplace
+             srcInputFile = dest -/- pkgPath pkg -/- inp
+             generatedFile = dest -/- pkgPath pkg -/- out
+             Just builder = determineBuilder stg inp
+--- a/hadrian/src/Settings/Default.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Settings/Default.hs	2022-06-24 17:22:47.066945724 +0200
+@@ -170,31 +170,21 @@
+ testsuitePackages = return ([ timeout | windowsHost ] ++ [ checkPpr, checkExact, countDeps, ghcConfig ])
+ 
+ -- | Default build ways for library packages:
+--- * We always build 'vanilla' way.
+ -- * We build 'profiling' way when stage > Stage0.
+--- * We build 'dynamic' way when stage > Stage0 and the platform supports it.
++-- * We build 'dynamic' way when the platform supports it.
+ defaultLibraryWays :: Ways
+ defaultLibraryWays = Set.fromList <$>
+     mconcat
+-    [ pure [vanilla]
+-    , notStage0 ? pure [profiling]
+-    , notStage0 ? platformSupportsSharedLibs ? pure [dynamic]
++    [ pure [profiling]
++    , platformSupportsSharedLibs ? pure [dynamic]
+     ]
+ 
+ -- | Default build ways for the RTS.
+ defaultRtsWays :: Ways
+ defaultRtsWays = Set.fromList <$>
+   mconcat
+-  [ pure [vanilla]
+-  , notStage0 ? pure
+-      [ profiling, debugProfiling
+-      , debug
+-      ]
+-  , notStage0 ? targetSupportsThreadedRts ? pure [threaded, threadedProfiling, threadedDebugProfiling, threadedDebug]
+-  , notStage0 ? platformSupportsSharedLibs ? pure
+-      [ dynamic, debugDynamic
+-      ]
+-  , notStage0 ? platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
++  [ platformSupportsSharedLibs ? pure [ dynamic, debugDynamic ]
++  , platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
+   ]
+ 
+ -- TODO: Move C source arguments here
+--- a/hadrian/src/Settings/Program.hs	2022-05-27 12:33:31.000000000 +0200
++++ b/hadrian/src/Settings/Program.hs	2022-06-24 17:22:47.066945724 +0200
+@@ -20,5 +20,5 @@
+             | prof && dyn                          =
+                 error "programContext: profiling+dynamic not supported"
+             | pkg == ghc && prof && notStage0 stage = profiling
+-            | dyn && notStage0 stage                = dynamic
++            | dyn                = dynamic
+             | otherwise                            = vanilla

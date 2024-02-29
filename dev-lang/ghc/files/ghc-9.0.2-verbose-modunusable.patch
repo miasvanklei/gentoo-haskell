@@ -6,7 +6,7 @@ diff -urN ghc-9.0.2/compiler/GHC/Unit/State.hs ghc-9.0.2-r1/compiler/GHC/Unit/St
  instance Outputable ModuleOrigin where
      ppr ModHidden = text "hidden module"
 -    ppr (ModUnusable _) = text "unusable module"
-+    ppr (ModUnusable reason) = text "unusable module" $$ ppr reason
++    ppr (ModUnusable reason) = text "unusable module" $$ ppr (uuReason reason)
      ppr (ModOrigin e res rhs f) = sep (punctuate comma (
          (case e of
              Nothing -> []
