@@ -500,7 +500,7 @@ src_configure() {
 		local MY_PN="hadrian/hadrian"
 		cabal_chdeps 'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
 		cabal-bootstrap
-		cabal-configure
+		cabal-configure --flag=-selftest
 		cabal_src_compile || die "Hadrian bootstrap failed"
 	)
 
