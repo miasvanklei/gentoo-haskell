@@ -1,0 +1,29 @@
+diff --git a/hadrian/src/Settings/Packages.hs b/hadrian/src/Settings/Packages.hs
+index 54b943ed58d91e387064853a63d4b9b818bdc543..cee1ee8b1d8e9783ca96b81e2efd1dbe00f297e8 100644
+--- a/hadrian/src/Settings/Packages.hs
++++ b/hadrian/src/Settings/Packages.hs
+@@ -10,6 +10,7 @@ import Settings.Builders.Common (wayCcArgs)
+ import Oracles.Flag
+ import Packages
+ import Settings
++import Data.Version.Extra
+ 
+ -- | Package-specific command-line arguments.
+ packageArgs :: Args
+@@ -33,6 +34,7 @@ packageArgs = do
+     cursesLibraryDir <- getSetting CursesLibDir
+     ffiIncludeDir  <- getSetting FfiIncludeDir
+     ffiLibraryDir  <- getSetting FfiLibDir
++    stageVersion <- readVersion <$> (expr $ ghcVersionStage stage)
+ 
+     mconcat
+         --------------------------------- base ---------------------------------
+@@ -83,7 +85,7 @@ packageArgs = do
+             -- not being fixed to `ghc`, when building stage0, we must set
+             -- -this-unit-id to `ghc` because the boot compiler expects that.
+             -- We do it through a cabal flag in ghc.cabal
+-            , stage0 ? arg "+hadrian-stage0"
++            , stageVersion < makeVersion [9,8,1] ? arg "+hadrian-stage0"
+             , flag StaticLibzstd `cabalFlag` "static-libzstd"
+             ]
+ 

@@ -88,6 +88,10 @@ BDEPEND="
 		dev-python/sphinx-rtd-theme
 		>=dev-libs/libxslt-1.1.2
 	)
+	ghcbootstrap? (
+		dev-lang/ghc
+		dev-util/shake
+	)
 	test? ( ${PYTHON_DEPS} )
 "
 
@@ -459,6 +463,9 @@ src_prepare() {
 	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
 	eapply "${FILESDIR}"/hadrian-9.8.1-build-dynamic-only.patch
 
+	# fix compilation with 9.8.1 as boot compiler
+	eapply "${FILESDIR}"/hadrian-9.8.1-compability-9.8.1-boot-compiler.patch
+
 	# FIXME: A hack that allows dev-python/sphinx-7 to build the docs
 	#
 	# GHC has updated the bundled version here:
@@ -634,7 +641,7 @@ src_compile() {
 	hadrian_vars+=("--flavour=${HADRIAN_FLAVOUR}")
 
 	# Control the verbosity of hadrian. Default is one level of --verbose
-	${HADRIAN_VERBOSITY:=1}
+	${HADRIAN_VERBOSITY:=2}
 
 	local n="${HADRIAN_VERBOSITY}"
 	until [[ $n -le 0 ]]; do
@@ -650,11 +657,7 @@ src_compile() {
 	done
 
 
-	if use ghcbootstrap; then
-		local hadrian=( /usr/bin/hadrian )
-	else
-		local hadrian=( "${S}/hadrian/dist/build/hadrian/hadrian" )
-	fi
+	local hadrian=( "${S}/hadrian/dist/build/hadrian/hadrian" )
 	hadrian+=(
 		"${hadrian_vars[@]}"
 		binary-dist-dir
