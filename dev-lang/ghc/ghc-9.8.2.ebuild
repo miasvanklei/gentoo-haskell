@@ -13,36 +13,15 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 	fi
 fi
 
-BOOTSTRAP_PV="9.4.8"
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{10..12} )
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
-inherit multiprocessing pax-utils toolchain-funcs prefix
-inherit check-reqs llvm unpacker haskell-cabal
+inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal
+
 DESCRIPTION="The Glasgow Haskell Compiler"
 HOMEPAGE="https://www.haskell.org/ghc/"
 
-SRC_URI="
-	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
-	!ghcbootstrap? (
-		amd64? ( https://downloads.haskell.org/~ghc/${PV}/ghc-${PV}-x86_64-alpine3_12-linux.tar.xz )
-		arm64? ( https://dl-cdn.alpinelinux.org/alpine/edge/community/aarch64/ghc-${BOOTSTRAP_PV}-r1.apk -> ghc-${BOOTSTRAP_PV}-alpine.tar.gz )
-	)
-"
-
-yet_binary() {
-	case ${ARCH} in
-		arm64)
-			return 0
-			;;
-		amd64)
-			return 0
-			;;
-		*)
-			return 1
-			;;
-	esac
-}
+SRC_URI="https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz"
 
 GHC_PV=${PV}
 #GHC_PV=8.10.0.20200123 # uncomment only for -alpha, -beta, -rc ebuilds
@@ -56,11 +35,11 @@ BUMP_LIBRARIES=(
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-#KEYWORDS="~amd64 ~ppc64 ~x86"
-IUSE="big-endian doc elfutils ghcbootstrap ghcmakebinary +gmp llvm numa profile test unregisterised"
+KEYWORDS="~amd64 ~arm64"
+IUSE="big-endian doc elfutils ghcmakebinary +gmp llvm numa profile test unregisterised"
 RESTRICT="!test? ( test )"
 
-LLVM_MAX_SLOT="16"
+LLVM_MAX_SLOT="17"
 RDEPEND="
 	>=dev-lang/perl-5.6.1
 	dev-libs/gmp:0=
@@ -88,10 +67,8 @@ BDEPEND="
 		dev-python/sphinx-rtd-theme
 		>=dev-libs/libxslt-1.1.2
 	)
-	ghcbootstrap? (
-		dev-lang/ghc
-		dev-util/shake
-	)
+	>=dev-lang/ghc-9.4.3
+	dev-util/shake
 	test? ( ${PYTHON_DEPS} )
 "
 
@@ -116,10 +93,6 @@ is_crosscompile() {
 is_native() {
 	[[ ${CHOST} == ${CBUILD} ]] && [[ ${CHOST} == ${CTARGET} ]]
 }
-
-if ! is_crosscompile; then
-	PDEPEND="!ghcbootstrap? ( >=app-admin/haskell-updater-1.2 )"
-fi
 
 # returns tool prefix for crosscompiler.
 # Example:
@@ -250,76 +223,6 @@ ghc_setup_cflags() {
 	done
 }
 
-# substitutes string $1 to $2 in files $3 $4 ...
-relocate_path() {
-	local from=$1
-	local   to=$2
-	shift 2
-	local file=
-	for file in "$@"
-	do
-		sed -i -e "s|$from|$to|g" \
-			"$file" || die "path relocation failed for '$file'"
-	done
-}
-
-# changes hardcoded ghc paths and updates package index
-# $1 - new absolute root path
-relocate_ghc() {
-	local to=$1 ghc_v=${BIN_PV}
-
-	# libdir for prebuilt binary and for current system may mismatch
-	# It does for prefix installation for example: bug #476998
-	local bin_ghc_prefix=${WORKDIR}/usr
-	local bin_libpath=$(echo "${bin_ghc_prefix}"/lib*)
-	local bin_libdir=${bin_libpath#${bin_ghc_prefix}/}
-
-	# backup original script to use it later after relocation
-	local gp_back="${T}/ghc-pkg-${ghc_v}-orig"
-	cp "${WORKDIR}/usr/bin/ghc-pkg-${ghc_v}" "$gp_back" || die "unable to backup ghc-pkg wrapper"
-
-	if [[ ${bin_libdir} != $(get_libdir) ]]; then
-		einfo "Relocating '${bin_libdir}' to '$(get_libdir)' (bug #476998)"
-		# moving the dir itself is not strictly needed
-		# but then USE=binary would result in installing
-		# in '${bin_libdir}'
-		mv "${bin_ghc_prefix}/${bin_libdir}" "${bin_ghc_prefix}/$(get_libdir)" || die
-
-		relocate_path "/usr/${bin_libdir}" "/usr/$(get_libdir)" \
-			"${WORKDIR}/usr/bin/ghc-${ghc_v}" \
-			"${WORKDIR}/usr/bin/ghci-${ghc_v}" \
-			"${WORKDIR}/usr/bin/ghc-pkg-${ghc_v}" \
-			"${WORKDIR}/usr/bin/hsc2hs" \
-			"${WORKDIR}/usr/bin/runghc-${ghc_v}" \
-			"$gp_back" \
-			"${WORKDIR}/usr/$(get_libdir)/${PN}-${ghc_v}/lib/package.conf.d/"*
-	fi
-
-	# Relocate from /usr to ${EPREFIX}/usr
-	relocate_path "/usr" "${to}/usr" \
-		"${WORKDIR}/usr/bin/ghc-${ghc_v}" \
-		"${WORKDIR}/usr/bin/ghci-${ghc_v}" \
-		"${WORKDIR}/usr/bin/ghc-pkg-${ghc_v}" \
-		"${WORKDIR}/usr/bin/haddock-ghc-${ghc_v}" \
-		"${WORKDIR}/usr/bin/hp2ps" \
-		"${WORKDIR}/usr/bin/hpc" \
-		"${WORKDIR}/usr/bin/hsc2hs" \
-		"${WORKDIR}/usr/bin/runghc-${ghc_v}" \
-		"${WORKDIR}/usr/$(get_libdir)/${PN}-${ghc_v}/lib/package.conf.d/"*
-
-	# this one we will use to regenerate cache
-	# so it should point to current tree location
-	relocate_path "/usr" "${WORKDIR}/usr" "$gp_back"
-
-	if use prefix; then
-		hprefixify "${bin_libpath}"/${PN}*/settings
-	fi
-
-	# regenerate the binary package cache
-	"$gp_back" recache || die "failed to update cache after relocation"
-	rm "$gp_back"
-}
-
 ghc-check-reqs() {
 	# These are pessimistic values (slightly bigger than worst-case)
 	# Worst case is UNREG USE=profile ia64. See bug #611866 for some
@@ -425,8 +328,6 @@ src_prepare() {
 
 	ghc_setup_cflags
 
-	use llvm && ! use ghcbootstrap && llvmize "${WORKDIR}/usr/bin"
-
 	# binpkg may have been built with FEATURES=splitdebug
 	if [[ -d "${WORKDIR}/usr/lib/debug" ]] ; then
 		rm -rf "${WORKDIR}/usr/lib/debug" || die
@@ -504,26 +405,6 @@ src_configure() {
 		cabal_src_compile || die "Hadrian bootstrap failed"
 	)
 
-	# Get ghc from the binary
-	# except when bootstrapping we just pick ghc up off the path
-	if ! use ghcbootstrap; then
-		local ghc_arch
-		case ${ARCH} in
-			arm64)
-				ghc_arch=aarch64
-				;;
-			amd64)
-				ghc_arch=x86_64
-				;;
-			*)
-				eerror "${ARCH} not supported yet"
-				;;
-		esac
-
-		export LD_LIBRARY_PATH="${WORKDIR}/usr/lib/ghc-${BOOTSTRAP_PV}/lib/${ghc_arch}-linux-ghc-${BOOTSTRAP_PV}"
-		export PATH="${WORKDIR}/usr/lib/ghc-${BOOTSTRAP_PV}/bin:${PATH}"
-	fi
-
 	# prepare hadrian build settings files
 	mkdir _build
 	touch _build/hadrian.settings
@@ -543,6 +424,7 @@ src_configure() {
 	econf_args+=(
 		AR=${CTARGET}-ar
 		CC=${CTARGET}-gcc
+		LD=${CTARGET}-ld
 		# these should be inferred by GHC but ghc defaults
 		# to using bundled tools on windows.
 		Windres=${CTARGET}-windres
@@ -553,23 +435,6 @@ src_configure() {
 		# Put docs into the right place, ie /usr/share/doc/ghc-${GHC_PV}
 		--docdir="${EPREFIX}/usr/share/doc/$(cross)${PF}"
 	)
-	case ${CTARGET} in
-		arm*)
-			# ld.bfd-2.28 does not work for ghc. Force ld.gold
-			# instead. This should be removed once gentoo gets
-			# a fix for R_ARM_COPY bug: https://sourceware.org/PR16177
-			econf_args+=(LD=${CTARGET}-ld.gold)
-		;;
-		sparc*)
-			# ld.gold-2.28 does not work for ghc. Force ld.bfd
-			# instead. This should be removed once gentoo gets
-			# a fix for missing --no-relax support bug:
-			# https://sourceware.org/ml/binutils/2017-07/msg00183.html
-			econf_args+=(LD=${CTARGET}-ld.bfd)
-		;;
-		*)
-			econf_args+=(LD=${CTARGET}-ld)
-	esac
 
 	if [[ ${CBUILD} != ${CHOST} ]]; then
 		# GHC bug: ghc claims not to support cross-building.
@@ -685,8 +550,6 @@ src_install() {
 	emake DESTDIR="${D}" install
 	popd
 
-	#emake -j1 install DESTDIR="${D}"
-
 	use llvm && llvmize "${ED}/usr/bin"
 
 	# Skip for cross-targets as they all share target location:
@@ -744,6 +607,12 @@ src_install() {
 		# stripping hosts executables.
 		dostrip -x "/usr/$(get_libdir)/$(cross)${GHC_P}"
 		dostrip    "/usr/$(get_libdir)/$(cross)${GHC_P}/bin"
+	fi
+
+	if is_native; then
+		newenvd - "50${P}" <<-_EOF_
+			LDPATH="${EPREFIX}/usr/lib/${P}/lib/${CBUILD%%-*}-linux-${P}"
+		_EOF_
 	fi
 }
 
