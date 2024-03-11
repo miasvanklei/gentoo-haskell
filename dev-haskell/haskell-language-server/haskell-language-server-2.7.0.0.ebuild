@@ -202,6 +202,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/ghc-9.8.patch
+	"${FILESDIR}"/plugins-optional.patch
 )
 
 src_configure() {
