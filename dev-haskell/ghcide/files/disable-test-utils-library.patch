@@ -1,0 +1,23 @@
+--- a/ghcide.cabal	2024-02-26 17:43:49.000000000 +0100
++++ b/ghcide.cabal	2024-03-11 18:33:18.138051505 +0100
+@@ -280,6 +280,10 @@
+   if !flag(executable)
+     buildable: False
+ 
++flag test-utils
++  description: Build the test-utils library
++  default:     True
++
+ library ghcide-test-utils
+   import: warnings
+   visibility: public
+@@ -313,6 +317,9 @@
+       OverloadedStrings
+       RecordWildCards
+       ViewPatterns
++
++  if !flag(test-utils)
++    buildable: False
+   
+ test-suite ghcide-tests
+   import: warnings

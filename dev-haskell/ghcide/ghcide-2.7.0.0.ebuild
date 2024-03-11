@@ -105,8 +105,9 @@ DEPEND="${RDEPEND}
 "
 
 PATCHES=(
-	"${FILESDIR}/add-flag-build-tests-utils-library.patch"
+	"${FILESDIR}/disable-test-utils-library.patch"
 )
+
 
 S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
 
