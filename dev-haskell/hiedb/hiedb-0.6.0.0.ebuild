@@ -17,7 +17,7 @@ KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.3.0.1-add-executable-flag.patch"
+	"${FILESDIR}/${P}-add-executable-flag.patch"
 	"${FILESDIR}/${PN}-0.5.0.1-disable-flaky-tests.patch"
 )
 

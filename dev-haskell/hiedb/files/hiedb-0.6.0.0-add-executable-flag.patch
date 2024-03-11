@@ -1,0 +1,16 @@
+--- a/hiedb.cabal	2001-09-08 19:46:40.000000000 -0600
++++ b/hiedb.cabal	2021-02-03 22:13:39.524633712 -0700
+@@ -39,7 +39,13 @@
+                        -Wunused-packages
+                        -Wno-name-shadowing
+ 
++flag executable
++  description: Install the hiedb executable
++  default: False
++
+ executable hiedb
++  if !flag(executable)
++    buildable: False
+   import:              common-options
+   hs-source-dirs:      exe
+   main-is:             Main.hs
