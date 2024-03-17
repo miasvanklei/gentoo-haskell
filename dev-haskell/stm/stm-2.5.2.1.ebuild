@@ -13,7 +13,7 @@ HOMEPAGE="https://wiki.haskell.org/Software_transactional_memory"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-#keep in sync with ghc-9.4
+#keep in sync with ghc-9.8
 #KEYWORDS="~amd64 ~x86"
 
 RDEPEND=">=dev-lang/ghc-8.8.1:=
@@ -22,4 +22,4 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
 "
 
-CABAL_CORE_LIB_GHC_PV="9.4.4 9.4.5 9.4.7 9.4.8 9.6.2 9.8.2"
+CABAL_CORE_LIB_GHC_PV="9.8.2"

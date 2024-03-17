@@ -26,7 +26,7 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
 	virtual/pkgconfig
 	test? ( >=dev-haskell/quickcheck-2 <dev-haskell/quickcheck-3
-		>=dev-haskell/tasty-0.8 <dev-haskell/tasty-1.5
+		>=dev-haskell/tasty-0.8 <dev-haskell/tasty-1.6
 		>=dev-haskell/tasty-quickcheck-0.8 <dev-haskell/tasty-quickcheck-0.11 )
 "
 
