@@ -7,7 +7,6 @@ EAPI=8
 
 CABAL_HACKAGE_REVISION=1
 
-CABAL_HACKAGE_REVISION=1
 CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
 inherit haskell-cabal
 

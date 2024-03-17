@@ -57,7 +57,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-hunit
 	)
 "
-
 BDEPEND="test? (
 	dev-haskell/cabal-fmt
 )"

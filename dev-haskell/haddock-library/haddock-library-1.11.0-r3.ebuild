@@ -17,6 +17,11 @@ LICENSE="BSD-2"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
+CABAL_CHDEPS=(
+	'hspec                          >= 2.4.4    && < 2.12' 'hspec >=2.4.4'
+	'hspec-discover:hspec-discover  >= 2.4.4    && < 2.12' 'hspec-discover:hspec-discover >=2.4.4'
+)
+
 RDEPEND="
 	>=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=

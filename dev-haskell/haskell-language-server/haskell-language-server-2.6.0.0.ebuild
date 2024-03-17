@@ -20,6 +20,7 @@ KEYWORDS="~amd64"
 # Disabled:
 # - hls_plugins_class: Requires ghc-exactprint < 1.1
 # - hls_plugins_stan: Depends on ghc >8.8.1 <=9.2.3 || >=9.4.0 <9.10.0
+# - hls_formatters_ormolu: Requires masked package ormolu
 IUSE_HLS_PLUGINS="
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
@@ -159,6 +160,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_retrie retrie)
 		$(cabal_flag hls_plugins_semantic-tokens semanticTokens)
 		$(cabal_flag hls_plugins_splice splice)
+		--flag=-class
 		--flag=-fourmolu
 		--flag=-ormolu
 		--flag=-stan
