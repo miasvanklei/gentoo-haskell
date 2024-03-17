@@ -17,6 +17,8 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
+PATCHES=( "${FILESDIR}/${PN}-2.2.1.0-cabal-doctest.patch" )
+
 GHC_BOOTSTRAP_PACKAGES=(
 	cabal-doctest
 )

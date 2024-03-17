@@ -20,7 +20,6 @@ KEYWORDS="~amd64"
 # Disabled:
 # - hls_plugins_class: Requires ghc-exactprint < 1.1
 # - hls_plugins_stan: Depends on ghc >8.8.1 <=9.2.3 || >=9.4.0 <9.10.0
-# - hls_formatters_ormolu: Requires masked package ormolu
 IUSE_HLS_PLUGINS="
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
@@ -45,6 +44,7 @@ IUSE_HLS_PLUGINS="
 
 # Disabled:
 # - hls_formatters_fourmolu: Requires masked package fourmolu
+# - hls_formatters_ormolu: Requires masked package ormolu
 IUSE_HLS_FORMATTERS="
 	+hls_formatters_cabal-fmt
 	+hls_formatters_floskell
