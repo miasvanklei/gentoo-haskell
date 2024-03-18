@@ -18,12 +18,6 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
-CABAL_CHDEPS=(
-	'base       >= 4 && < 4.19' 'base       >= 4'
-	'deepseq    >= 1.1 && < 1.5' 'deepseq    >= 1.1'
-	'bytestring >= 0.10 && < 0.12' 'bytestring >= 0.10'
-)
-
 RDEPEND="
 	>=dev-lang/ghc-8.8.1:=
 "

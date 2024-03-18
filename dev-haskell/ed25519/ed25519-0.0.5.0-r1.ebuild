@@ -30,11 +30,6 @@ DEPEND="${RDEPEND}
 #		>=dev-haskell/quickcheck-2.4 <dev-haskell/quickcheck-2.9
 #	)
 
-CABAL_CHDEPS=(
-	'ghc-prim    >= 0.1 && < 0.5' 'ghc-prim    >= 0.1'
-	'bytestring  >= 0.9 && < 0.11' 'bytestring  >= 0.9'
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=no-donna \
