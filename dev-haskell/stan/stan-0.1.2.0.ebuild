@@ -17,7 +17,7 @@ KEYWORDS="~amd64"
 IUSE="executable"
 
 RDEPEND="
-	>=dev-haskell/base64-0.4.1:=[profile?] <dev-haskell/base64-0.5:=[profile?]
+	>=dev-haskell/base64-0.4.1:=[profile?] <dev-haskell/base64-2.0:=[profile?]
 	>=dev-haskell/blaze-html-0.9.1:=[profile?] <dev-haskell/blaze-html-0.10:=[profile?]
 	>=dev-haskell/clay-0.14:=[profile?] <dev-haskell/clay-0.15:=[profile?]
 	>=dev-haskell/colourista-0.1:=[profile?] <dev-haskell/colourista-0.3:=[profile?]
