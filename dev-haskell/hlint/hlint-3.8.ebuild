@@ -15,12 +15,8 @@ HOMEPAGE="https://github.com/ndmitchell/hlint#readme"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="emacs +ghc-lib +gpl hsyaml +threads test"
+IUSE="emacs ghc-lib +gpl hsyaml +threads test"
 RESTRICT="!test? ( test )"
-
-PATCHES=(
-	"${FILESDIR}/${PN}-3.3.6-change-refactor-name.patch"
-)
 
 RDEPEND="
 	>=dev-haskell/aeson-1.3:=[profile?]
@@ -32,8 +28,6 @@ RDEPEND="
 	>=dev-haskell/extra-1.7.3:=[profile?]
 	dev-haskell/file-embed:=[profile?]
 	>=dev-haskell/filepattern-0.1.1:=[profile?]
-	>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
-	>=dev-haskell/ghc-lib-parser-ex-9.8.0.0:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.8.1:=[profile?]
 	>=dev-haskell/refact-0.3:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-haskell/uniplate-1.5:=[profile?]
@@ -41,6 +35,12 @@ RDEPEND="
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
+	ghc-lib? (
+		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
+	)
+	!ghc-lib? (
+		 >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:=
+	)
 	gpl? (
 		>=dev-haskell/hscolour-1.21:=[profile?]
 	)
