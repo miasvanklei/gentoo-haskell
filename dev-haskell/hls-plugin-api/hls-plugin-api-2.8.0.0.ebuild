@@ -32,7 +32,7 @@ RDEPEND="
 	~dev-haskell/hls-graph-2.7.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
-	>=dev-haskell/lsp-2.4:=[profile?] <dev-haskell/lsp-2.5:=[profile?]
+	>=dev-haskell/lsp-2.5:=[profile?] <dev-haskell/lsp-2.6:=[profile?]
 	>=dev-haskell/megaparsec-9.0:=[profile?]
 	>=dev-haskell/opentelemetry-0.4:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
