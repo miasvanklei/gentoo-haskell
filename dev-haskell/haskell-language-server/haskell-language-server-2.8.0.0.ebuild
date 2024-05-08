@@ -32,6 +32,7 @@ IUSE_HLS_PLUGINS="
 	+hls_plugins_import-lens
 	+hls_plugins_gadt
 	+hls_plugins_module-name
+	+hls_plugins_notes
 	+hls_plugins_overloaded-record-dot
 	+hls_plugins_pragmas
 	+hls_plugins_qualify-imported-names
@@ -71,16 +72,16 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-paths:=[profile?]
-	~dev-haskell/ghcide-2.7.0.0:=[profile?]
+	~dev-haskell/ghcide-2.8.0.0:=[profile?]
 	dev-haskell/gitrev:=[profile?]
 	dev-haskell/githash:=[profile?]
 	dev-haskell/hashable:=[profile?]
 	dev-haskell/hie-bios:=[profile?]
 	dev-haskell/hiedb:=[profile?]
-	>=dev-haskell/hls-graph-2.7.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.7.0.0:=[profile?]
+	>=dev-haskell/hls-graph-2.8.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.8.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
-	>=dev-haskell/lsp-2.4.0.0:=[profile?]
+	>=dev-haskell/lsp-2.5.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/optparse-simple:=[profile?]
@@ -200,10 +201,10 @@ DEPEND="${RDEPEND}
 #		dev-haskell/row-types
 #	)
 
-PATCHES=(
-	"${FILESDIR}"/ghc-9.8.patch
-	"${FILESDIR}"/plugins-optional.patch
-)
+#PATCHES=(
+#	"${FILESDIR}"/ghc-9.8.patch
+#	"${FILESDIR}"/plugins-optional.patch
+#)
 
 src_configure() {
 	config_flags=(
@@ -225,6 +226,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_hlint hlint)
 		$(cabal_flag hls_plugins_import-lens importLens)
 		$(cabal_flag hls_plugins_module-name moduleName)
+		$(cabal_flag hls_plugins_notes notes)
 		$(cabal_flag hls_plugins_overloaded-record-dot overloadedRecordDot)
 		$(cabal_flag hls_plugins_pragmas pragmas)
 		$(cabal_flag hls_plugins_qualify-imported-names qualifyImportedNames)
@@ -234,6 +236,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_splice splice)
 		$(cabal_flag hls_plugins_stan stan)
 		--flag=-fourmolu
+		--flag=-ghc-lib
 		--flag=ignore-plugins-ghc-bounds
 		--flag=-pedantic
 	)
