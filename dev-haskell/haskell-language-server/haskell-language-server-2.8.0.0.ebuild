@@ -81,7 +81,7 @@ RDEPEND="
 	>=dev-haskell/hls-graph-2.8.0.0:=[profile?]
 	~dev-haskell/hls-plugin-api-2.8.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
-	>=dev-haskell/lsp-2.5.0.0:=[profile?]
+	>=dev-haskell/lsp-2.4.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/optparse-simple:=[profile?]
