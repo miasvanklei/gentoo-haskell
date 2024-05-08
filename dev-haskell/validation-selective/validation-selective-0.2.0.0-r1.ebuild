@@ -17,10 +17,6 @@ LICENSE="MPL-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-0.2.0.0-cabal-doctest.patch"
-)
-
 RDEPEND="
 	>=dev-haskell/selective-0.3:=[profile?] <dev-haskell/selective-0.8:=[profile?]
 	>=dev-lang/ghc-8.10.6:=
