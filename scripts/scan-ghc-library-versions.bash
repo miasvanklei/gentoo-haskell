@@ -17,19 +17,25 @@ libraries=(
     ghc-boot-th
     ghc-compact
     ghc-heap
+    ghc-platform
     ghc-prim
     ghci
+    haskeline
     hpc
     integer-gmp
     mtl
+    parsec
     pretty
     process
+    semaphore-compat
     stm
     template-haskell
     terminfo
+    text
     time
     transformers
     unix
+    xhtml
 )
 
 print_version() {
@@ -47,13 +53,15 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-git checkout "ghc-${1}-release" >/dev/null || exit 1
+git checkout --force "ghc-${1}-release" >/dev/null || exit 1
 git submodule foreach --recursive git reset --hard >/dev/null || exit 1
 git submodule update --init --recursive >/dev/null || exit 1
 
 cat \
     <(for l in "${libraries[@]}"; do print_version "$l" "libraries/${l}/${l}.cabal"; done) \
     <(for l in "${libraries[@]}"; do print_version "$l" "libraries/${l}/${l}.cabal.in"; done) \
+    <(print_version Cabal-syntax "libraries/Cabal/Cabal-syntax/Cabal-syntax.cabal") \
     <(print_version Cabal "libraries/Cabal/Cabal/Cabal.cabal") \
     <(print_version containers "libraries/containers/containers/containers.cabal") \
+    <(print_version ghc-toolchain "utils/ghc-toolchain/ghc-toolchain.cabal") \
     | sort

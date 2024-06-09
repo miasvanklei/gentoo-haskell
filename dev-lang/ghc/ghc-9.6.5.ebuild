@@ -99,6 +99,7 @@ RDEPEND="
 		|| (
 			sys-devel/llvm:15
 			sys-devel/llvm:16
+			sys-devel/llvm:17
 		)
 	)
 "
@@ -195,9 +196,6 @@ bump_lib() {
 
 	einfo "Bumping ${pn} up to ${pv}"
 
-	for f in ghc.mk GNUmakefile; do
-		mv libraries/"${pn}"/$f "${WORKDIR}"/"${p}"/$f || die
-	done
 	mv libraries/"${pn}" "${WORKDIR}"/"${pn}".old || die
 	mv "${WORKDIR}"/"${p}" libraries/"${pn}" || die
 }
@@ -502,9 +500,9 @@ src_prepare() {
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-13.patch
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-14.patch
 
-		# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
-		# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-		eapply "${FILESDIR}"/${PN}-9.6.4-llvm-16.patch
+	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
+	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
+	eapply "${FILESDIR}"/${PN}-9.6.4-llvm-17.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -548,6 +546,8 @@ src_prepare() {
 	pushd "${S}/libraries/Win32"
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
 	popd
+
+	eapply "${FILESDIR}"/${PN}-9.8.2-force-merge-objects-when-building-dynamic-objects.patch
 
 	bump_libs
 
