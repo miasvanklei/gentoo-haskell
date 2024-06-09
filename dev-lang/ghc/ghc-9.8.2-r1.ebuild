@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -108,7 +108,6 @@ RDEPEND="
 		|| (
 			sys-devel/llvm:15
 			sys-devel/llvm:16
-			sys-devel/llvm:17
 		)
 	)
 "
@@ -116,16 +115,14 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
+	dev-util/shake
 	doc? (
 		app-text/docbook-xml-dtd:4.2
 		app-text/docbook-xml-dtd:4.5
 		app-text/docbook-xsl-stylesheets
 		dev-python/sphinx
+		dev-python/sphinx-rtd-theme
 		>=dev-libs/libxslt-1.1.2
-	)
-	ghcbootstrap? (
-		ghcmakebinary? ( dev-haskell/hadrian[static] )
-		~dev-haskell/hadrian-${PV}
 	)
 	test? ( ${PYTHON_DEPS} )
 "
@@ -197,19 +194,18 @@ append-ghc-cflags() {
 	done
 }
 
-# $1 - subdirectory (under libraries/)
-# $2 - lib name (under libraries/)
-# $3 - lib version
+# $1 - lib name (under libraries/)
+# $2 - lib version
 # example: bump_lib "transformers" "0.4.2.0"
 bump_lib() {
-	local subdir="$1" pn=$2 pv=$3
+	local pn=$1 pv=$2
 	local p=${pn}-${pv}
 	local f
 
 	einfo "Bumping ${pn} up to ${pv}"
 
-	mv libraries/"${subdir}"/"${pn}" "${WORKDIR}"/"${pn}".old || die
-	mv "${WORKDIR}"/"${p}" libraries/"${subdir}"/"${pn}" || die
+	mv libraries/"${pn}" "${WORKDIR}"/"${pn}".old || die
+	mv "${WORKDIR}"/"${p}" libraries/"${pn}" || die
 }
 
 update_SRC_URI() {
@@ -230,7 +226,7 @@ bump_libs() {
 		set -- $p
 		pn=$1 pv=$2
 
-		if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
+	if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
 			subdir="Cabal"
 		else
 			subdir=""
@@ -518,9 +514,9 @@ src_prepare() {
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-13.patch
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-14.patch
 
-	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
-	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-	eapply "${FILESDIR}"/${PN}-9.6.4-llvm-17.patch
+		# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
+		# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
+		eapply "${FILESDIR}"/${PN}-9.6.4-llvm-16.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -529,6 +525,18 @@ src_prepare() {
 	# a bunch of crosscompiler patches
 	# needs newer version:
 	#eapply "${FILESDIR}"/${PN}-8.2.1_rc1-hp2ps-cross.patch
+
+	# build ghc and libraries only the dynamic way
+	eapply "${FILESDIR}"/${PN}-9.4.4-cabal-dynamic-by-default.patch
+	# atomic definition arguments must be Atomic
+	eapply "${FILESDIR}"/${PN}-9.6.3-fix-atomic-builtin-definitions.patch
+
+	# Build only dynamic + disable stripping
+	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
+	eapply "${FILESDIR}"/hadrian-9.8.1-build-dynamic-only.patch
+
+	# fix compilation with 9.8.1 as boot compiler
+	eapply "${FILESDIR}"/hadrian-9.8.1-compability-9.8.1-boot-compiler.patch
 
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
@@ -555,13 +563,17 @@ src_configure() {
 			emake DESTDIR="${WORKDIR}/ghc-bin" install
 		)
 
-		einfo "Bootstrapping hadrian"
-		( cd "${S}/hadrian/bootstrap" || die
-			./bootstrap.py \
-				-w "${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc" \
-				-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
-		)
+		export PATH="${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
 	fi
+
+        einfo "Bootstrapping hadrian"
+        ( cd "${S}/hadrian" || die
+                local MY_PN="hadrian/hadrian"
+                cabal_chdeps 'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
+                cabal-bootstrap
+                cabal-configure --flag=-selftest
+                cabal_src_compile || die "Hadrian bootstrap failed"
+        )
 
 	# prepare hadrian build settings files
 	mkdir _build
@@ -593,12 +605,6 @@ src_configure() {
 #			hadrian/UserSettings.hs
 #	fi
 
-	# Get ghc from the binary
-	# except when bootstrapping we just pick ghc up off the path
-	if ! use ghcbootstrap; then
-		export PATH="${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
-	fi
-
 	# Allow the user to select their bignum backend (default to gmp):
 	# use gmp || sed -i -e 's/userFlavour = defaultFlavour { name = \"user\"/userFlavour = defaultFlavour { name = \"user\", bignumBackend = \"native\"/'
 	#echo "BIGNUM_BACKEND = $(usex gmp gmp native)" >> mk/build.mk
@@ -615,6 +621,7 @@ src_configure() {
 	econf_args+=(
 		AR=${CTARGET}-ar
 		CC=${CTARGET}-gcc
+		LD=${CTARGET}-ld
 		# these should be inferred by GHC but ghc defaults
 		# to using bundled tools on windows.
 		Windres=${CTARGET}-windres
@@ -626,12 +633,6 @@ src_configure() {
 		--docdir="${EPREFIX}/usr/share/doc/$(cross)${PF}"
 	)
 	case ${CTARGET} in
-		arm*)
-			# ld.bfd-2.28 does not work for ghc. Force ld.gold
-			# instead. This should be removed once gentoo gets
-			# a fix for R_ARM_COPY bug: https://sourceware.org/PR16177
-			econf_args+=(LD=${CTARGET}-ld.gold)
-		;;
 		sparc*)
 			# ld.gold-2.28 does not work for ghc. Force ld.bfd
 			# instead. This should be removed once gentoo gets
@@ -731,15 +732,15 @@ src_compile() {
 
 	# Control the build flavour
 	if use profile; then
-		: ${HADRIAN_FLAVOUR:="default"}
+		: ${HADRIAN_FLAVOUR:="default+disable_stripping"}
 	else
-		: ${HADRIAN_FLAVOUR:="default+no_profiled_libs"}
+		: ${HADRIAN_FLAVOUR:="default+disable_stripping+no_profiled_libs"}
 	fi
 
 	hadrian_vars+=("--flavour=${HADRIAN_FLAVOUR}")
 
-	# Control the verbosity of hadrian. Default is one level of --verbose
-	${HADRIAN_VERBOSITY:=1}
+	# Control the verbosity of hadrian. Default is two levels of --verbose
+	${HADRIAN_VERBOSITY:=2}
 
 	local n="${HADRIAN_VERBOSITY}"
 	until [[ $n -le 0 ]]; do
@@ -773,11 +774,7 @@ src_compile() {
 #	# 3. and then all the rest
 #	#emake all
 
-	if use ghcbootstrap; then
-		local hadrian=( /usr/bin/hadrian )
-	else
-		local hadrian=( "${S}/hadrian/bootstrap/_build/bin/hadrian" )
-	fi
+	local hadrian=( "${S}/hadrian/dist/build/hadrian/hadrian" )
 	hadrian+=(
 		"${hadrian_vars[@]}"
 		binary-dist-dir
@@ -870,6 +867,12 @@ src_install() {
 		# stripping hosts executables.
 		dostrip -x "/usr/$(get_libdir)/$(cross)${GHC_P}"
 		dostrip    "/usr/$(get_libdir)/$(cross)${GHC_P}/bin"
+	fi
+
+	if is_native; then
+		newenvd - "50${P}" <<-_EOF_
+			LDPATH="${EPREFIX}/usr/lib/${P}/lib/${CBUILD%%-*}-linux-${P}"
+		_EOF_
 	fi
 }
 
