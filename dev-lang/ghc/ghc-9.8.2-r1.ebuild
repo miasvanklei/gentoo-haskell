@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -108,6 +108,7 @@ RDEPEND="
 		|| (
 			sys-devel/llvm:15
 			sys-devel/llvm:16
+			sys-devel/llvm:17
 		)
 	)
 "
@@ -121,7 +122,6 @@ BDEPEND="
 		app-text/docbook-xml-dtd:4.5
 		app-text/docbook-xsl-stylesheets
 		dev-python/sphinx
-		dev-python/sphinx-rtd-theme
 		>=dev-libs/libxslt-1.1.2
 	)
 	test? ( ${PYTHON_DEPS} )
@@ -194,18 +194,19 @@ append-ghc-cflags() {
 	done
 }
 
-# $1 - lib name (under libraries/)
-# $2 - lib version
+# $1 - subdirectory (under libraries/)
+# $2 - lib name (under libraries/)
+# $3 - lib version
 # example: bump_lib "transformers" "0.4.2.0"
 bump_lib() {
-	local pn=$1 pv=$2
+	local subdir="$1" pn=$2 pv=$3
 	local p=${pn}-${pv}
 	local f
 
 	einfo "Bumping ${pn} up to ${pv}"
 
-	mv libraries/"${pn}" "${WORKDIR}"/"${pn}".old || die
-	mv "${WORKDIR}"/"${p}" libraries/"${pn}" || die
+	mv libraries/"${subdir}"/"${pn}" "${WORKDIR}"/"${pn}".old || die
+	mv "${WORKDIR}"/"${p}" libraries/"${subdir}"/"${pn}" || die
 }
 
 update_SRC_URI() {
@@ -226,7 +227,7 @@ bump_libs() {
 		set -- $p
 		pn=$1 pv=$2
 
-	if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
+		if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
 			subdir="Cabal"
 		else
 			subdir=""
@@ -454,6 +455,8 @@ src_unpack() {
 }
 
 src_prepare() {
+	bump_libs
+
 	# Force the use of C.utf8 locale
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1287>
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1289>
@@ -514,9 +517,9 @@ src_prepare() {
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-13.patch
 	#eapply "${FILESDIR}"/${PN}-9.0.2-llvm-14.patch
 
-		# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
-		# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-		eapply "${FILESDIR}"/${PN}-9.6.4-llvm-16.patch
+	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
+	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
+	eapply "${FILESDIR}"/${PN}-9.6.4-llvm-17.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -537,6 +540,8 @@ src_prepare() {
 
 	# fix compilation with 9.8.1 as boot compiler
 	eapply "${FILESDIR}"/hadrian-9.8.1-compability-9.8.1-boot-compiler.patch
+	# fix compilation with cabal 3.10.3.0 (bumped libs)
+	eapply "${FILESDIR}"/hadrian-9.8.1-compability-3.10.3.0-cabal.patch
 
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
@@ -544,8 +549,6 @@ src_prepare() {
 	popd
 
 	eapply "${FILESDIR}"/${PN}-9.8.2-force-merge-objects-when-building-dynamic-objects.patch
-
-	bump_libs
 
 	eapply_user
 	# as we have changed the build system
