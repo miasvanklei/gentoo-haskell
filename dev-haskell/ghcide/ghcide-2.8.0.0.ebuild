@@ -19,7 +19,12 @@ SRC_URI="https://github.com/haskell/haskell-language-server/archive/refs/tags/${
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="executable test-utils test-exe"
+IUSE="executable test-exe test-lib"
+
+PATCHES=(
+	"${FILESDIR}/${PN}-2.7.0.0-add-test-lib-flag.patch"
+)
+
 
 CABAL_TEST_REQUIRED_BINS=(
 	ghcide
@@ -81,6 +86,10 @@ RDEPEND="
 	executable? (
 		dev-haskell/gitrev:=[profile?]
 	)
+	test-lib? (
+		>=dev-haskell/lsp-test-0.17:=[profile?] <dev-haskell/lsp-test-0.18
+		>=dev-haskell/tasty-hunit-0.10:=[profile?]
+	)
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
@@ -104,11 +113,6 @@ DEPEND="${RDEPEND}
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}/disable-test-utils-library.patch"
-)
-
-
 S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
 
 src_configure() {
@@ -116,6 +120,7 @@ src_configure() {
 		--flag=-ekg
 		--flag=-ghc-patched-unboxed-bytecode
 		--flag=-pedantic
+		$(cabal_flag test-lib test-lib)
 	)
 
 	if use executable || use test; then
@@ -130,21 +135,5 @@ src_configure() {
 		flags+=( --flag=-test-exe )
 	fi
 
-	if use test-utils || use test; then
-		flags+=( --flag=test-utils )
-	else
-		flags+=( --flag=-test-utils )
-	fi
-
 	haskell-cabal_src_configure "${flags[@]}"
-}
-
-src_install() {
-	local install_components=(
-		lib:$PN
-	)
-	use executable && install_components+=( "exe:ghcide" )
-	use test-exe && install_components+=( "exe:ghcide-test-preprocessor" )
-
-	haskell-cabal_src_install "${install_components[@]}"
 }
