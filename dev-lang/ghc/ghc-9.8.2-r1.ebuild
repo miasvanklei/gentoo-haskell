@@ -124,6 +124,10 @@ BDEPEND="
 		dev-python/sphinx
 		>=dev-libs/libxslt-1.1.2
 	)
+	ghcbootstrap? (
+		dev-haskell/base16-bytestring
+		dev-haskell/cryptohash-sha256
+	)
 	test? ( ${PYTHON_DEPS} )
 "
 
