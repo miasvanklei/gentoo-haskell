@@ -560,28 +560,6 @@ src_prepare() {
 }
 
 src_configure() {
-	if ! use ghcbootstrap; then
-		einfo "Installing bootstrap GHC"
-
-		( cd "$(ghc_bin_path)" || die
-			./configure \
-				--prefix="" \
-				--libdir="/$(get_libdir)" || die
-			emake DESTDIR="${WORKDIR}/ghc-bin" install
-		)
-
-		export PATH="${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
-	fi
-
-        einfo "Bootstrapping hadrian"
-        ( cd "${S}/hadrian" || die
-                local MY_PN="hadrian/hadrian"
-                cabal_chdeps 'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
-                cabal-bootstrap
-                cabal-configure --flag=-selftest
-                cabal_src_compile || die "Hadrian bootstrap failed"
-        )
-
 	# prepare hadrian build settings files
 	mkdir _build
 	touch _build/hadrian.settings
@@ -680,6 +658,28 @@ src_configure() {
 	einfo "Final _build/hadrian.settings:"
 	#cat mk/build.mk || die
 	cat _build/hadrian.settings || die
+
+	if ! use ghcbootstrap; then
+		einfo "Installing bootstrap GHC"
+
+		( cd "$(ghc_bin_path)" || die
+			econf "${econf_args[@]}" \
+				--prefix="" \
+				--libdir="/$(get_libdir)" || die
+			emake DESTDIR="${WORKDIR}/ghc-bin" install
+		)
+
+		export PATH="${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
+	fi
+
+        einfo "Bootstrapping hadrian"
+        ( cd "${S}/hadrian" || die
+                local MY_PN="hadrian/hadrian"
+                cabal_chdeps 'Cabal                >= 3.2     && < 3.9' 'Cabal >= 3.2'
+                cabal-bootstrap
+                cabal-configure --flag=-selftest
+                cabal_src_compile || die "Hadrian bootstrap failed"
+        )
 
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \

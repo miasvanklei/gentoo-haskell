@@ -21,11 +21,11 @@ inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal
 DESCRIPTION="The Glasgow Haskell Compiler"
 HOMEPAGE="https://www.haskell.org/ghc/"
 
-GHC_BINARY_PV="9.4.3"
+GHC_BINARY_PV="9.8.1"
 SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
 	!ghcbootstrap? (
-		https://downloads.haskell.org/~ghc/9.8.2/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
+		https://downloads.haskell.org/~ghc/${PV}/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 "
@@ -108,28 +108,23 @@ DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
 	doc? (
-		$(python_gen_any_dep '
-			dev-python/sphinx[${PYTHON_USEDEP}]
-			dev-python/sphinx-rtd-theme[${PYTHON_USEDEP}]
-		')
 		app-text/docbook-xml-dtd:4.2
 		app-text/docbook-xml-dtd:4.5
 		app-text/docbook-xsl-stylesheets
+		dev-python/sphinx
 		>=dev-libs/libxslt-1.1.2
 	)
 	ghcbootstrap? (
 		ghcmakebinary? ( dev-haskell/hadrian[static] )
+		dev-haskell/alex
 		~dev-haskell/hadrian-${PV}
 	)
-	test? (
-		${PYTHON_DEPS}
-	)
+	test? ( ${PYTHON_DEPS} )
 "
 
 needs_python() {
 	# test driver is written in python
 	use test && return 0
-	use doc && return 0
 	return 1
 }
 
@@ -140,13 +135,6 @@ REQUIRED_USE="
 
 # haskell libraries built with cabal in configure mode, #515354
 QA_CONFIGURE_OPTIONS+=" --with-compiler --with-gcc"
-
-python_check_deps() {
-	if use doc; then
-		python_has_version "dev-python/sphinx[${PYTHON_USEDEP}]" &&
-		python_has_version "dev-python/sphinx-rtd-theme[${PYTHON_USEDEP}]"
-	fi
-}
 
 is_crosscompile() {
 	[[ ${CHOST} != ${CTARGET} ]]
@@ -507,17 +495,9 @@ src_prepare() {
 	#eapply "${FILESDIR}"/${PN}-9.0.2-CHOST-prefix.patch
 	#eapply "${FILESDIR}"/${PN}-9.0.2-darwin.patch
 
-	# Incompatible with ghc-9.0.2-modorigin-semigroup.patch
-	# Below patch should not be needed by ghc-9.2
-	#eapply "${FILESDIR}"/${PN}-9.0.2-modorigin.patch
-
 	# ModUnusable pretty-printing should include the reason
-	eapply "${FILESDIR}/${PN}-9.0.2-verbose-modunusable.patch"
-
-	# Fixes panic when compiling some packages
-	# https://github.com/gentoo-haskell/gentoo-haskell/issues/1250#issuecomment-1044257595
-	# https://gitlab.haskell.org/ghc/ghc/-/issues/21097
-	eapply "${FILESDIR}/${PN}-9.2.7-modorigin-semigroup.patch"
+	# broken in 9.6.4
+	#eapply "${FILESDIR}/${PN}-9.0.2-verbose-modunusable.patch"
 
 	# Needed for testing with python-3.10
 	#use test && eapply "${FILESDIR}/${PN}-9.0.2-fix-tests-python310.patch"
@@ -532,7 +512,7 @@ src_prepare() {
 
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-	eapply "${FILESDIR}"/${PN}-9.4.8-llvm-17.patch
+	eapply "${FILESDIR}"/${PN}-9.10.1-llvm-17.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -542,31 +522,10 @@ src_prepare() {
 	# needs newer version:
 	#eapply "${FILESDIR}"/${PN}-8.2.1_rc1-hp2ps-cross.patch
 
-	# https://gitlab.haskell.org/ghc/ghc/-/issues/22965
-	#eapply "${FILESDIR}/${PN}-9.2.6-fix-alignment-of-capability.patch"
-
-	# FIXME: A hack that allows dev-python/sphinx-7 to build the docs
-	#
-	# GHC has updated the bundled version here:
-	# <https://gitlab.haskell.org/ghc/ghc/-/commit/70526f5bd8886126f49833ef20604a2c6477780a>
-	# However, the patch is difficult to apply and our versions of GHC don't
-	# have the update, so we symlink to the system version instead.
-	if use doc; then
-		local python_str="import sphinx_rtd_theme; print(sphinx_rtd_theme.__file__)"
-		local rtd_theme_dir="$(dirname $("${EPYTHON}" -c "$python_str"))"
-		local orig_rtd_theme_dir="${S}/docs/users_guide/rtd-theme"
-
-		einfo "Replacing bundled rtd-theme with dev-python/sphinx-rtd-theme"
-		rm -r "${orig_rtd_theme_dir}" || die
-		ln -s "${rtd_theme_dir}" "${orig_rtd_theme_dir}" || die
-	fi
-
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
 	popd
-
-	eapply "${FILESDIR}"/${PN}-9.4.8-force-merge-objects-when-building-dynamic-objects.patch
 
 	bump_libs
 
