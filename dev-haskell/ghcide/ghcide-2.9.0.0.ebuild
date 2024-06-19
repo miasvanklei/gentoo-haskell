@@ -19,12 +19,7 @@ SRC_URI="https://github.com/haskell/haskell-language-server/archive/refs/tags/${
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="executable test-exe test-lib"
-
-PATCHES=(
-	"${FILESDIR}/${PN}-2.7.0.0-add-test-lib-flag.patch"
-)
-
+IUSE="executable test-exe"
 
 CABAL_TEST_REQUIRED_BINS=(
 	ghcide
@@ -41,7 +36,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dependent-map:=[profile?]
 	dev-haskell/dependent-sum:=[profile?]
-	>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
+	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/enummapset:=[profile?]
 	>=dev-haskell/extra-1.7.14:=[profile?]
@@ -56,13 +51,13 @@ RDEPEND="
 	>=dev-haskell/hie-bios-0.14:=[profile?] <dev-haskell/hie-bios-0.15:=[profile?]
 	>=dev-haskell/hie-compat-0.3.0.0:=[profile?] <dev-haskell/hie-compat-0.4:=[profile?]
 	>=dev-haskell/hiedb-0.6.0.0:=[profile?] <dev-haskell/hiedb-0.7:=[profile?]
-	~dev-haskell/hls-graph-2.8.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.8.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.9.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.9.0.0:=[profile?]
 	>=dev-haskell/implicit-hie-0.1.4.0:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/list-t:=[profile?]
-	>=dev-haskell/lsp-2.4.0.0:=[profile?] <dev-haskell/lsp-2.5:=[profile?]
-	>=dev-haskell/lsp-types-2.1.0.0:=[profile?] <dev-haskell/lsp-types-2.2:=[profile?]
+	>=dev-haskell/lsp-2.7.0.0:=[profile?] <dev-haskell/lsp-2.8:=[profile?]
+	>=dev-haskell/lsp-types-2.3.0.0:=[profile?] <dev-haskell/lsp-types-2.4:=[profile?]
 	>=dev-haskell/opentelemetry-0.6.1:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/parallel:=[profile?]
@@ -85,10 +80,6 @@ RDEPEND="
 	>=dev-lang/ghc-9.0.2:=
 	executable? (
 		dev-haskell/gitrev:=[profile?]
-	)
-	test-lib? (
-		>=dev-haskell/lsp-test-0.17:=[profile?] <dev-haskell/lsp-test-0.18
-		>=dev-haskell/tasty-hunit-0.10:=[profile?]
 	)
 "
 DEPEND="${RDEPEND}
@@ -120,7 +111,6 @@ src_configure() {
 		--flag=-ekg
 		--flag=-ghc-patched-unboxed-bytecode
 		--flag=-pedantic
-		$(cabal_flag test-lib test-lib)
 	)
 
 	if use executable || use test; then
