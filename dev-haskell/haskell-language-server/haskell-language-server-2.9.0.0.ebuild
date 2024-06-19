@@ -72,14 +72,14 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/ghc-paths:=[profile?]
-	~dev-haskell/ghcide-2.8.0.0:=[profile?]
+	~dev-haskell/ghcide-2.9.0.0:=[profile?]
 	dev-haskell/gitrev:=[profile?]
 	dev-haskell/githash:=[profile?]
 	dev-haskell/hashable:=[profile?]
 	dev-haskell/hie-bios:=[profile?]
 	dev-haskell/hiedb:=[profile?]
-	>=dev-haskell/hls-graph-2.8.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.8.0.0:=[profile?]
+	>=dev-haskell/hls-graph-2.9.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.9.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	>=dev-haskell/lsp-2.4.0.0:=[profile?]
 	dev-haskell/lsp-types:=[profile?]
@@ -114,7 +114,7 @@ RDEPEND="
 		dev-haskell/vector:=[profile?]
 	)
 	hls_plugins_eval? (
-		>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
+		>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6:=[profile?]
 		dev-haskell/dlist:=[profile?]
 		>=dev-haskell/megaparsec-9.0:=[profile?]
 		>=dev-haskell/parser-combinators-1.2:=[profile?]
@@ -131,7 +131,7 @@ RDEPEND="
 	)
 	hls_plugins_hlint? (
 		dev-haskell/apply-refact:=[profile?]
-		>=dev-haskell/diff-0.4.0:=[profile?] <dev-haskell/diff-0.5:=[profile?]
+		>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6:=[profile?]
 		>=dev-haskell/ghc-exactprint-0.6.3.4:=[profile?]
 		dev-haskell/ghc-lib-parser-ex:=[profile?]
 		dev-haskell/hlint:=[profile?]
@@ -201,10 +201,9 @@ DEPEND="${RDEPEND}
 #		dev-haskell/row-types
 #	)
 
-#PATCHES=(
-#	"${FILESDIR}"/ghc-9.8.patch
-#	"${FILESDIR}"/plugins-optional.patch
-#)
+PATCHES=(
+	"${FILESDIR}"/2.9.0.0-add-ghcide-benchmark-flag.patch
+)
 
 src_configure() {
 	config_flags=(

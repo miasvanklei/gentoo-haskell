@@ -1,0 +1,36 @@
+--- a/haskell-language-server.cabal	2024-06-19 15:18:11.340983349 +0200
++++ b/haskell-language-server.cabal	2024-06-19 15:22:55.194043419 +0200
+@@ -2055,8 +2055,15 @@
+   hs-source-dirs:     test/wrapper
+   main-is:            Main.hs
+ 
++flag ghcide-benchmark
++  description: Build the ghcide-test-utils library
++  default:     False
++  manual:      True
++
+ benchmark benchmark
+     import:           defaults, warnings
++    if !flag(ghcide-benchmark)
++      buildable: False
+     -- Depends on shake-bench which is unbuildable after this point
+     type: exitcode-stdio-1.0
+     ghc-options: -threaded
+@@ -2217,6 +2224,8 @@
+         OverloadedStrings
+         RecordWildCards
+         ViewPatterns
++    if !flag(ghcide-benchmark)
++      buildable: False
+ 
+ library ghcide-bench-lib
+     default-language: GHC2021
+@@ -2253,6 +2262,8 @@
+         RecordWildCards
+         ViewPatterns
+ 
++    if !flag(ghcide-benchmark)
++      buildable: False
+ 
+ test-suite ghcide-bench-test
+     type: exitcode-stdio-1.0
