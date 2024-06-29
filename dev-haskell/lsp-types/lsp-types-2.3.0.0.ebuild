@@ -24,31 +24,33 @@ PATCHES=(
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
 RDEPEND="
-	>=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3
-	>=dev-haskell/data-default-0.7:=[profile?] <dev-haskell/data-default-0.8
-	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-0.6
-	>=dev-haskell/dlist-1.0:=[profile?] <dev-haskell/dlist-1.1
-	>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1
-	dev-haskell/generic-arbitrary
-	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.5
-	>=dev-haskell/indexed-traversable-0.1:=[profile?] <dev-haskell/indexed-traversable-0.2
-	>=dev-haskell/indexed-traversable-instances-0.1:=[profile?] <dev-haskell/indexed-traversable-instances-0.2
-	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.3
-	>=dev-haskell/lens-aeson-1.2:=[profile?] <dev-haskell/lens-aeson-1.3
-	>=dev-haskell/mod-0.2:=[profile?] <dev-haskell/mod-0.3
-	>=dev-haskell/network-uri-2.6:=[profile?] <dev-haskell/network-uri-2.7
-	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8
+	>=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
+	>=dev-haskell/data-default-0.7:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
+	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-0.6:=[profile?]
+	>=dev-haskell/dlist-1.0:=[profile?] <dev-haskell/dlist-1.1:=[profile?]
+	>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
+	dev-haskell/generic-arbitrary:=[profile?]
+	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
+	>=dev-haskell/indexed-traversable-0.1:=[profile?] <dev-haskell/indexed-traversable-0.2:=[profile?]
+	>=dev-haskell/indexed-traversable-instances-0.1:=[profile?] <dev-haskell/indexed-traversable-instances-0.2:=[profile?]
+	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.4:=[profile?]
+	>=dev-haskell/mod-0.2:=[profile?] <dev-haskell/mod-0.3:=[profile?]
+	>=dev-haskell/network-uri-2.6:=[profile?] <dev-haskell/network-uri-2.7:=[profile?]
+	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 	dev-haskell/quickcheck:=[profile?]
 	dev-haskell/quickcheck-instances:=[profile?]
-	>=dev-haskell/row-types-1.0:=[profile?] <dev-haskell/row-types-1.1
-	>=dev-haskell/safe-0.3:=[profile?] <dev-haskell/safe-0.4
-	>=dev-haskell/some-1.0:=[profile?] <dev-haskell/some-1.1
-	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2
+	dev-haskell/regex:=[profile?]
+	>=dev-haskell/row-types-1.0:=[profile?] <dev-haskell/row-types-1.1:=[profile?]
+	>=dev-haskell/safe-0.3:=[profile?] <dev-haskell/safe-0.4:=[profile?]
+	>=dev-haskell/some-1.0:=[profile?] <dev-haskell/some-1.1:=[profile?]
+	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2:=[profile?]
+	dev-haskell/witherable:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? (
 		dev-haskell/hspec
+		dev-haskell/hspec-golden
 	)
 "

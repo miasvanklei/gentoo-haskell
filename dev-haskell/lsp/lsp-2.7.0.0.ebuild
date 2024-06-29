@@ -18,24 +18,23 @@ KEYWORDS="~amd64"
 IUSE="examples"
 
 RDEPEND="
-	>=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3
-	>=dev-haskell/async-2.2:=[profile?] <dev-haskell/async-2.3
-	>=dev-haskell/attoparsec-0.14:=[profile?] <dev-haskell/attoparsec-0.15
-	>=dev-haskell/co-log-core-0.3:=[profile?] <dev-haskell/co-log-core-0.4
-	>=dev-haskell/data-default-0.7:=[profile?] <dev-haskell/data-default-0.8
-	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.5
-	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.3
-	>=dev-haskell/lens-aeson-1.2:=[profile?] <dev-haskell/lens-aeson-1.3
-	>=dev-haskell/lsp-types-2.3:=[profile?] <dev-haskell/lsp-types-2.4
-	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8
-	>=dev-haskell/random-1.2:=[profile?] <dev-haskell/random-1.3
-	>=dev-haskell/row-types-1.0:=[profile?] <dev-haskell/row-types-1.1
-	>=dev-haskell/sorted-list-0.2.1:=[profile?] <dev-haskell/sorted-list-0.3
-	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2
-	>=dev-haskell/text-rope-0.2:=[profile?] <dev-haskell/text-rope-0.3
-	>=dev-haskell/unliftio-core-0.2:=[profile?] <dev-haskell/unliftio-core-0.3
-	>=dev-haskell/unordered-containers-0.2:=[profile?] <dev-haskell/unordered-containers-0.3
-	>=dev-haskell/uuid-1.3:=[profile?]
+	>=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
+	>=dev-haskell/async-2.2:=[profile?] <dev-haskell/async-2.3:=[profile?]
+	>=dev-haskell/attoparsec-0.14:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
+	>=dev-haskell/co-log-core-0.3:=[profile?] <dev-haskell/co-log-core-0.4:=[profile?]
+	>=dev-haskell/data-default-0.7:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
+	>=dev-haskell/extra-1.7:=[profile?] <dev-haskell/extra-1.8:=[profile?]
+	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
+	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.4:=[profile?]
+	>=dev-haskell/lens-aeson-1.2:=[profile?] <dev-haskell/lens-aeson-1.3:=[profile?]
+	>=dev-haskell/lsp-types-2.3:=[profile?] <dev-haskell/lsp-types-2.4:=[profile?]
+	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
+	>=dev-haskell/sorted-list-0.2.1:=[profile?] <dev-haskell/sorted-list-0.3:=[profile?]
+	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2:=[profile?]
+	>=dev-haskell/text-rope-0.2:=[profile?] <dev-haskell/text-rope-0.3:=[profile?]
+	>=dev-haskell/unliftio-0.2:=[profile?] <dev-haskell/unliftio-0.3:=[profile?]
+	>=dev-haskell/unliftio-core-0.2:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]
+	>=dev-haskell/unordered-containers-0.2:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
