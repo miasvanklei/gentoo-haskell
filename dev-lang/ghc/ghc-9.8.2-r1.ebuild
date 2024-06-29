@@ -734,8 +734,12 @@ src_compile() {
 	use profile || hadrian_flavour+="+no_profiled_libs"
 	use llvm && hadrian_flavour+="+llvm"
 
+	: ${HADRIAN_FLAVOUR:="${hadrian_flavour}"}
+
+	hadrian_vars+=("--flavour=${HADRIAN_FLAVOUR}")
+
 	# Control the verbosity of hadrian. Default is two levels of --verbose
-	${HADRIAN_VERBOSITY:=2}
+	: ${HADRIAN_VERBOSITY:=2}
 
 	local n="${HADRIAN_VERBOSITY}"
 	until [[ $n -le 0 ]]; do
