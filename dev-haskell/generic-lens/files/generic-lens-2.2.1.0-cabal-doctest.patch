@@ -72,11 +72,11 @@ diff -urN generic-lens-2.2.1.0/generic-lens.cabal generic-lens-2.2.1.0-r1/generi
 +build-type:           Custom
  cabal-version:        >= 1.10
  Tested-With:          GHC == 8.4.1, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.4, GHC == 8.10.3, GHC == 9.0.1, GHC == 9.2.1
-
+ 
 @@ -20,6 +20,12 @@
                      , examples/Examples.hs
                      , ChangeLog.md
-
+ 
 +custom-setup
 +    setup-depends:
 +        base
