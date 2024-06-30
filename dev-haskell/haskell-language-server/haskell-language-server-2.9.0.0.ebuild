@@ -16,12 +16,11 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 # Disabled:
-# - hls_plugins_fourmolu: Requires masked package fourmolu
-# - hls_plugins_ormolu: Requires masked package ormolu
-# - hls_plugins_stan: Depends on ghc >8.8.1 <=9.2.3 || >=9.4.0 <9.10.0
+# - hls_plugins_fourmolu: Requires masked package ormolu
 IUSE="
 	ghcide-bench
 	ghcide-bench-lib
+	ghc-lib
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
 	+hls_plugins_cabal-fmt
@@ -39,6 +38,7 @@ IUSE="
 	+hls_plugins_import-lens
 	+hls_plugins_module-name
 	+hls_plugins_notes
+	+hls_plugins_ormolu
 	+hls_plugins_overloaded-record-dot
 	+hls_plugins_pragmas
 	+hls_plugins_qualify-imported-names
@@ -47,6 +47,7 @@ IUSE="
 	+hls_plugins_retrie
 	+hls_plugins_semantic-tokens
 	+hls_plugins_splice
+	+hls_plugins_stan
 	+hls_plugins_stylish-haskell
 "
 
@@ -64,8 +65,6 @@ CABAL_TEST_REQUIRED_BINS=(
 
 # Disabled:
 # hls_plugins_fourmolu? ( )
-# hls_plugins_ormolu? ( )
-# hls_plugins_stan? ( )
 RDEPEND="
 	dev-haskell/aeson-pretty:=[profile?]
 	dev-haskell/data-default:=[profile?]
@@ -181,13 +180,14 @@ RDEPEND="
 		dev-haskell/aeson:=[profile?]
 		dev-haskell/apply-refact:=[profile?]
 		dev-haskell/hashable:=[profile?]
-		dev-haskell/ghc-lib-parser:=[profile?]
 		dev-haskell/ghc-lib-parser-ex:=[profile?]
 		>=dev-haskell/hlint-3.5:=[profile?] <dev-haskell/hlint-3.9
 		dev-haskell/lens:=[profile?]
 		dev-haskell/refact:=[profile?]
 		dev-haskell/regex-tdfa:=[profile?]
 		dev-haskell/temporary:=[profile?]
+		ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?] )
+		!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:= )
 		dev-haskell/unordered-containers:=[profile?]
 	)
 	hls_plugins_import-lens? (
@@ -204,6 +204,10 @@ RDEPEND="
 		>=dev-haskell/regex-tdfa-1.3.1:=[profile?]
 		dev-haskell/text-rope:=[profile?]
 		dev-haskell/unordered-containers:=[profile?]
+	)
+	hls_plugins_ormolu? (
+		>=dev-haskell/ormolu-0.1.2:=[profile?] <dev-haskell/ormolu-0.8:=[profile?]
+		>=dev-haskell/process-extras-0.7.1:=[profile?]
 	)
 	hls_plugins_overloaded-record-dot? (
 		dev-haskell/aeson:=[profile?]
@@ -269,6 +273,9 @@ RDEPEND="
 		dev-haskell/lens:=[profile?]
 		dev-haskell/syb:=[profile?]
 	)
+	hls_plugins_stan? (
+		dev-haskell/stan:=[profile?]
+	)
 	hls_plugins_stylish-haskell? (
 		>=dev-haskell/stylish-haskell-0.12:=[profile?] <dev-haskell/stylish-haskell-0.15
 	)
@@ -282,6 +289,7 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	config_flags=(
+		$(cabal_flag ghc-lib ghc-lib)
 		$(cabal_flag hls_plugins_alternate-number-format alternateNumberFormat)
 		$(cabal_flag hls_plugins_cabal cabal)
 		$(cabal_flag hls_plugins_cabal-fmt cabalfmt)
@@ -299,6 +307,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_import-lens importLens)
 		$(cabal_flag hls_plugins_module-name moduleName)
 		$(cabal_flag hls_plugins_notes notes)
+		$(cabal_flag hls_plugins_ormolu ormolu)
 		$(cabal_flag hls_plugins_overloaded-record-dot overloadedRecordDot)
 		$(cabal_flag hls_plugins_pragmas pragmas)
 		$(cabal_flag hls_plugins_qualify-imported-names qualifyImportedNames)
@@ -307,16 +316,18 @@ src_configure() {
 		$(cabal_flag hls_plugins_retrie retrie)
 		$(cabal_flag hls_plugins_semantic-tokens semanticTokens)
 		$(cabal_flag hls_plugins_splice splice)
+		$(cabal_flag hls_plugins_stan stan)
 		$(cabal_flag hls_plugins_stylish-haskell stylishhaskell)
 		--flag=-fourmolu
-		--flag=-ormolu
-		--flag=-stan
-		--flag=-dynamic
-		--flag=ghc-lib
 		--flag=ignore-plugins-ghc-bounds
 		--flag=-pedantic
 		--flag=-isoloateCabalfmtTests
 	)
 
 	haskell-cabal_src_configure "${config_flags[@]}"
+}
+
+src_compile() {
+	export LD_LIBRARY_PATH="${S}/dist/build/hls-refactor-plugin"
+	haskell-cabal_src_compile
 }
