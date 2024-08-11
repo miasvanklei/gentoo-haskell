@@ -39,7 +39,6 @@ RDEPEND="
 	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 	dev-haskell/quickcheck:=[profile?]
 	dev-haskell/quickcheck-instances:=[profile?]
-	dev-haskell/regex:=[profile?]
 	>=dev-haskell/row-types-1.0:=[profile?] <dev-haskell/row-types-1.1:=[profile?]
 	>=dev-haskell/safe-0.3:=[profile?] <dev-haskell/safe-0.4:=[profile?]
 	>=dev-haskell/some-1.0:=[profile?] <dev-haskell/some-1.1:=[profile?]
