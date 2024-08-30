@@ -30,3 +30,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/hunit
 		dev-haskell/parsec )
 "
+
+CABAL_CHDEPS=(
+	'base                   >=4.8      && <4.20' 'base                   >=4.8      && <4.21'
+)
