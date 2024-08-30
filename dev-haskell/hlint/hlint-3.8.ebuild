@@ -36,10 +36,10 @@ RDEPEND="
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.11:=[profile?]
 	)
 	!ghc-lib? (
-		 >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:=
+		 >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.11:=
 	)
 	gpl? (
 		>=dev-haskell/hscolour-1.21:=[profile?]
@@ -60,6 +60,10 @@ BDEPEND="
 		app-editors/emacs
 	)
 "
+
+PATCHES=(
+	"${FILESDIR}/ghc-9.10.patch"
+)
 
 SITEFILE="60${PN}-gentoo.el"
 
