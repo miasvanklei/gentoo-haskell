@@ -24,7 +24,8 @@ PATCHES=(
 
 RDEPEND="
 	>=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-1.1:=[profile?]
-	>=dev-haskell/cabal-syntax-3.8:=[profile?] <dev-haskell/cabal-syntax-3.11:=[profile?]
+	>=dev-haskell/cabal-syntax-3.8:=[profile?] <dev-haskell/cabal-syntax-3.13:=[profile?]
+	>=dev-haskell/choice-0.2.4.1:=[profile?]  <dev-haskell/choice-0.3:=[profile?]
 	>=dev-haskell/diff-0.4:=[profile?] <dev-haskell/diff-1.0:=[profile?]
 	>=dev-haskell/file-embed-0.0.15:=[profile?] <dev-haskell/file-embed-0.1:=[profile?]
 	>=dev-haskell/megaparsec-9.0:=[profile?]
@@ -37,10 +38,10 @@ RDEPEND="
 		>=dev-haskell/th-env-0.1.1:=[profile?] <dev-haskell/th-env-0.2:=[profile?]
 	)
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.11:=[profile?]
 	)
 	!ghc-lib? (
-		=dev-lang/ghc-9.8*:=
+		=dev-lang/ghc-9.10*:=
 	)
 "
 DEPEND="${RDEPEND}
