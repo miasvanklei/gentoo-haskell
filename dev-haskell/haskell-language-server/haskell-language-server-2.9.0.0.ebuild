@@ -57,6 +57,7 @@ RESTRICT="test" # Depends on masked ghcide-test-utils
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.9.0.0-add-bench-flags.patch"
+	"${FILESDIR}/build-extra-plugins-ghc-9.10.patch"
 )
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -186,8 +187,8 @@ RDEPEND="
 		dev-haskell/refact:=[profile?]
 		dev-haskell/regex-tdfa:=[profile?]
 		dev-haskell/temporary:=[profile?]
-		ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?] )
-		!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:= )
+		ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.11:=[profile?] )
+		!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.11:= )
 		dev-haskell/unordered-containers:=[profile?]
 	)
 	hls_plugins_import-lens? (
@@ -231,7 +232,6 @@ RDEPEND="
 		dev-haskell/parser-combinators:=[profile?]
 		dev-haskell/regex-applicative:=[profile?]
 		dev-haskell/regex-tdfa:=[profile?]
-		dev-haskell/retrie:=[profile?]
 		dev-haskell/syb:=[profile?]
 		dev-haskell/unordered-containers:=[profile?]
 		|| (

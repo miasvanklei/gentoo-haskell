@@ -1,0 +1,164 @@
+--- a/haskell-language-server.cabal	2024-08-30 16:19:37.141636180 +0200
++++ b/haskell-language-server.cabal	2024-08-30 16:20:13.141255381 +0200
+@@ -619,13 +619,13 @@
+   manual:      True
+ 
+ common retrie
+-  if flag(retrie) && impl(ghc < 9.10)
++  if flag(retrie) && impl(ghc < 9.12)
+     build-depends: haskell-language-server:hls-retrie-plugin
+     cpp-options: -Dhls_retrie
+ 
+ library hls-retrie-plugin
+   import:           defaults, pedantic, warnings
+-  if !(flag(retrie) && impl(ghc < 9.10))
++  if !(flag(retrie) && impl(ghc < 9.12))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Retrie
+   hs-source-dirs:   plugins/hls-retrie-plugin/src
+@@ -656,7 +656,7 @@
+ 
+ test-suite hls-retrie-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(retrie) && impl(ghc < 9.10))
++  if !(flag(retrie) && impl(ghc < 9.12))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-retrie-plugin/test
+@@ -687,14 +687,13 @@
+   manual:      True
+ 
+ common hlint
+-  if flag(hlint) && impl(ghc < 9.10)
++  if flag(hlint) && impl(ghc < 9.12)
+     build-depends: haskell-language-server:hls-hlint-plugin
+     cpp-options: -Dhls_hlint
+ 
+ library hls-hlint-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/ndmitchell/hlint/pull/1594
+-  if !(flag(hlint) && impl(ghc < 9.10))
++  if !(flag(hlint) && impl(ghc < 9.12))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Hlint
+   hs-source-dirs:   plugins/hls-hlint-plugin/src
+@@ -736,7 +735,7 @@
+ 
+ test-suite hls-hlint-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(hlint) && impl(ghc < 9.10))
++  if !(flag(hlint) && impl(ghc < 9.12))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-hlint-plugin/test
+@@ -763,13 +762,13 @@
+   manual:      True
+ 
+ common stan
+-  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.10.0))
++  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.12.0))
+     build-depends: haskell-language-server:hls-stan-plugin
+     cpp-options: -Dhls_stan
+ 
+ library hls-stan-plugin
+   import:           defaults, pedantic, warnings
+-  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.10.0))
++  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.12.0))
+     buildable: True
+   else
+     buildable: False
+@@ -797,7 +796,7 @@
+ 
+ test-suite hls-stan-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.10.0))
++  if flag(stan) && (impl(ghc > 8.8.1) && impl(ghc <= 9.2.3) || impl(ghc >= 9.4.0) && impl(ghc < 9.12.0))
+     buildable: True
+   else
+     buildable: False
+@@ -920,13 +919,13 @@
+   manual:      True
+ 
+ common splice
+-  if flag(splice) && impl(ghc < 9.10)
++  if flag(splice) && impl(ghc < 9.12)
+     build-depends: haskell-language-server:hls-splice-plugin
+     cpp-options: -Dhls_splice
+ 
+ library hls-splice-plugin
+   import:           defaults, pedantic, warnings
+-  if !(flag(splice) && impl(ghc < 9.10))
++  if !(flag(splice) && impl(ghc < 9.12))
+     buildable: False
+   exposed-modules:
+     Ide.Plugin.Splice
+@@ -956,7 +955,7 @@
+ 
+ test-suite hls-splice-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(splice) && impl(ghc < 9.10))
++  if !(flag(splice) && impl(ghc < 9.12))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-splice-plugin/test
+@@ -1405,14 +1404,13 @@
+   manual:      True
+ 
+ common floskell
+-  if flag(floskell) && impl(ghc < 9.10)
++  if flag(floskell) && impl(ghc < 9.12)
+     build-depends: haskell-language-server:hls-floskell-plugin
+     cpp-options: -Dhls_floskell
+ 
+ library hls-floskell-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/ennocramer/floskell/pull/82
+-  if !(flag(floskell) && impl(ghc < 9.10))
++  if !(flag(floskell) && impl(ghc < 9.12))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Floskell
+   hs-source-dirs:   plugins/hls-floskell-plugin/src
+@@ -1428,7 +1426,7 @@
+ 
+ test-suite hls-floskell-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(floskell) && impl(ghc < 9.10))
++  if !(flag(floskell) && impl(ghc < 9.12))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-floskell-plugin/test
+@@ -1562,14 +1560,13 @@
+   manual:      True
+ 
+ common stylishHaskell
+-  if flag(stylishHaskell) && impl(ghc < 9.10)
++  if flag(stylishHaskell) && impl(ghc < 9.12)
+     build-depends: haskell-language-server:hls-stylish-haskell-plugin
+     cpp-options: -Dhls_stylishHaskell
+ 
+ library hls-stylish-haskell-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/haskell/stylish-haskell/issues/479
+-  if !(flag(stylishHaskell) && impl(ghc < 9.10))
++  if !(flag(stylishHaskell) && impl(ghc < 9.12))
+     buildable: False
+   exposed-modules:  Ide.Plugin.StylishHaskell
+   hs-source-dirs:   plugins/hls-stylish-haskell-plugin/src
+@@ -1588,7 +1585,7 @@
+ 
+ test-suite hls-stylish-haskell-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(stylishHaskell) && impl(ghc < 9.10))
++  if !(flag(stylishHaskell) && impl(ghc < 9.12))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-stylish-haskell-plugin/test
+@@ -2030,7 +2027,7 @@
+   if flag(eval)
+     cpp-options: -Dhls_eval
+ -- formatters
+-  if flag(floskell) && impl(ghc < 9.10)
++  if flag(floskell) && impl(ghc < 9.12)
+     cpp-options: -Dhls_floskell
+   if flag(fourmolu)
+     cpp-options: -Dhls_fourmolu
