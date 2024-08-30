@@ -43,6 +43,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+CABAL_CHDEPS=(
+	'base >=4.9 && <4.20' 'base >=4.9 && <4.21'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag executable executable)
