@@ -18,6 +18,7 @@ IUSE="executable"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.9.2.0-add-executable-flag.patch"
+	"${FILESDIR}/ghc-9.10.patch"
 )
 
 RDEPEND="
