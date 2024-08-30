@@ -1,0 +1,16 @@
+--- a/libraries/Cabal/Cabal/src/Distribution/Simple/Setup/Config.hs
++++ b/libraries/Cabal/Cabal/src/Distribution/Simple/Setup/Config.hs
+@@ -312,11 +312,11 @@
+     { configArgs = []
+     , configPrograms_ = Option' (Just (Last' progDb))
+     , configHcFlavor = maybe NoFlag Flag defaultCompilerFlavor
+-    , configVanillaLib = Flag True
++    , configVanillaLib = Flag False
+     , configProfLib = NoFlag
+     , configSharedLib = NoFlag
+     , configStaticLib = NoFlag
+-    , configDynExe = Flag False
++    , configDynExe = Flag True
+     , configFullyStaticExe = Flag False
+     , configProfExe = NoFlag
+     , configProf = NoFlag

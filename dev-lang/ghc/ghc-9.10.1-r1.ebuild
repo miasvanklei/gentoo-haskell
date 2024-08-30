@@ -116,8 +116,15 @@ BDEPEND="
 		>=dev-libs/libxslt-1.1.2
 	)
 	ghcbootstrap? (
-		ghcmakebinary? ( dev-haskell/hadrian[static] )
-		~dev-haskell/hadrian-${PV}
+		dev-haskell/base16-bytestring
+		dev-haskell/cabal-install
+		dev-haskell/cryptohash-sha256
+		dev-haskell/extra
+		dev-haskell/mtl
+		dev-haskell/parsec
+		dev-haskell/text
+		dev-haskell/unordered-containers
+		dev-util/shake
 	)
 	test? ( ${PYTHON_DEPS} )
 "
@@ -528,6 +535,14 @@ src_prepare() {
 	# needs newer version:
 	#eapply "${FILESDIR}"/${PN}-8.2.1_rc1-hp2ps-cross.patch
 
+	# build ghc and libraries only the dynamic way
+	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
+	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
+
+	# Build only dynamic + disable stripping
+	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
+	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
+
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
@@ -714,7 +729,7 @@ src_compile() {
 	###
 
 	# Control the build flavour
-	local hadrian_flavour="default"
+	local hadrian_flavour="default+disable_stripping"
 	use profile || hadrian_flavour+="+no_profiled_libs"
 	use llvm && hadrian_flavour+="+llvm"
 
@@ -758,17 +773,31 @@ src_compile() {
 #	# 3. and then all the rest
 #	#emake all
 
+	einfo "Setuping hadrian"
+	( local MY_PN="hadrian/hadrian"
+		cabal_chdeps \
+			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
+			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
+		mkdir "$HOME/.cabal"
+		cat <<- _EOF_ > "$HOME/.cabal/config"
+			library-vanilla: False
+			executable-dynamic: True
+		_EOF_
+	)
+
+
+
 	if use ghcbootstrap; then
-		local hadrian=( /usr/bin/hadrian )
+		local hadrian=( "${S}/hadrian/build-cabal" )
 	else
 		local hadrian=( "${S}/hadrian/bootstrap/_build/bin/hadrian" )
 	fi
+
 	hadrian+=(
 		"${hadrian_vars[@]}"
 		binary-dist-dir
 	)
 
-	einfo "Running: ${hadrian[@]}"
 	"${hadrian[@]}" || die
 }
 

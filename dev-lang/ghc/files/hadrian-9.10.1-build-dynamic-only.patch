@@ -5,7 +5,7 @@
    traverse (fmap (\p -> (iserv, p)) . programPath)
        [ Context Stage1 iserv w Final
 -      | w <- [vanilla, profiling, dynamic]
-+      | w <- [profilingDynamic, dynamic]
++      | w <- [profiling, dynamic]
        , w `elem` rtsways
        ]
  
@@ -72,7 +72,7 @@
          let pkg = unsafeFindPackageByPath pkgpath
 -            context = Context stage pkg vanilla Inplace
 +            context = Context stage pkg dynamic Inplace
-         extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
+         extra <- extraDependenciesFor stage pkg
          srcs <- hsSources context
          gens <- interpretInContext context generatedDependencies
 --- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200

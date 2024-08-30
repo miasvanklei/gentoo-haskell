@@ -1,0 +1,11 @@
+--- a/m4/ghc_toolchain.m4	2024-08-29 19:08:11.995126085 +0200
++++ b/m4/ghc_toolchain.m4	2024-08-29 19:08:32.586907564 +0200
+@@ -144,7 +144,7 @@
+             ;;
+         NO)
+             # We're in the source tree, so compile ghc-toolchain
+-            "$GHC" -v0 \
++            "$GHC" -v0 -dynamic \
+                 -ilibraries/ghc-platform/src -iutils/ghc-toolchain/src \
+                 -XNoImplicitPrelude \
+                 -odir actmp-ghc-toolchain -hidir actmp-ghc-toolchain \
