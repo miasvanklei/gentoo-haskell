@@ -26,8 +26,3 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-hunit-0.10
 		dev-haskell/tasty-quickcheck )
 "
-
-CABAL_CHDEPS=(
-        'Cabal         ^>=3.12.1.0' 'Cabal         ^>=3.12.0.0'
-	'Cabal-syntax  ^>=3.12.1.0' 'Cabal-syntax  ^>=3.12.0.0'
-)
