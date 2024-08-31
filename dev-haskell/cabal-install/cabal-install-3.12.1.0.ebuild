@@ -66,11 +66,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/tree-diff )
 "
 
-CABAL_CHDEPS=(
-        'Cabal ^>=3.12.1.0' 'Cabal ^>=3.12.0.0'
-        'Cabal-syntax ^>=3.12.1.0' 'Cabal-syntax ^>=3.12.0.0'
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-debug-expensive-assertions \
