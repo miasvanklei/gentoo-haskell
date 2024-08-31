@@ -79,6 +79,8 @@ S="${WORKDIR}"/${GHC_P}
 BUMP_LIBRARIES=(
 	# "hackage-name          hackage-version"
 	"directory 1.3.8.4"
+	"Cabal 3.12.1.0"
+	"Cabal-syntax 3.12.1.0"
 )
 
 LICENSE="BSD"
@@ -454,6 +456,8 @@ src_unpack() {
 }
 
 src_prepare() {
+	bump_libs
+
 	# Force the use of C.utf8 locale
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1287>
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1289>
@@ -547,7 +551,15 @@ src_prepare() {
 		eapply "${FILESDIR}/${PN}-9.10.1-Cabal-syntax-add-no-alex-flag.patch"
 	popd
 
-	bump_libs
+	( cd "${S}/hadrian/bootstrap" || die
+		local MY_PN="hadrian/hadrian"
+		cabal_chdeps \
+			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
+			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
+		# apply patches in the form "packagename-*.patch"
+		mkdir "_build"
+		cp -r "${FILESDIR}/hadrian-bootstrap" "_build/patches"
+	)
 
 	eapply_user
 	# as we have changed the build system
@@ -668,13 +680,10 @@ src_configure() {
 
 	einfo "Bootstrapping hadrian"
 	( cd "${S}/hadrian/bootstrap" || die
-#		local MY_PN="hadrian/hadrian"
-#		cabal_chdeps \
-#			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
-#			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
 		${bootstrapargs} \
 			-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
 	)
+
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
 		$(use_enable elfutils dwarf-unwind) \
