@@ -1,0 +1,23 @@
+--- a/hadrian/bootstrap/bootstrap.py	2024-05-10 07:05:49.000000000 +0200
++++ b/hadrian/bootstrap/bootstrap.py	2024-08-31 10:36:14.209351347 +0200
+@@ -149,9 +149,9 @@
+     return BootstrapInfo(dependencies=deps, builtin=builtin)
+ 
+ def check_builtin(dep: BuiltinDep, ghc: Compiler) -> None:
+-    subprocess_run([str(ghc.ghc_pkg_path), 'describe', f'{dep.package}-{dep.version}'],
++    subprocess_run([str(ghc.ghc_pkg_path), 'describe', f'{dep.package}'],
+                    check=True, stdout=subprocess.DEVNULL)
+-    print(f'Using {dep.package}-{dep.version} from GHC...')
++    print(f'Using {dep.package} from GHC...')
+     return
+ 
+ def resolve_dep(dep : BootstrapDep) -> Path:
+@@ -224,7 +224,7 @@
+ 
+     # Note: we pass -i so GHC doesn't look for anything else
+     # This should be fine for cabal-install dependencies.
+-    check_call([str(ghc.ghc_path), '--make', '-package-env=-', '-i', f'-odir={setup_dist_dir}', f'-hidir={setup_dist_dir}', '-o', setup, 'Setup'])
++    check_call([str(ghc.ghc_path), '--make', '-dynamic', '-package-env=-', '-i', f'-odir={setup_dist_dir}', f'-hidir={setup_dist_dir}', '-o', setup, 'Setup'])
+     check_call([setup, 'configure'] + configure_args)
+     check_call([setup, 'build'] + build_args)
+     check_call([setup, 'install'] + build_args)

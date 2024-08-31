@@ -24,8 +24,8 @@ HOMEPAGE="https://www.haskell.org/ghc/"
 GHC_BINARY_PV="9.8.1"
 SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
+	https://downloads.haskell.org/~ghc/${PV}/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 	!ghcbootstrap? (
-		https://downloads.haskell.org/~ghc/${PV}/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 "
@@ -116,15 +116,7 @@ BDEPEND="
 		>=dev-libs/libxslt-1.1.2
 	)
 	ghcbootstrap? (
-		dev-haskell/base16-bytestring
-		dev-haskell/cabal-install
-		dev-haskell/cryptohash-sha256
-		dev-haskell/extra
-		dev-haskell/mtl
-		dev-haskell/parsec
-		dev-haskell/text
-		dev-haskell/unordered-containers
-		dev-util/shake
+		dev-lang/ghc
 	)
 	test? ( ${PYTHON_DEPS} )
 "
@@ -543,6 +535,9 @@ src_prepare() {
 	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
 	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
 
+	# allow hadrian bootstrap for current + bootstrap ghc
+	eapply "${FILESDIR}"/hadrian-9.10.1-bootstrap-any-ghc.patch
+
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
@@ -663,15 +658,23 @@ src_configure() {
 				--libdir="/$(get_libdir)" || die
 			emake DESTDIR="${WORKDIR}/ghc-bin" install
 		)
-
-		einfo "Bootstrapping hadrian"
-		( cd "${S}/hadrian/bootstrap" || die
-			./bootstrap.py \
-				-w "${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc" \
-				-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
-		)
 	fi
 
+	local bootstrapargs=( "./bootstrap.py" )
+
+	if ! use ghcbootstrap; then
+		bootstrapargs+=( "-w \"${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc\"" )
+	fi
+
+	einfo "Bootstrapping hadrian"
+	( cd "${S}/hadrian/bootstrap" || die
+#		local MY_PN="hadrian/hadrian"
+#		cabal_chdeps \
+#			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
+#			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
+		${bootstrapargs} \
+			-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
+	)
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
 		$(use_enable elfutils dwarf-unwind) \
@@ -773,25 +776,7 @@ src_compile() {
 #	# 3. and then all the rest
 #	#emake all
 
-	einfo "Setuping hadrian"
-	( local MY_PN="hadrian/hadrian"
-		cabal_chdeps \
-			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
-			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
-		mkdir "$HOME/.cabal"
-		cat <<- _EOF_ > "$HOME/.cabal/config"
-			library-vanilla: False
-			executable-dynamic: True
-		_EOF_
-	)
-
-
-
-	if use ghcbootstrap; then
-		local hadrian=( "${S}/hadrian/build-cabal" )
-	else
-		local hadrian=( "${S}/hadrian/bootstrap/_build/bin/hadrian" )
-	fi
+	local hadrian=( "${S}/hadrian/bootstrap/_build/bin/hadrian" )
 
 	hadrian+=(
 		"${hadrian_vars[@]}"
