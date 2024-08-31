@@ -1,6 +1,14 @@
 --- a/hadrian/bootstrap/bootstrap.py	2024-05-10 07:05:49.000000000 +0200
-+++ b/hadrian/bootstrap/bootstrap.py	2024-08-31 10:36:14.209351347 +0200
-@@ -149,9 +149,9 @@
++++ b/hadrian/bootstrap/bootstrap.py	2024-08-31 14:11:27.312723933 +0200
+@@ -38,6 +39,7 @@
+ ARTIFACTS   = BUILDDIR / 'artifacts'      # Where we put the archive
+ TMPDIR      = BUILDDIR / 'tmp'            #
+ PKG_DB      = BUILDDIR / 'packages.conf'  # package db
++PATCHDIR    = BUILDDIR / 'patches'        # where patches are stored
+ 
+ PackageName = NewType('PackageName', str)
+ Version = NewType('Version', str)
+@@ -149,9 +151,9 @@
      return BootstrapInfo(dependencies=deps, builtin=builtin)
  
  def check_builtin(dep: BuiltinDep, ghc: Compiler) -> None:
@@ -12,8 +20,27 @@
      return
  
  def resolve_dep(dep : BootstrapDep) -> Path:
-@@ -224,7 +224,7 @@
+@@ -189,9 +191,9 @@
  
+     sdist_dir = resolve_dep(dep)
+ 
+-    install_sdist(dist_dir, sdist_dir, ghc, dep.flags)
++    install_sdist(dep.package, dist_dir, sdist_dir, ghc, dep.flags)
+ 
+-def install_sdist(dist_dir: Path, sdist_dir: Path, ghc: Compiler, flags: List[str]):
++def install_sdist(packagename: PackageName, dist_dir: Path, sdist_dir: Path, ghc: Compiler, flags: List[str]):
+     prefix = PSEUDOSTORE.resolve()
+     flags_option = ' '.join(flags)
+     setup_dist_dir = dist_dir / 'setup'
+@@ -222,9 +224,14 @@
+         with open(setup_file, 'w') as setup_out:
+             setup_out.write('import Distribution.Simple\nmain = defaultMain')
+ 
++    check_call(['dos2unix', f'{packagename}.cabal'])
++
++    for patchfile in list(PATCHDIR.glob(f'{packagename}*.patch')):
++        check_call(['patch', '-f', '-p1', '-i', patchfile.resolve()])
++
      # Note: we pass -i so GHC doesn't look for anything else
      # This should be fine for cabal-install dependencies.
 -    check_call([str(ghc.ghc_path), '--make', '-package-env=-', '-i', f'-odir={setup_dist_dir}', f'-hidir={setup_dist_dir}', '-o', setup, 'Setup'])
