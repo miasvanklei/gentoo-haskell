@@ -1,0 +1,14 @@
+--- a/hadrian/bootstrap/bootstrap.py	2024-05-10 07:05:49.000000000 +0200
++++ b/hadrian/bootstrap/bootstrap.py	2024-09-01 17:54:55.220397799 +0200
+@@ -149,9 +149,9 @@
+     return BootstrapInfo(dependencies=deps, builtin=builtin)
+ 
+ def check_builtin(dep: BuiltinDep, ghc: Compiler) -> None:
+-    subprocess_run([str(ghc.ghc_pkg_path), 'describe', f'{dep.package}-{dep.version}'],
++    subprocess_run([str(ghc.ghc_pkg_path), 'describe', f'{dep.package}'],
+                    check=True, stdout=subprocess.DEVNULL)
+-    print(f'Using {dep.package}-{dep.version} from GHC...')
++    print(f'Using {dep.package} from GHC...')
+     return
+ 
+ def resolve_dep(dep : BootstrapDep) -> Path:

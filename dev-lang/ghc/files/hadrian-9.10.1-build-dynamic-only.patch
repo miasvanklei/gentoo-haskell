@@ -1,3 +1,14 @@
+--- a/hadrian/bootstrap/bootstrap.py    2024-05-10 07:05:49.000000000 +0200
++++ b/hadrian/bootstrap/bootstrap.py    2024-09-01 17:54:55.220397799 +0200
+@@ -224,7 +224,7 @@
+
+     # Note: we pass -i so GHC doesn't look for anything else
+     # This should be fine for cabal-install dependencies.
+-    check_call([str(ghc.ghc_path), '--make', '-package-env=-', '-i', f'-odir={setup_dist_dir}', f'-hidir={setup_dist_dir}', '-o', setup, 'Setup'])
++    check_call([str(ghc.ghc_path), '--make', '-dynamic', '-package-env=-', '-i', f'-odir={setup_dist_dir}', f'-hidir={setup_dist_dir}', '-o', setup, 'Setup'])
+     check_call([setup, 'configure'] + configure_args)
+     check_call([setup, 'build'] + build_args)
+     check_call([setup, 'install'] + build_args)
 --- a/hadrian/src/Rules/BinaryDist.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/BinaryDist.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -436,7 +436,7 @@
@@ -5,7 +16,7 @@
    traverse (fmap (\p -> (iserv, p)) . programPath)
        [ Context Stage1 iserv w Final
 -      | w <- [vanilla, profiling, dynamic]
-+      | w <- [profiling, dynamic]
++      | w <- [profilingDynamic, dynamic]
        , w `elem` rtsways
        ]
  
