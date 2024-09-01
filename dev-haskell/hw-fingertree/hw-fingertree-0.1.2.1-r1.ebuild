@@ -18,9 +18,9 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
-	'deepseq                    >= 1.4        && < 1.5' 'deepseq >= 1.4'
 	'hedgehog                   >= 0.6        && < 1.3' 'hedgehog >= 0.6'
 	'doctest                    >= 0.16.2     && < 0.21' 'doctest >= 0.16.2'
+	'deepseq                    >= 1.4        && < 1.5' 'deepseq                    >= 1.4'
 )
 
 RDEPEND="
