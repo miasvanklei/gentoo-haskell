@@ -469,11 +469,7 @@ ghc-check-bootstrap-mismatch () {
 # TODO: Break out into hadrian.eclass
 # Uses $_hadrian_args, if set
 run_hadrian() {
-	if use ghcbootstrap; then
-		local cmd=("${BROOT}/usr/bin/hadrian")
-	else
-		local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
-	fi
+	local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
 
 	cmd+=( "${_hadrian_args[@]}" "$@" )
 
@@ -658,7 +654,7 @@ src_configure() {
 	###
 
 	# Control the build flavour
-	local hadrian_flavour="default+default_stripping"
+	local hadrian_flavour="default+disable_stripping"
 	use profile || hadrian_flavour+="+no_profiled_libs"
 	use llvm && hadrian_flavour+="+llvm"
 
