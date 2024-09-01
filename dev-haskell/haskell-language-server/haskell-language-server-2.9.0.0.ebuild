@@ -121,6 +121,7 @@ RDEPEND="
 		>=dev-haskell/unordered-containers-0.2.10:=[profile?]
 	)
 	hls_plugins_cabal-fmt? (
+		dev-haskell/cabal-fmt:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/process-extras:=[profile?]
 	)
