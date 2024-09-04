@@ -590,6 +590,9 @@ src_prepare() {
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
 	eapply "${FILESDIR}"/${PN}-9.4.5-musl-target.patch
 
+	# fix QA issue with --with-cc
+	eapply "${FILESDIR}"/hadrian-9.10.1-remove-with-cc-configure-flag.patch
+
 	# build ghc and libraries only the dynamic way
 	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
 	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
