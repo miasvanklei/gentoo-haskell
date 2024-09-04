@@ -595,9 +595,6 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
 	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
 
-	# Disable stripping
-	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
-
 	# don't check versions
 	eapply "${FILESDIR}"/hadrian-9.10.1-dont-check-builtin-versions.patch
 
@@ -685,6 +682,11 @@ src_configure() {
 	# We also need to use the GHC_FLAGS flags when building ghc itself
 	echo "*.*.ghc.hs.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
 	echo "*.*.ghc.c.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
+
+	# Don't let it pre-strip the stage 1 bootstrapping libraries/executables
+	# (which will be installed to the system)
+	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
+	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
 
 	### Gather configuration variables for GHC
 
