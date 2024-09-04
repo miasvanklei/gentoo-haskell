@@ -283,6 +283,24 @@
       "version": "0.19.8"
     },
     {
+      "cabal_sha256": "c2ca36499bf9365726968b1e11a757e6d846c47cdf0c2c26a003698fd3c300fe",
+      "flags": [],
+      "package": "Cabal-syntax",
+      "revision": 0,
+      "source": "hackage",
+      "src_sha256": "75d6a0aa9c00990a0d6e7720ac50c6954f6c942fa1be42c8add7f1c025f7e212",
+      "version": "3.10.3.0"
+    },
+    {
+      "cabal_sha256": "4a36954a66769eef90353daa0dbb07d43e49c228281383c7e4134445d495f714",
+      "flags": [],
+      "package": "Cabal",
+      "revision": 0,
+      "source": "hackage",
+      "src_sha256": "cb7f7c66626d7555f799e786513ddd65a874fd23f1cf312990c7a48abfc0b2c6",
+      "version": "3.10.3.0"
+    },
+    {
       "cabal_sha256": null,
       "flags": [
         "-selftest",

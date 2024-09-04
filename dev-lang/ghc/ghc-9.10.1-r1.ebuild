@@ -114,6 +114,8 @@ BOOTSTRAP_LIBRARIES=(
 	"unordered-containers 0.2.20 2"
 	"utf8-string 1.0.2 0"
 	"shake 0.19.8 0"
+	"Cabal 3.10.3.0 0"
+	"Cabal-syntax 3.10.3.0 0"
 )
 
 LICENSE="BSD"
@@ -596,6 +598,7 @@ src_prepare() {
 	# Disable stripping
 	eapply "${FILESDIR}"/hadrian-9.6.2-disable-stripping.patch
 
+	# don't check versions
 	eapply "${FILESDIR}"/hadrian-9.10.1-dont-check-builtin-versions.patch
 
 	# mingw32 target
@@ -612,13 +615,6 @@ src_prepare() {
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
 	fi
-
-	# Loosen some bounds when bootstrapping with current ghc
-	( local MY_PN="hadrian/hadrian"
-		cabal_chdeps \
-			'Cabal                >= 3.10    && < 3.11' 'Cabal >= 3.10' \
-			'containers           >= 0.5     && < 0.7' 'containers           >= 0.5'
-	)
 
 	eapply_user
 	# as we have changed the build system
