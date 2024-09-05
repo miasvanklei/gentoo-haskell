@@ -10,8 +10,8 @@ This triggers Gentoo's QA notice, "Unrecognized configure options", when
 building GHC.
 
 Signed-off-by: hololeap <hololeap@protonmail.com>
---- a/src/Settings/Builders/Cabal.hs
-+++ b/src/Settings/Builders/Cabal.hs
+--- a/hadrian/src/Settings/Builders/Cabal.hs
++++ b/hadrian/src/Settings/Builders/Cabal.hs
 @@ -203,7 +203,6 @@ configureArgs cFlags' ldFlags' = do
          , conf "--with-curses-libraries"  $ arg =<< getSetting CursesLibDir
          -- ROMES:TODO: how is the Host set to TargetPlatformFull? That would be the target
