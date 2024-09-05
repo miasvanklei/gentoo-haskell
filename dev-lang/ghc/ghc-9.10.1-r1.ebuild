@@ -155,10 +155,6 @@ BDEPEND="
 		dev-python/sphinx
 		>=dev-libs/libxslt-1.1.2
 	)
-	ghcbootstrap? (
-		ghcmakebinary? ( dev-haskell/hadrian[static] )
-		~dev-haskell/hadrian-${PV}
-	)
 	test? (
 		${PYTHON_DEPS}
 		${LLVM_DEPS}
@@ -526,6 +522,11 @@ src_unpack() {
 src_prepare() {
 	bump_libs
 
+	# restore cabal-syntax Lexer.hs
+	mv "${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.x{,.source} || die
+	cp "${WORKDIR}"/Cabal-syntax.old/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs \
+		"${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs || die
+
 	hadrian_setup_sources
 
 	# Force the use of C.utf8 locale
@@ -650,7 +651,7 @@ src_configure() {
 	###
 
 	# Control the build flavour
-	local hadrian_flavour="default+disable_stripping"
+	local hadrian_flavour="default"
 	use profile || hadrian_flavour+="+no_profiled_libs"
 	use llvm && hadrian_flavour+="+llvm"
 
@@ -690,6 +691,9 @@ src_configure() {
 	# (which will be installed to the system)
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
 	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
+
+	# Disable need for alex util when building Cabal-syntax
+	echo '*.Cabal-syntax.cabal.configure.opts += --flag=no-alex' >> _build/hadrian.settings
 
 	### Gather configuration variables for GHC
 
