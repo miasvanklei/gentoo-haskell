@@ -21,12 +21,13 @@ inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal
 DESCRIPTION="The Glasgow Haskell Compiler"
 HOMEPAGE="https://www.haskell.org/ghc/"
 
-GHC_BRANCH_COMMIT="f3225ed4b3f3c4309f9342c5e40643eeb0cc45da" # ghc-9.10.1-release
+GHC_BRANCH_COMMIT="f3225ed4b3f3c4309f9342c5e40643eeb0cc45da" # ghc-9.8.2-release
 
-GHC_BINARY_PV="9.8.1"
+GHC_BINARY_PV="9.6.2"
 SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
 	!ghcbootstrap? (
+		https://downloads.haskell.org/~ghc/9.8.2/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 	test? (
@@ -39,7 +40,7 @@ GHC_BUGGY_TESTS=(
 	# Actual stderr output differs from expected:
 	# +/usr/libexec/gcc/x86_64-pc-linux-gnu/ld: warning: ManySections.o: missing .note.GNU-stack section implies executable stack
 	# +/usr/libexec/gcc/x86_64-pc-linux-gnu/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-	"recomp015"
+	"testsuite/tests/driver/recomp015"
 )
 
 yet_binary() {
@@ -90,32 +91,15 @@ S="${WORKDIR}"/${GHC_P}
 
 BUMP_LIBRARIES=(
 	# "hackage-name          hackage-version"
-	"directory 1.3.8.4"
-	"Cabal 3.12.1.0"
-	"Cabal-syntax 3.12.1.0"
-)
 
-BOOTSTRAP_LIBRARIES=(
-	# "hackage-name hackage-version hackage-revision"
-	"base16-bytestring 1.0.2.0 1"
-	"clock 0.8.4 0"
-	"cryptohash-sha256 0.11.102.1 4"
-	"extra 1.7.16 0"
-	"filepattern 0.1.3 0"
-	"os-string 2.0.2.2 0"
-	"hashable 1.4.4.0 1"
-	"heaps 0.4 0"
-	"js-dgtable 0.5.2 0"
-	"js-flot 0.8.3 0"
-	"js-jquery 3.3.1 0"
-	"primitive 0.9.0.0 1"
-	"splitmix 0.1.0.5 1"
-	"random 1.2.1.2 0"
-	"unordered-containers 0.2.20 2"
-	"utf8-string 1.0.2 0"
-	"shake 0.19.8 0"
-	"Cabal 3.10.3.0 0"
-	"Cabal-syntax 3.10.3.0 0"
+	# These libs are a higher version in ghc-9.6.5 than they are in ghc-9.8.2
+	# This could cause problems for hackport when determining minimum ghc
+	# version, so we upgrade them.
+	"Cabal-syntax 3.10.3.0"
+	"Cabal        3.10.3.0"
+	"directory    1.3.8.5"
+	"filepath     1.4.300.1"
+	"process      1.6.19.0"
 )
 
 LICENSE="BSD"
@@ -154,6 +138,10 @@ BDEPEND="
 		app-text/docbook-xsl-stylesheets
 		dev-python/sphinx
 		>=dev-libs/libxslt-1.1.2
+	)
+	ghcbootstrap? (
+		ghcmakebinary? ( dev-haskell/hadrian[static] )
+		~dev-haskell/hadrian-${PV}
 	)
 	test? (
 		${PYTHON_DEPS}
@@ -251,14 +239,6 @@ update_SRC_URI() {
 
 		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
 	done
-
-	for p in "${BOOTSTRAP_LIBRARIES[@]}"; do
-		set -- $p
-		pn=$1 pv=$2 rv=$3
-
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
-	done
 }
 
 update_SRC_URI
@@ -277,23 +257,6 @@ bump_libs() {
 
 		bump_lib "${dir}" "${pn}" "${pv}"
 	done
-}
-
-hadrian_setup_sources() {
-	local bootstrap_src="${WORKDIR}/hadrian-bootstrap-sources"
-	mkdir -p "${bootstrap_src}"
-
-	for p in "${BOOTSTRAP_LIBRARIES[@]}"; do
-		set -- $p
-		pn=$1 pv=$2 rv=$3
-
-		cp "${DISTDIR}/${pn}-${pv}.tar.gz" "${bootstrap_src}"
-		cp "${DISTDIR}/${pn}-${pv}-${rv}.cabal" "${bootstrap_src}/${pn}.cabal"
-	done
-
-	cp "${FILESDIR}/plan-bootstrap-${PV}.json" "${bootstrap_src}/plan-bootstrap.json"
-
-	tar czf "${bootstrap_src}.tar.gz" -C "${bootstrap_src}" .
 }
 
 ghc_setup_toolchain() {
@@ -467,7 +430,11 @@ ghc-check-bootstrap-mismatch () {
 # TODO: Break out into hadrian.eclass
 # Uses $_hadrian_args, if set
 run_hadrian() {
-	local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
+	if use ghcbootstrap; then
+		local cmd=("${BROOT}/usr/bin/hadrian")
+	else
+		local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
+	fi
 
 	cmd+=( "${_hadrian_args[@]}" "$@" )
 
@@ -520,15 +487,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	bump_libs
-
-	# restore cabal-syntax Lexer.hs
-	mv "${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.x{,.source} || die
-	cp "${WORKDIR}"/Cabal-syntax.old/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs \
-		"${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs || die
-
-	hadrian_setup_sources
-
 	# Force the use of C.utf8 locale
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1287>
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1289>
@@ -577,6 +535,18 @@ src_prepare() {
 	# Release tarball does not contain needed test data
 	if use test; then
 		cp -a "${WORKDIR}/${PN}-${GHC_BRANCH_COMMIT}/testsuite" "${S}" || die
+
+		[[ ${#GHC_BUGGY_TESTS[@]} -gt 0 ]] && einfo "Tests have been marked as buggy and will be deleted:"
+
+		local t
+
+		for t in "${GHC_BUGGY_TESTS[@]}"; do
+			einfo "     * ${t}"
+		done
+
+		for t in "${GHC_BUGGY_TESTS[@]}"; do
+			rm -r "${S}/${t}" || die
+		done
 	fi
 
 	cd "${S}" # otherwise eapply will break
@@ -585,37 +555,27 @@ src_prepare() {
 
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-	eapply "${FILESDIR}"/${PN}-9.10.1-llvm-18.patch
+	eapply "${FILESDIR}"/${PN}-9.6.4-llvm-18.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
 	eapply "${FILESDIR}"/${PN}-9.4.5-musl-target.patch
 
-	# fix QA issue with --with-cc
-	eapply "${FILESDIR}"/hadrian-9.10.1-remove-with-cc-configure-flag.patch
-
-	# build ghc and libraries only the dynamic way
-	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
-	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
-	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
-
-	# don't check versions
-	eapply "${FILESDIR}"/hadrian-9.10.1-dont-check-builtin-versions.patch
 
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
 	popd
 
-	pushd "${S}/libraries/Cabal"
-		eapply "${FILESDIR}/${PN}-9.10.1-Cabal-syntax-add-no-alex-flag.patch"
-	popd
+	eapply "${FILESDIR}"/${PN}-9.8.2-force-merge-objects-when-building-dynamic-objects.patch
 
 	# Only applies to the testsuite directory copied from the git snapshot
 	if use test; then
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
 	fi
+
+	bump_libs
 
 	eapply_user
 	# as we have changed the build system
@@ -687,15 +647,11 @@ src_configure() {
 	echo "*.*.ghc.hs.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
 	echo "*.*.ghc.c.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
 
-	# Don't let it pre-strip the stage 1 bootstrapping libraries/executables
-	# (which will be installed to the system)
+	# Don't let it pre-strip the stage 1 bootstrapping libraries (which will be
+	# installed to the system)
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
-	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
 
-	# Disable need for alex util when building Cabal-syntax
-	echo '*.Cabal-syntax.cabal.configure.opts += --flag=no-alex' >> _build/hadrian.settings
-
-	### Gather configuration variables for GHC
+    ### Gather configuration variables for GHC
 
 	# Get ghc from the binary
 	# except when bootstrapping we just pick ghc up off the path
@@ -751,6 +707,9 @@ src_configure() {
 	einfo "Final _build/hadrian.settings:"
 	cat _build/hadrian.settings || die
 
+
+
+
 	### Bootstrap Hadrian, then final configure (should this be here or in src_compile?)
 
 	if ! use ghcbootstrap; then
@@ -762,20 +721,14 @@ src_configure() {
 				--libdir="/$(get_libdir)" || die
 			emake DESTDIR="${WORKDIR}/ghc-bin" install
 		)
+
+		einfo "Bootstrapping hadrian"
+		( cd "${S}/hadrian/bootstrap" || die
+			./bootstrap.py \
+				-w "${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc" \
+				-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
+		)
 	fi
-
-
-	local bootstrapargs=( "./bootstrap.py" )
-
-	if ! use ghcbootstrap; then
-		bootstrapargs+=( "-w \"${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc\"" )
-	fi
-
-	einfo "Bootstrapping hadrian"
-	( cd "${S}/hadrian/bootstrap" || die
-		${bootstrapargs} \
-			-s "${WORKDIR}/hadrian-bootstrap-sources.tar.gz" || die "Hadrian bootstrap failed"
-	)
 
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
@@ -790,6 +743,7 @@ src_configure() {
 }
 
 src_compile() {
+
 	run_hadrian binary-dist-dir
 
 	# FIXME: This is failing, but the docs mention it:
@@ -810,13 +764,6 @@ src_test() {
 	local args=(
 		--progress-info=unicorn # good luck unicorns
 	)
-
-	[[ ${#GHC_BUGGY_TESTS[@]} -gt 0 ]] && einfo "Tests have been marked as buggy and will be skipped:"
-
-	for t in "${GHC_BUGGY_TESTS[@]}"; do
-		args+=( "--broken-test=${t}" )
-		einfo "     * ${t}"
-	done
 
 	run_hadrian "${args[@]}" test
 }
