@@ -524,7 +524,7 @@ src_prepare() {
 
 	# restore cabal-syntax Lexer.hs
 	mv "${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.x{,.source} || die
-	cp "${WORKDIR}"/Cabal-syntax.old/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs \
+	cp "${WORKDIR}"/Cabal-syntax.old/src/Distribution/Fields/Lexer.hs \
 		"${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs || die
 
 	hadrian_setup_sources
