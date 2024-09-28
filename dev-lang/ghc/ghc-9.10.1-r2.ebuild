@@ -132,6 +132,7 @@ LLVM_DEPS="
 		sys-devel/llvm:16
 		sys-devel/llvm:17
 		sys-devel/llvm:18
+		sys-devel/llvm:19
 	)
 "
 
@@ -597,7 +598,7 @@ src_prepare() {
 
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-	eapply "${FILESDIR}"/${PN}-9.10.1-llvm-18.patch
+	eapply "${FILESDIR}"/${PN}-9.10.1-llvm-19.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -611,8 +612,9 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
 	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
 
-	# don't check versions
+	# don't check versions + bump versions
 	eapply "${FILESDIR}"/hadrian-9.10.1-dont-check-builtin-versions.patch
+	eapply "${FILESDIR}"/hadrian-9.10.1-bump-libraries.patch
 
 	# mingw32 target
 	pushd "${S}/libraries/Win32"
