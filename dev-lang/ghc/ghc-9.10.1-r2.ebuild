@@ -621,10 +621,6 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-8.2.1_rc1-win32-cross-2-hack.patch # bad workaround
 	popd
 
-	pushd "${S}/libraries/Cabal"
-		eapply "${FILESDIR}/${PN}-9.10.1-Cabal-syntax-add-no-alex-flag.patch"
-	popd
-
 	# Only applies to the testsuite directory copied from the git snapshot
 	if use test; then
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
