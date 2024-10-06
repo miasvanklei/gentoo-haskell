@@ -894,6 +894,9 @@ src_install() {
 		dostrip -x "/usr/$(get_libdir)/$(cross)${GHC_P}"
 		dostrip    "/usr/$(get_libdir)/$(cross)${GHC_P}/bin"
 	fi
+
+        echo "LDPATH=\"/usr/lib/ghc-${PV}/lib/${CTARGET#-}-linux-ghc-${PV}\"" > "${T}"/50ghc || die
+        doenvd "${T}"/50ghc
 }
 
 pkg_preinst() {
