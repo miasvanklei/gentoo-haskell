@@ -12,13 +12,14 @@ building GHC.
 Signed-off-by: hololeap <hololeap@protonmail.com>
 --- a/src/Settings/Builders/Cabal.hs
 +++ b/src/Settings/Builders/Cabal.hs
-@@ -203,7 +203,6 @@ configureArgs cFlags' ldFlags' = do
+@@ -200,7 +200,6 @@ configureArgs cFlags' ldFlags' = do
+         , conf "--with-gmp-libraries"     $ arg =<< getSetting GmpLibDir
          , conf "--with-curses-libraries"  $ arg =<< getSetting CursesLibDir
-         -- ROMES:TODO: how is the Host set to TargetPlatformFull? That would be the target
          , conf "--host"                   $ arg =<< getSetting TargetPlatformFull
 -        , conf "--with-cc" $ arg =<< getBuilderPath . (Cc CompileC) =<< getStage
-         , ghcVersionH
+         , notStage0 ? arg "--ghc-option=-ghcversion-file=rts/include/ghcversion.h"
          ]
  
 -- 
 2.44.2
+
