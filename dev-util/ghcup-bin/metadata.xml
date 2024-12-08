@@ -5,12 +5,8 @@
 		<email>haskell@gentoo.org</email>
 		<name>Gentoo Haskell</name>
 	</maintainer>
-	<use>
-		<flag name="profile">Enable profiling flags</flag>
-		<flag name="threads">Enable threading and rtsopts</flag>
-	</use>
 	<upstream>
-		<remote-id type="hackage">hackport</remote-id>
-		<remote-id type="github">gentoo-haskell/hackport</remote-id>
+		<remote-id type="hackage">ghcup</remote-id>
+		<remote-id type="github">haskell/ghcup-hs</remote-id>
 	</upstream>
 </pkgmetadata>
