@@ -83,7 +83,7 @@
          let pkg = unsafeFindPackageByPath pkgpath
 -            context = Context stage pkg vanilla Inplace
 +            context = Context stage pkg dynamic Inplace
-         extra <- extraDependenciesFor stage pkg
+         extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
          srcs <- hsSources context
          gens <- interpretInContext context generatedDependencies
 --- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
