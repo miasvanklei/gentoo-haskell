@@ -88,34 +88,35 @@ GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 
 S="${WORKDIR}"/${GHC_P}
 
+BUMP_DEP_LIBRARIES=(
+)
+
 BUMP_LIBRARIES=(
-	# "hackage-name          hackage-version"
-	"directory 1.3.8.5"
-	"Cabal 3.12.1.0"
-	"Cabal-syntax 3.12.1.0"
+	"directory" "1.3.8.5"
+	"Cabal" "3.12.1.0"
+	"Cabal-syntax" "3.12.1.0"
 )
 
 BOOTSTRAP_LIBRARIES=(
-	# "hackage-name hackage-version hackage-revision"
-	"base16-bytestring 1.0.2.0 1"
-	"clock 0.8.4 0"
-	"cryptohash-sha256 0.11.102.1 4"
-	"extra 1.7.16 0"
-	"filepattern 0.1.3 0"
-	"os-string 2.0.2.2 0"
-	"hashable 1.4.4.0 1"
-	"heaps 0.4 0"
-	"js-dgtable 0.5.2 0"
-	"js-flot 0.8.3 0"
-	"js-jquery 3.3.1 0"
-	"primitive 0.9.0.0 1"
-	"splitmix 0.1.0.5 1"
-	"random 1.2.1.2 0"
-	"unordered-containers 0.2.20 2"
-	"utf8-string 1.0.2 0"
-	"shake 0.19.8 0"
-	"Cabal 3.10.3.0 0"
-	"Cabal-syntax 3.10.3.0 0"
+	"base16-bytestring" "1.0.2.0" "1"
+	"clock" "0.8.4" "0"
+	"cryptohash-sha256" "0.11.102.1" "4"
+	"extra" "1.7.16" "0"
+	"filepattern" "0.1.3" "0"
+	"os-string" "2.0.2.2" "0"
+	"hashable" "1.4.4.0" "1"
+	"heaps" "0.4" "0"
+	"js-dgtable" "0.5.2" "0"
+	"js-flot" "0.8.3" "0"
+	"js-jquery" "3.3.1" "0"
+	"primitive" "0.9.0.0" "1"
+	"splitmix" "0.1.0.5" "1"
+	"random" "1.2.1.2" "0"
+	"unordered-containers" "0.2.20" "2"
+	"utf8-string" "1.0.2" "0"
+	"shake" "0.19.8" "0"
+	"Cabal" "3.10.3.0" "0"
+	"Cabal-syntax" "3.10.3.0" "0"
 )
 
 LICENSE="BSD"
@@ -244,25 +245,38 @@ bump_lib() {
 	mv "${WORKDIR}"/"${p}" "${dir}"/"${pn}" || die
 }
 
-update_SRC_URI() {
-	local p pn pv
-	for p in "${BUMP_LIBRARIES[@]}"; do
-		set -- $p
+add_bump_libraries_SRC_URI() {
+	local pn pv
+	while :; do
 		pn=$1 pv=$2
 
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-	done
-
-	for p in "${BOOTSTRAP_LIBRARIES[@]}"; do
-		set -- $p
-		pn=$1 pv=$2 rv=$3
+		[[ -n ${pn} ]] || break
+		[[ -n ${pv} ]] || die "'${pn}' has no version"
 
 		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
+
+		shift 2
 	done
 }
 
-update_SRC_URI
+add_bootstrap_libraries_SRC_URI() {
+	local pn pv rv
+	while :; do
+		pn=$1 pv=$2 rv=$3
+
+		[[ -n ${pn} ]] || break
+		[[ -n ${pv} ]] || die "'${pn}' has no version"
+		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
+
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
+
+		shift 3
+	done
+}
+
+add_bump_libraries_SRC_URI "${BUMP_LIBRARIES[@]}"
+add_bootstrap_libraries_SRC_URI "${BOOTSTRAP_LIBRARIES[@]}"
 
 bump_libs() {
 	local p pn pv dir
@@ -280,17 +294,44 @@ bump_libs() {
 	done
 }
 
+
+bump_deps_libraries() {
+	while :; do
+		pn=$1 from=$2 to=$3
+
+		[[ -n ${pn} ]] || break
+		[[ -n ${from} ]] || die "'${pn}' has no 'from' part"
+		[[ -n ${to} ]] || die "'${from}' has no 'to' part"
+
+		export CABAL_FILE="${bootstrap_src}/${pn}.cabal"
+		export mycabal_chdeps=(
+			"${from}" "${to}"
+		)
+
+		cabal_chdeps "${mycabal_chdeps[@]}"
+
+		shift 3
+	done
+}
+
 hadrian_setup_sources() {
 	local bootstrap_src="${WORKDIR}/hadrian-bootstrap-sources"
 	mkdir -p "${bootstrap_src}"
 
-	for p in "${BOOTSTRAP_LIBRARIES[@]}"; do
-		set -- $p
+	while :; do
 		pn=$1 pv=$2 rv=$3
+
+		[[ -n ${pn} ]] || break
+		[[ -n ${pv} ]] || die "'${pn}' has no version"
+		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
 
 		cp "${DISTDIR}/${pn}-${pv}.tar.gz" "${bootstrap_src}"
 		cp "${DISTDIR}/${pn}-${pv}-${rv}.cabal" "${bootstrap_src}/${pn}.cabal"
+
+		shift 3
 	done
+
+	bump_deps_libraries "${BUMP_DEP_LIBRARIES[@]}"
 
 	cp "${FILESDIR}/plan-bootstrap-${PV}.json" "${bootstrap_src}/plan-bootstrap.json"
 
@@ -523,12 +564,7 @@ src_unpack() {
 src_prepare() {
 	bump_libs
 
-	# restore cabal-syntax Lexer.hs
-	mv "${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.x{,.source} || die
-	cp "${WORKDIR}"/Cabal-syntax.old/src/Distribution/Fields/Lexer.hs \
-		"${S}"/libraries/Cabal/Cabal-syntax/src/Distribution/Fields/Lexer.hs || die
-
-	hadrian_setup_sources
+	hadrian_setup_sources "${BOOTSTRAP_LIBRARIES[@]}"
 
 	# Force the use of C.utf8 locale
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1287>
@@ -607,11 +643,10 @@ src_prepare() {
 	# build ghc and libraries only the dynamic way
 	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
 	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
-	eapply "${FILESDIR}"/hadrian-9.10.1-build-dynamic-only.patch
+	eapply "${FILESDIR}"/hadrian-9.8.1-build-dynamic-only.patch
 
 	# don't check versions + bump versions
 	eapply "${FILESDIR}"/hadrian-9.10.1-dont-check-builtin-versions.patch
-	eapply "${FILESDIR}"/hadrian-9.10.1-bump-libraries.patch
 
 	# Fix QA Notice: Found the following implicit function declarations in configure logs
 	eapply "${FILESDIR}/${PN}-9.10.1-fix-configure-implicit-function.patch"
@@ -791,6 +826,7 @@ src_configure() {
 
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
+		--with-system-libffi \
 		$(use_enable elfutils dwarf-unwind) \
 		$(use_enable numa) \
 		$(use_enable unregisterised)
