@@ -18,6 +18,7 @@ KEYWORDS="amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND="
 	>=dev-lang/ghc-8.8.1:=
+	>=dev-haskell/os-string-2.0:=[profile?] <dev-haskell/os-string-2.1:=[profile?]
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
