@@ -24,3 +24,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-2.2.0.1
 "
+
+CABAL_CHDEPS=(
+	"time >=1.5 && <1.13" "time >=1.5 && <1.15"
+)
