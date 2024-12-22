@@ -88,3 +88,7 @@ src_configure() {
 
 	haskell-cabal_src_configure "${flags[@]}"
 }
+
+PATCHES=(
+	"${FILESDIR}/support-ghc-9.8.4.patch"
+)
