@@ -18,13 +18,12 @@ IUSE="examples executable"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.1.0.0-modify-flags.patch"
-	"${FILESDIR}/${PN}-9.10-support.patch"
 )
 
 RDEPEND=">=dev-haskell/ansi-terminal-0.10.3:=[profile?] <dev-haskell/ansi-terminal-1.1:=[profile?]
 	>=dev-haskell/async-2.2.2:=[profile?] <dev-haskell/async-2.3:=[profile?]
 	>=dev-haskell/data-default-0.7.1:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
-	>=dev-haskell/ghc-exactprint-1.5.0:=[profile?] <dev-haskell/ghc-exactprint-1.10:=[profile?]
+	>=dev-haskell/ghc-exactprint-1.5.0:=[profile?] <dev-haskell/ghc-exactprint-1.12:=[profile?]
 	>=dev-haskell/list-t-1.0.4:=[profile?] <dev-haskell/list-t-1.1:=[profile?]
 	>=dev-haskell/optparse-applicative-0.15.1:=[profile?] <dev-haskell/optparse-applicative-0.19:=[profile?]
 	>=dev-haskell/random-shuffle-0.0.4:=[profile?] <dev-haskell/random-shuffle-0.1:=[profile?]
@@ -32,7 +31,7 @@ RDEPEND=">=dev-haskell/ansi-terminal-0.10.3:=[profile?] <dev-haskell/ansi-termin
 	>=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
-	>=dev-lang/ghc-9.2:=[profile?] <dev-lang/ghc-9.11:=[profile?]
+	>=dev-lang/ghc-9.2:=[profile?] <dev-lang/ghc-9.13:=[profile?]
 	examples? (
 		dev-haskell/ghc-paths:=[profile?]
 		>=dev-haskell/haskell-src-exts-1.23.0:=[profile?] <dev-haskell/haskell-src-exts-1.24:=[profile?]
