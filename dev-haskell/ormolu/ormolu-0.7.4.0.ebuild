@@ -38,10 +38,10 @@ RDEPEND="
 		>=dev-haskell/th-env-0.1.1:=[profile?] <dev-haskell/th-env-0.2:=[profile?]
 	)
 	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.11:=[profile?]
+		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
 	)
 	!ghc-lib? (
-		=dev-lang/ghc-9.10*:=
+		=dev-lang/ghc-9.8*:=
 	)
 "
 DEPEND="${RDEPEND}
