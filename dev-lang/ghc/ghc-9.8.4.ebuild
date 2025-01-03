@@ -13,20 +13,24 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 	fi
 fi
 
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
-inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal
+inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal verify-sig
 
 DESCRIPTION="The Glasgow Haskell Compiler"
 HOMEPAGE="https://www.haskell.org/ghc/"
 
-GHC_BRANCH_COMMIT="f3225ed4b3f3c4309f9342c5e40643eeb0cc45da" # ghc-9.10.1-release
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
-GHC_BINARY_PV="9.8.1"
+GHC_BRANCH_COMMIT="a3401159f2846605abb517e71af463df47398e72" # ghc-9.8.4-release
+
+GHC_BINARY_PV="9.6.2"
 SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
+	verify-sig? ( https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz.sig )
 	!ghcbootstrap? (
+		https://downloads.haskell.org/~ghc/9.8.2/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 	test? (
@@ -136,9 +140,9 @@ LLVM_DEPS="
 RDEPEND="
 	>=dev-lang/perl-5.6.1
 	dev-libs/gmp:0=
+	dev-libs/libffi:=
 	sys-libs/ncurses:=[unicode(+)]
 	elfutils? ( dev-libs/elfutils )
-	!ghcmakebinary? ( dev-libs/libffi:= )
 	numa? ( sys-process/numactl )
 	llvm? ( ${LLVM_DEPS} )
 "
@@ -156,6 +160,9 @@ BDEPEND="
 	test? (
 		${PYTHON_DEPS}
 		${LLVM_DEPS}
+	)
+	verify-sig? (
+		sec-keys/openpgp-keys-ghc
 	)
 "
 
@@ -289,7 +296,6 @@ bump_libs() {
 		bump_lib "${dir}" "${pn}" "${pv}"
 	done
 }
-
 
 bump_deps_libraries() {
 	while :; do
@@ -554,7 +560,16 @@ src_unpack() {
 	case ${CHOST} in
 		*-darwin* | *-solaris*)  ONLYA=${GHC_P}-src.tar.xz  ;;
 	esac
-	unpacker ${ONLYA}
+	if use verify-sig; then
+		verify-sig_verify_detached "${DISTDIR}"/${P}-src.tar.xz{,.sig}
+	fi
+	# Strip signature files from the list of files to unpack
+	for f in ${ONLYA}; do
+		if [[ ${f} != *.sig ]]; then
+			nosig="${nosig} ${f}"
+		fi
+	done
+	unpacker ${nosig}
 }
 
 src_prepare() {
@@ -739,9 +754,6 @@ src_configure() {
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
 	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
 
-	# Disable need for alex util when building Cabal-syntax
-	echo '*.Cabal-syntax.cabal.configure.opts += --flag=no-alex' >> _build/hadrian.settings
-
 	### Gather configuration variables for GHC
 
 	# Get ghc from the binary
@@ -766,6 +778,10 @@ src_configure() {
 
 		# Put docs into the right place, ie /usr/share/doc/ghc-${GHC_PV}
 		--docdir="${EPREFIX}/usr/share/doc/$(cross)${PF}"
+
+		# Use system libffi instead of bundled libffi-tarballs
+		--with-system-libffi
+		--with-ffi-includes=$($(tc-getPKG_CONFIG) --cflags-only-I libffi | sed 's/-I//g')
 	)
 
 	if [[ ${CBUILD} != ${CHOST} ]]; then
@@ -793,6 +809,7 @@ src_configure() {
 	einfo "Final _build/hadrian.settings:"
 	cat _build/hadrian.settings || die
 
+
 	### Bootstrap Hadrian, then final configure (should this be here or in src_compile?)
 
 	if ! use ghcbootstrap; then
@@ -819,9 +836,7 @@ src_configure() {
 			-s "${WORKDIR}/hadrian-bootstrap-sources.tar.gz" || die "Hadrian bootstrap failed"
 	)
 
-#		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
-		--with-system-libffi \
 		$(use_enable elfutils dwarf-unwind) \
 		$(use_enable numa) \
 		$(use_enable unregisterised)
