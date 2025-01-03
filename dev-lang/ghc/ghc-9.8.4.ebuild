@@ -30,7 +30,6 @@ SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
 	verify-sig? ( https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz.sig )
 	!ghcbootstrap? (
-		https://downloads.haskell.org/~ghc/9.8.2/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 	test? (

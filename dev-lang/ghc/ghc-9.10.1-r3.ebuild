@@ -13,7 +13,7 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 	fi
 fi
 
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
 inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal
@@ -745,9 +745,6 @@ src_configure() {
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
 	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
 
-	# Disable need for alex util when building Cabal-syntax
-	echo '*.Cabal-syntax.cabal.configure.opts += --flag=no-alex' >> _build/hadrian.settings
-
 	### Gather configuration variables for GHC
 
 	# Get ghc from the binary
@@ -831,7 +828,6 @@ src_configure() {
 
 #		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
-		--with-system-libffi \
 		$(use_enable elfutils dwarf-unwind) \
 		$(use_enable numa) \
 		$(use_enable unregisterised)
