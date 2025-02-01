@@ -23,7 +23,7 @@ RDEPEND="
 	>=dev-haskell/attoparsec-0.14:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
 	>=dev-haskell/co-log-core-0.3:=[profile?] <dev-haskell/co-log-core-0.4:=[profile?]
 	>=dev-haskell/data-default-0.7:=[profile?] <dev-haskell/data-default-0.8:=[profile?]
-	>=dev-haskell/extra-1.7:=[profile?] <dev-haskell/extra-1.8:=[profile?]
+	>=dev-haskell/extra-1.7:=[profile?] <dev-haskell/extra-1.9:=[profile?]
 	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
 	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.4:=[profile?]
 	>=dev-haskell/lens-aeson-1.2:=[profile?] <dev-haskell/lens-aeson-1.3:=[profile?]
