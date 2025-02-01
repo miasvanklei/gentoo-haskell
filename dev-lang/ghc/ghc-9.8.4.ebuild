@@ -678,7 +678,11 @@ src_prepare() {
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
 	fi
 
+	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1579>
+	eapply "${FILESDIR}/${PN}-9.8.4-add-missing-rts-include.patch"
+
 	eapply_user
+
 	# as we have changed the build system
 	eautoreconf
 }
