@@ -50,12 +50,12 @@ index ff2926a..dfc0456 100644
 +++ b/test/Doctest.hs
 @@ -9,20 +9,12 @@ DocTest's run function to keep docs up to date.
  module Main (main) where
-
+ 
  import Test.DocTest (doctest)
 -
 +import Build_doctests (flags, pkgs, module_sources)
 +import System.Environment.Compat (unsetEnv)
-
+ 
  main :: IO ()
 -main = doctest
 -    $ "-XDeriveAnyClass"
@@ -83,7 +83,7 @@ index 3d75fad..41f2b2b 100644
 @@ -74,6 +74,12 @@ common common-options
                         TypeApplications
                         ViewPatterns
-
+ 
 +custom-setup:
 +  setup-depends:
 +      base
@@ -97,10 +97,11 @@ index 3d75fad..41f2b2b 100644
    type:                exitcode-stdio-1.0
    hs-source-dirs:      test
    main-is:             Doctest.hs
--  build-depends:       doctest >= 0.16 && < 0.22
+-  build-depends:       doctest >= 0.16 && < 1
 +  build-depends:
-+      doctest >= 0.16 && < 0.22
++      doctest >= 0.16 && < 1
 +    , base-compat
    ghc-options:         -threaded
 -- 
 2.39.2
+
