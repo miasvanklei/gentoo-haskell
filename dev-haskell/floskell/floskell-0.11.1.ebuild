@@ -44,7 +44,7 @@ DEPEND="${RDEPEND}
 "
 
 CABAL_CHDEPS=(
-	'base >=4.9 && <4.20' 'base >=4.9 && <4.21'
+	'base >=4.9 && <4.20' 'base >=4.9 && <4.22'
 )
 
 src_configure() {
