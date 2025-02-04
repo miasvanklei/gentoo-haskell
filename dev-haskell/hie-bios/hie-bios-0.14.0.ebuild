@@ -47,3 +47,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-hunit
 	)
 "
+
+CABAL_CHDEPS=(
+	"ghc                  >= 9.2.1 && < 9.11" "ghc                  >= 9.2.1 && < 9.13"
+)
