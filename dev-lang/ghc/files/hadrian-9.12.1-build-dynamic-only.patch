@@ -77,15 +77,15 @@
  data HsObject = HsObject Basename Extension deriving (Eq, Show)
 --- a/hadrian/src/Rules/Dependencies.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/Dependencies.hs	2022-06-24 17:22:47.065945710 +0200
-@@ -20,7 +20,7 @@
+@@ -23,7 +23,7 @@
      root -/- "**/.dependencies.mk" %> \mk -> do
          DepMkFile stage pkgpath <- getDepMkFile root mk
          let pkg = unsafeFindPackageByPath pkgpath
 -            context = Context stage pkg vanilla Inplace
 +            context = Context stage pkg dynamic Inplace
-         extra <- maybe (return []) ($ stage) $ M.lookup pkg extra_dependencies
          srcs <- hsSources context
          gens <- interpretInContext context generatedDependencies
+         need (srcs ++ gens)
 --- a/hadrian/src/Rules/Register.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Rules/Register.hs	2022-06-24 17:22:47.065945710 +0200
 @@ -37,7 +37,7 @@
@@ -137,43 +137,37 @@
              Just builder = determineBuilder stg inp
 --- a/hadrian/src/Settings/Default.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Settings/Default.hs	2022-06-24 17:22:47.066945724 +0200
-@@ -170,31 +170,21 @@
- testsuitePackages = return ([ timeout | windowsHost ] ++ [ checkPpr, checkExact, countDeps, ghcConfig ])
- 
- -- | Default build ways for library packages:
---- * We always build 'vanilla' way.
- -- * We build 'profiling' way when stage > Stage0.
---- * We build 'dynamic' way when stage > Stage0 and the platform supports it.
-+-- * We build 'dynamic' way when the platform supports it.
+@@ -201,25 +201,19 @@
  defaultLibraryWays :: Ways
  defaultLibraryWays = Set.fromList <$>
      mconcat
 -    [ pure [vanilla]
 -    , notStage0 ? pure [profiling]
--    , notStage0 ? platformSupportsSharedLibs ? pure [dynamic]
-+    [ pure [profiling]
-+    , platformSupportsSharedLibs ? pure [dynamic]
+-    , notStage0 ? platformSupportsSharedLibs ? pure [dynamic, profilingDynamic]
++    [ pure [dynamic]
++    , notStage0 ? pure [profilingDynamic]
      ]
- 
+
  -- | Default build ways for the RTS.
  defaultRtsWays :: Ways
  defaultRtsWays = Set.fromList <$>
    mconcat
 -  [ pure [vanilla]
--  , notStage0 ? pure
++  [ pure [dynamic]
+   , notStage0 ? pure
 -      [ profiling, debugProfiling
 -      , debug
--      ]
++      [ profilingDynamic, debugDynamic, debugProfilingDynamic
+       ]
 -  , notStage0 ? targetSupportsThreadedRts ? pure [threaded, threadedProfiling, threadedDebugProfiling, threadedDebug]
 -  , notStage0 ? platformSupportsSharedLibs ? pure
--      [ dynamic, debugDynamic
+-      [ dynamic, profilingDynamic, debugDynamic, debugProfilingDynamic
 -      ]
--  , notStage0 ? platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
-+  [ platformSupportsSharedLibs ? pure [ dynamic, debugDynamic ]
-+  , platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure [ threadedDynamic, threadedDebugDynamic ]
+-  , notStage0 ? platformSupportsSharedLibs ? targetSupportsThreadedRts ? pure
++  , notStage0 ? targetSupportsThreadedRts ? pure
+       [ threadedDynamic, threadedDebugDynamic, threadedProfilingDynamic, threadedDebugProfilingDynamic
+       ]
    ]
- 
- -- TODO: Move C source arguments here
 --- a/hadrian/src/Settings/Program.hs	2022-05-27 12:33:31.000000000 +0200
 +++ b/hadrian/src/Settings/Program.hs	2022-06-24 17:22:47.066945724 +0200
 @@ -20,5 +20,5 @@
