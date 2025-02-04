@@ -17,7 +17,7 @@ KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/base16-bytestring-1.0.0.0:=[profile?] <dev-haskell/base16-bytestring-1.1:=[profile?]
 	>=dev-haskell/binary-instances-1:=[profile?] <dev-haskell/binary-instances-1.1:=[profile?]
-	>=dev-haskell/cabal-syntax-3.12.0.0:=[profile?] <dev-haskell/cabal-syntax-3.13:=[profile?]
+	>=dev-haskell/cabal-syntax-3.12.0.0:=[profile?] <dev-haskell/cabal-syntax-3.15:=[profile?]
 	>=dev-haskell/cryptohash-sha256-0.11.101.0:=[profile?] <dev-haskell/cryptohash-sha256-0.12:=[profile?]
 	>=dev-haskell/lukko-0.1.1:=[profile?] <dev-haskell/lukko-0.2:=[profile?]
 	>=dev-haskell/network-uri-2.6.1.0:=[profile?] <dev-haskell/network-uri-2.7:=[profile?]
