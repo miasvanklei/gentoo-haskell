@@ -1,0 +1,254 @@
+--- a/haskell-language-server.cabal	2025-02-02 16:59:21.285875310 +0100
++++ b/haskell-language-server.cabal	2025-02-02 16:59:06.806029170 +0100
+@@ -347,7 +347,7 @@
+     , deepseq
+     , extra
+     , ghc
+-    , ghc-exactprint  >= 1.5 && < 1.10.0.0
++    , ghc-exactprint  >= 1.5 && < 1.13.0.0
+     , ghcide          == 2.10.0.0
+     , hls-graph
+     , hls-plugin-api  == 2.10.0.0
+@@ -732,7 +732,7 @@
+     , filepath
+     , ghcide                == 2.10.0.0
+     , hashable
+-    , hlint                 >= 3.5 && < 3.9
++    , hlint                 >= 3.5 && < 3.11
+     , hls-plugin-api        == 2.10.0.0
+     , lens
+     , mtl
+@@ -1553,7 +1553,7 @@
+     , lsp
+     , mtl
+     , process-extras  >= 0.7.1
+-    , ormolu          ^>=0.1.2 || ^>= 0.2 || ^>= 0.3 || ^>= 0.5 || ^>= 0.6 || ^>= 0.7
++    , ormolu
+     , text
+     , transformers 
+ 
+--- a/plugins/hls-call-hierarchy-plugin/src/Ide/Plugin/CallHierarchy/Internal.hs	2025-02-03 20:06:07.941710023 +0100
++++ b/plugins/hls-call-hierarchy-plugin/src/Ide/Plugin/CallHierarchy/Internal.hs	2025-02-03 20:06:24.305542341 +0100
+@@ -47,7 +47,7 @@
+ prepareCallHierarchyItem :: NormalizedFilePath -> Position -> Action [CallHierarchyItem]
+ prepareCallHierarchyItem nfp pos = use GetHieAst nfp <&> \case
+     Nothing               -> mempty
+-    Just (HAR _ hf _ _ _) -> prepareByAst hf pos nfp
++    Just (HAR _ hf _ _ _ _) -> prepareByAst hf pos nfp
+
+ prepareByAst :: HieASTs a -> Position -> NormalizedFilePath -> [CallHierarchyItem]
+ prepareByAst hf pos nfp =
+@@ -269,7 +269,7 @@
+         getSymbolFromAst :: NormalizedFilePath -> Position -> Action (Maybe Symbol)
+         getSymbolFromAst nfp pos_ = use GetHieAst nfp <&> \case
+             Nothing -> Nothing
+-            Just (HAR _ hf _ _ _) -> do
++            Just (HAR _ hf _ _ _ _) -> do
+                 case listToMaybe $ pointCommand hf pos_ extract of
+                     Just infos -> mkSymbol . fst3 =<< listToMaybe infos
+                     Nothing    -> Nothing
+--- a/plugins/hls-class-plugin/src/Ide/Plugin/Class/ExactPrint.hs	2025-02-02 21:43:03.963524132 +0100
++++ b/plugins/hls-class-plugin/src/Ide/Plugin/Class/ExactPrint.hs	2025-02-02 21:51:14.178314659 +0100
+@@ -30,7 +30,7 @@
+                 pm_parsed_source pm
+
+         old = T.pack $ exactPrint ps
+-        (ps', _, _) = runTransform (addMethodDecls ps mDecls range withSig)
++        ps' = addMethodDecls ps mDecls range withSig
+         new = T.pack $ exactPrint ps'
+     pure (old, new)
+
+@@ -41,7 +41,7 @@
+     pure (name, sig')
+
+ #if MIN_VERSION_ghc(9,5,0)
+-addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> TransformT Identity (Located (HsModule GhcPs))
++addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> Located (HsModule GhcPs)
+ #else
+ addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> TransformT Identity (Located HsModule)
+ #endif
+@@ -50,8 +50,7 @@
+     | otherwise = go (map fst mDecls)
+     where
+     go inserting = do
+-        allDecls <- hsDecls ps
+-        case break (inRange range . getLoc) allDecls of
++        case break (inRange range . getLoc) (hsDecls ps) of
+             (before, L l inst : after) ->
+                 let
+                     instSpan = realSrcSpan $ getLoc l
+@@ -93,11 +92,13 @@
+         case cid_ext of
+ #if MIN_VERSION_ghc(9,9,0)
+             (warnings, anns, key)
+-                | any (\(AddEpAnn kw _ )-> kw == AnnWhere) anns -> instd
++                | acid_where anns /= noAnn -> instd
+                 | otherwise ->
+                     InstD xInstD (ClsInstD ext decl {
+                     cid_ext = ( warnings
+-                              , AddEpAnn AnnWhere d1 : anns
++                              , anns {
++                                    acid_where = EpTok d1
++                                }
+                               , key
+                               )
+                     }) 
+--- a/plugins/hls-class-plugin/src/Ide/Plugin/Class/Types.hs	2025-02-02 22:13:08.420289732 +0100
++++ b/plugins/hls-class-plugin/src/Ide/Plugin/Class/Types.hs	2025-02-02 22:13:35.284029987 +0100
+@@ -22,7 +22,6 @@
+ import           Development.IDE.Core.PluginUtils (useMT)
+ import qualified Development.IDE.Core.Shake       as Shake
+ import           Development.IDE.GHC.Compat       hiding (newUnique, (<+>))
+-import           Development.IDE.GHC.Compat.Util  (bagToList)
+ import           Development.IDE.Graph.Classes
+ import           GHC.Generics
+ import           Ide.Plugin.Class.Utils
+@@ -176,7 +175,7 @@
+
+         getBindSpanWithoutSig :: ClsInstDecl GhcRn -> [BindInfo]
+         getBindSpanWithoutSig ClsInstDecl{..} =
+-            let bindNames = mapMaybe go (bagToList cid_binds)
++            let bindNames = mapMaybe go cid_binds
+                 go (L l bind) = case bind of
+                     FunBind{..}
+                         -- `Generated` tagged for Template Haskell,
+@@ -221,5 +220,5 @@
+             let name = idName id
+             whenMaybe (isBindingName name) $ do
+                 env <- tcInitTidyEnv
+-                let (_, ty) = tidyOpenType env (idType id)
++                let ty = tidyOpenType env (idType id)
+                 pure $ InstanceBindTypeSig name ty
+--- a/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/CodeLens.hs	2024-12-04 13:24:36.000000000 +0100
++++ b/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/CodeLens.hs	2025-02-02 16:59:06.746029808 +0100
+@@ -21,7 +21,7 @@
+ import           Control.Arrow                                (second)
+ import           Control.Exception                            (bracket_)
+ import qualified Control.Exception                            as E
+-import           Control.Lens                                 (ix, (%~), (^.))
++import           Control.Lens                                 (ix, (%~), (^.), (&))
+ import           Control.Monad                                (guard, void,
+                                                                when)
+ import           Control.Monad.IO.Class                       (MonadIO (liftIO))
+@@ -73,7 +73,7 @@
+                                                                pprInstance,
+                                                                typeKind)
+ 
+-
++import           GHC.Unit.Module.ModIface                     (IfaceTopEnv(..))
+ import           Development.IDE.Core.RuleTypes               (GetLinkable (GetLinkable),
+                                                                GetModSummary (GetModSummary),
+                                                                GetModuleGraph (GetModuleGraph),
+@@ -245,12 +245,9 @@
+         addRdrEnv hmi
+           | iface <- hm_iface hmi
+           , ms_mod ms == mi_module iface
+-          = hmi { hm_iface = iface { mi_globals = Just $!
+-#if MIN_VERSION_ghc(9,8,0)
+-                    forceGlobalRdrEnv
+-#endif
+-                      rdr_env
+-                }}
++          = hmi { hm_iface = iface & set_mi_top_env (Just $!
++                    IfaceTopEnv (forceGlobalRdrEnv rdr_env) []
++                )}
+           | otherwise = hmi
+ 
+     return (ms, linkable_hsc)
+--- a/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/Rules.hs	2024-12-04 13:24:36.000000000 +0100
++++ b/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/Rules.hs	2025-02-02 16:59:06.746029808 +0100
+@@ -65,7 +65,7 @@
+ apiAnnComments' :: ParsedModule -> [SrcLoc.RealLocated EpaCommentTok]
+ apiAnnComments' pm = do
+   L span (EpaComment c _) <- getEpaComments $ pm_parsed_source pm
+-  pure (L (anchor span) c)
++  pure (L (epaLocationRealSrcSpan span) c)
+   where
+ #if MIN_VERSION_ghc(9,5,0)
+     getEpaComments :: Development.IDE.GHC.Compat.Located (HsModule GhcPs) -> [LEpaComment]
+--- a/plugins/hls-explicit-fixity-plugin/src/Ide/Plugin/ExplicitFixity.hs	2024-12-04 13:24:36.000000000 +0100
++++ b/plugins/hls-explicit-fixity-plugin/src/Ide/Plugin/ExplicitFixity.hs	2025-02-02 16:59:06.750029766 +0100
+@@ -60,7 +60,7 @@
+             in  Just $ Hover (InL (mkPlainText contents')) Nothing
+ 
+         fixityText :: (Name, Fixity) -> T.Text
+-        fixityText (name, Fixity _ precedence direction) =
++        fixityText (name, Fixity precedence direction) =
+             printOutputable direction <> " " <> printOutputable precedence <> " `" <> printOutputable name <> "`"
+ 
+ newtype FixityMap = FixityMap (M.Map Name Fixity)
+--- a/plugins/hls-explicit-imports-plugin/src/Ide/Plugin/ExplicitImports.hs	2025-02-02 22:15:51.998690685 +0100
++++ b/plugins/hls-explicit-imports-plugin/src/Ide/Plugin/ExplicitImports.hs	2025-02-02 22:21:52.735055736 +0100
+@@ -82,11 +82,14 @@
+     LogWAEResponseError rspErr -> "RequestWorkspaceApplyEdit Failed with " <+> pretty rspErr
+     LogResolve msg -> pretty msg
+
++pRELUDE :: ModuleName
++pRELUDE = ModuleName $ fromString "Prelude"
++
+ -- | The "main" function of a plugin
+ descriptor :: Recorder (WithPriority Log) -> PluginId -> PluginDescriptor IdeState
+ descriptor recorder =
+     -- (almost) no one wants to see an explicit import list for Prelude
+-    descriptorForModules recorder (/= moduleName pRELUDE)
++    descriptorForModules recorder (/= pRELUDE)
+
+ descriptorForModules
+     :: Recorder (WithPriority Log)
+@@ -403,7 +406,7 @@
+         -- for every minimal imports
+         | (location, origImport, minImport@(ImportDecl{ideclName = L _ mn})) <- locationImportWithMinimal
+         -- (almost) no one wants to see an refine import list for Prelude
+-        , mn /= moduleName pRELUDE
++        , mn /= pRELUDE
+         -- we check for the inner imports
+         , Just innerImports <- [Map.lookup mn import2Map]
+         -- and only get those symbols used
+--- a/plugins/hls-explicit-record-fields-plugin/src/Ide/Plugin/ExplicitFields.hs	2025-02-02 20:56:07.473621094 +0100
++++ b/plugins/hls-explicit-record-fields-plugin/src/Ide/Plugin/ExplicitFields.hs	2025-02-02 20:56:51.425145716 +0100
+@@ -46,7 +46,7 @@
+                                                        TypeCheck (..))
+ import qualified Development.IDE.Core.Shake           as Shake
+ import           Development.IDE.GHC.Compat           (FieldOcc (FieldOcc),
+-                                                       GhcPass, GhcTc,
++                                                       GhcPass, GhcTc, RdrName(Exact),
+                                                        HasSrcSpan (getLoc),
+                                                        HsConDetails (RecCon),
+                                                        HsExpr (HsVar, XExpr),
+@@ -448,7 +448,7 @@
+   where
+     processRecCon (RecCon flds) = Just $ processRecordFlds flds
+     processRecCon _             = Nothing
+-    getOccName (FieldOcc x _) = Just $ getName x
++    getOccName (FieldOcc (Exact n) _) = Just $ getName n
+     getOccName _              = Nothing
+     getFieldName = getOccName . unLoc . hfbLHS . unLoc
+ showRecordPatFlds _ = Nothing
+--- a/plugins/hls-overloaded-record-dot-plugin/src/Ide/Plugin/OverloadedRecordDot.hs	2025-02-02 21:08:32.301649628 +0100
++++ b/plugins/hls-overloaded-record-dot-plugin/src/Ide/Plugin/OverloadedRecordDot.hs	2025-02-02 21:22:18.208843713 +0100
+@@ -291,12 +291,12 @@
+ #endif
+ -- applied record selection: "selector record" or "selector (record)" or
+ -- "selector selector2.record2"
+-getRecSels e@(unLoc -> HsApp _ se@(unLoc -> HsRecSel _ _) re) =
++getRecSels e@(unLoc -> HsApp _ se@(unLoc -> XExpr (HsRecSelRn _)) re) =
+     ( [ RecordSelectorExpr (realSrcSpanToRange realSpan') se re
+       | RealSrcSpan realSpan' _ <- [ getLoc e ] ], False )
+ -- Record selection where the field is being applied with the "$" operator:
+ -- "selector $ record"
+-getRecSels e@(unLoc -> OpApp _ se@(unLoc -> HsRecSel _ _)
++getRecSels e@(unLoc -> OpApp _ se@(unLoc -> XExpr (HsRecSelRn _))
+                         (unLoc -> HsVar _ (unLoc -> d)) re) | d == dollarName =
+     ( [ RecordSelectorExpr (realSrcSpanToRange realSpan')  se re
+       | RealSrcSpan realSpan' _ <- [ getLoc e ] ], False )
+--- a/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2024-12-04 13:24:36.000000000 +0100
++++ b/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2025-02-02 16:59:06.770029553 +0100
+@@ -20,7 +20,7 @@
+ import qualified Data.Text.Utf16.Rope             as Utf16
+ import           Data.Text.Utf16.Rope.Mixed       (Rope)
+ import qualified Data.Text.Utf16.Rope.Mixed       as Rope
+-import           Development.IDE.GHC.Compat
++import           Development.IDE.GHC.Compat       hiding (foldMapM)
+ import           Development.IDE.GHC.Error        (realSrcSpanToCodePointRange)
+ import           Ide.Plugin.SemanticTokens.Types  (HsSemanticTokenType (TModule),
+                                                    RangeHsSemanticTokenTypes (..))
