@@ -20,12 +20,13 @@ diff -urN ormolu-0.3.1.0/ormolu.cabal ormolu-0.3.1.0-r1/ormolu.cabal
  executable ormolu
      main-is:          Main.hs
      hs-source-dirs:   app
-@@ -131,6 +135,8 @@
- 
-     else
-         ghc-options: -O2 -Wall -rtsopts
-+    if !flag(executable)
-+        buildable: False
- 
+@@ -169,6 +169,9 @@
+       -O2
+       -Wall
+
++  if !flag(executable)
++    buildable: False
++
  test-suite tests
-     type:               exitcode-stdio-1.0
+   type: exitcode-stdio-1.0
+   main-is: Spec.hs
