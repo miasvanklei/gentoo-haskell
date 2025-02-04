@@ -18,15 +18,9 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-<<<<<<< HEAD:dev-haskell/colourista/colourista-0.1.0.2-r1.ebuild
-	>=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-1.1:=[profile?]
-	>=dev-haskell/text-1.2.3.0:=[profile?] <dev-haskell/text-2.2:=[profile?]
-	>=dev-lang/ghc-8.10.6:=
-=======
 	>=dev-haskell/ansi-terminal-0.10:=[profile?] <dev-haskell/ansi-terminal-1.2:=[profile?]
 	>=dev-haskell/text-1.2.3.0:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
->>>>>>> 268e96b80306321546b8e491870c64710eab7ff2:dev-haskell/colourista/colourista-0.1.0.2-r2.ebuild
 "
 DEPEND="
 	${RDEPEND}
