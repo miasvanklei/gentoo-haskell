@@ -11,6 +11,7 @@ inherit haskell-cabal
 
 DESCRIPTION="The core of an IDE"
 HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/ghcide#readme"
+SRC_URI="https://github.com/haskell/haskell-language-server/archive/refs/tags/${PV}.tar.gz -> haskell-language-server-${PV}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
@@ -22,7 +23,7 @@ IUSE="executable test-exe"
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.9.0.0-ghc-9_8_3.patch"
+	"${FILESDIR}/${P}-ghc-9_12_1.patch"
 )
 
 RDEPEND="
@@ -48,8 +49,8 @@ RDEPEND="
 	>=dev-haskell/hie-bios-0.14.0:=[profile?] <dev-haskell/hie-bios-0.15:=[profile?]
 	>=dev-haskell/hie-compat-0.3.0.0:=[profile?] <dev-haskell/hie-compat-0.4:=[profile?]
 	>=dev-haskell/hiedb-0.6.0.0:=[profile?] <dev-haskell/hiedb-0.7:=[profile?]
-	~dev-haskell/hls-graph-2.9.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.9.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.10.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.10.0.0:=[profile?]
 	>=dev-haskell/implicit-hie-0.1.4.0:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/list-t:=[profile?]
@@ -81,6 +82,9 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
+
+S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
+CABAL_FILE="${S}/${CABAL_PN}.cabal"
 
 src_configure() {
 	local flags=(
