@@ -106,24 +106,22 @@ BOOTSTRAP_LIBRARIES=(
 	"directory" "1.3.9.0" "1"
 	"extra" "1.8" "0"
 	"file-io" "0.1.4" "0"
-	"filepath" "1.5.3.0" "0"
 	"filepattern" "0.1.3" "0"
-	"os-string" "2.0.7" "0"
-	"hashable" "1.5.0.0" "0"
+	"hashable" "1.5.0.0" "1"
 	"heaps" "0.4" "0"
 	"js-dgtable" "0.5.2" "0"
 	"js-flot" "0.8.3" "0"
 	"js-jquery" "3.3.1" "0"
-	"process" "1.6.25.0" "0"
+	"process" "1.6.25.0" "1"
 	"primitive" "0.9.0.0" "2"
-	"splitmix" "0.1.0.5" "1"
+	"splitmix" "0.1.1" "0"
 	"random" "1.2.1.2" "0"
-	"unix" "2.8.6.0" "0"
+	"unix" "2.8.6.0" "1"
 	"unordered-containers" "0.2.20" "4"
 	"utf8-string" "1.0.2" "0"
 	"shake" "0.19.8" "0"
-	"Cabal" "3.14.0.0" "0"
-	"Cabal-syntax" "3.14.0.0" "0"
+	"Cabal" "3.14.1.1" "0"
+	"Cabal-syntax" "3.14.1.0" "0"
 	"QuickCheck" "2.14.3" "0"
 )
 
@@ -187,6 +185,39 @@ REQUIRED_USE="
 
 # haskell libraries built with cabal in configure mode, #515354
 QA_CONFIGURE_OPTIONS+=" --with-compiler --with-gcc"
+
+add_bump_libraries_SRC_URI() {
+	local pn pv
+	while :; do
+		pn=$1 pv=$2
+
+		[[ -n ${pn} ]] || break
+		[[ -n ${pv} ]] || die "'${pn}' has no version"
+
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
+
+		shift 2
+	done
+}
+
+add_bootstrap_libraries_SRC_URI() {
+	local pn pv rv
+	while :; do
+		pn=$1 pv=$2 rv=$3
+
+		[[ -n ${pn} ]] || break
+		[[ -n ${pv} ]] || die "'${pn}' has no version"
+		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
+
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
+
+		shift 3
+	done
+}
+
+add_bump_libraries_SRC_URI "${BUMP_LIBRARIES[@]}"
+add_bootstrap_libraries_SRC_URI "${BOOTSTRAP_LIBRARIES[@]}"
 
 is_crosscompile() {
 	[[ ${CHOST} != ${CTARGET} ]]
@@ -256,44 +287,12 @@ bump_lib() {
 	mv "${WORKDIR}"/"${p}" "${dir}"/"${pn}" || die
 }
 
-add_bump_libraries_SRC_URI() {
-	local pn pv
-	while :; do
-		pn=$1 pv=$2
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${pv} ]] || die "'${pn}' has no version"
-
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-
-		shift 2
-	done
-}
-
-add_bootstrap_libraries_SRC_URI() {
-	local pn pv rv
-	while :; do
-		pn=$1 pv=$2 rv=$3
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${pv} ]] || die "'${pn}' has no version"
-		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
-
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
-
-		shift 3
-	done
-}
-
-add_bump_libraries_SRC_URI "${BUMP_LIBRARIES[@]}"
-add_bootstrap_libraries_SRC_URI "${BOOTSTRAP_LIBRARIES[@]}"
-
 bump_libs() {
-	local p pn pv dir
-	for p in "${BUMP_LIBRARIES[@]}"; do
-		set -- $p
+	local pn pv dir
+	while :; do
 		pn=$1 pv=$2
+
+		[[ -n ${pn} ]] || break
 
 		if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
 			dir="libraries/Cabal"
@@ -302,6 +301,8 @@ bump_libs() {
 		fi
 
 		bump_lib "${dir}" "${pn}" "${pv}"
+
+		shift 2
 	done
 }
 
@@ -581,7 +582,7 @@ src_unpack() {
 }
 
 src_prepare() {
-	bump_libs
+	bump_libs "${BUMP_LIBRARIES[@]}"
 
 	hadrian_setup_sources "${BOOTSTRAP_LIBRARIES[@]}"
 
