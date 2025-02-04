@@ -37,6 +37,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+CABAL_CHDEPS=(
+	"ghc-prim                   >= 0.5        && < 0.12" "ghc-prim                   >= 0.5"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag bounds-checking bounds-checking-enabled)
