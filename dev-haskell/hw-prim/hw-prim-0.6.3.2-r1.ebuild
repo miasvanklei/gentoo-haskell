@@ -19,6 +19,10 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="bounds-checking"
 
+CABAL_CHDEPS=(
+	'ghc-prim                   >= 0.5        && < 0.12' 'ghc-prim                   >= 0.5'
+)
+
 RDEPEND="
 	>=dev-haskell/mmap-0.5:=[profile?] <dev-haskell/mmap-0.6:=[profile?]
 	>=dev-haskell/unliftio-core-0.1.2.0:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]
@@ -36,10 +40,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/quickcheck-2.10 <dev-haskell/quickcheck-2.15
 	)
 "
-
-CABAL_CHDEPS=(
-	"ghc-prim                   >= 0.5        && < 0.12" "ghc-prim                   >= 0.5"
-)
 
 src_configure() {
 	haskell-cabal_src_configure \
