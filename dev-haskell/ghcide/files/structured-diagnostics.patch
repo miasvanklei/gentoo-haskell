@@ -1,0 +1,2285 @@
+diff --git a/ghcide.cabal b/ghcide.cabal
+index bf88a55ed3..af9a191406 100644
+--- a/ghcide.cabal
++++ b/ghcide.cabal
+@@ -85,6 +85,7 @@ library
+     , hls-plugin-api               == 2.9.0.1
+     , implicit-hie                 >= 0.1.4.0 && < 0.1.5
+     , lens
++    , lens-aeson
+     , list-t
+     , lsp                          ^>=2.7
+     , lsp-types                    ^>=2.3
+@@ -150,7 +151,9 @@ library
+     Development.IDE.GHC.Compat
+     Development.IDE.GHC.Compat.Core
+     Development.IDE.GHC.Compat.CmdLine
++    Development.IDE.GHC.Compat.Driver
+     Development.IDE.GHC.Compat.Env
++    Development.IDE.GHC.Compat.Error
+     Development.IDE.GHC.Compat.Iface
+     Development.IDE.GHC.Compat.Logger
+     Development.IDE.GHC.Compat.Outputable
+diff --git a/session-loader/Development/IDE/Session.hs b/session-loader/Development/IDE/Session.hs
+index a1d778ab0e..2b99862cad 100644
+--- a/session-loader/Development/IDE/Session.hs
++++ b/session-loader/Development/IDE/Session.hs
+@@ -573,10 +573,11 @@ loadSessionWithOptions recorder SessionLoadingOptions{..} rootDir que = do
+                         this_flags = (this_error_env, this_dep_info)
+                         this_error_env = ([this_error], Nothing)
+                         this_error = ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) _cfp
+-                                       $ T.unlines
+-                                       [ "No cradle target found. Is this file listed in the targets of your cradle?"
+-                                       , "If you are using a .cabal file, please ensure that this module is listed in either the exposed-modules or other-modules section"
+-                                       ]
++                                       (T.unlines
++                                         [ "No cradle target found. Is this file listed in the targets of your cradle?"
++                                         , "If you are using a .cabal file, please ensure that this module is listed in either the exposed-modules or other-modules section"
++                                         ])
++                                       Nothing
+ 
+           void $ modifyVar' fileToFlags $ Map.insert hieYaml this_flags_map
+           void $ modifyVar' filesMap $ flip HM.union (HM.fromList (map ((,hieYaml) . fst) $ concatMap toFlagsMap all_targets))
+@@ -797,10 +798,10 @@ setNameCache nc hsc = hsc { hsc_NC = nc }
+ -- GHC had an implementation of this function, but it was horribly inefficient
+ -- We should move back to the GHC implementation on compilers where
+ -- https://gitlab.haskell.org/ghc/ghc/-/merge_requests/12162 is included
+-checkHomeUnitsClosed' ::  UnitEnv -> OS.Set UnitId -> [DriverMessages]
++checkHomeUnitsClosed' ::  UnitEnv -> OS.Set UnitId -> Maybe (Compat.MsgEnvelope DriverMessage)
+ checkHomeUnitsClosed' ue home_id_set
+-    | OS.null bad_unit_ids = []
+-    | otherwise = [singleMessage $ GHC.mkPlainErrorMsgEnvelope rootLoc $ DriverHomePackagesNotClosed (OS.toList bad_unit_ids)]
++    | OS.null bad_unit_ids = Nothing
++    | otherwise = Just (GHC.mkPlainErrorMsgEnvelope rootLoc $ DriverHomePackagesNotClosed (OS.toList bad_unit_ids))
+   where
+     bad_unit_ids = upwards_closure OS.\\ home_id_set
+     rootLoc = mkGeneralSrcSpan (Compat.fsLit "<command line>")
+@@ -875,10 +876,19 @@ newComponentCache recorder exts _cfp hsc_env old_cis new_cis = do
+     hscEnv' <- -- Set up a multi component session with the other units on GHC 9.4
+               Compat.initUnits dfs hsc_env
+ 
+-    let closure_errs = checkHomeUnitsClosed' (hsc_unit_env hscEnv') (hsc_all_home_unit_ids hscEnv')
+-        multi_errs = map (ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Warning) _cfp . T.pack . Compat.printWithoutUniques) closure_errs
++    let closure_errs = maybeToList $ checkHomeUnitsClosed' (hsc_unit_env hscEnv') (hsc_all_home_unit_ids hscEnv')
++        closure_err_to_multi_err err =
++            ideErrorWithSource
++                (Just "cradle") (Just DiagnosticSeverity_Warning) _cfp
++                (T.pack (Compat.printWithoutUniques (singleMessage err)))
++#if MIN_VERSION_ghc(9,5,0)
++                (Just (fmap GhcDriverMessage err))
++#else
++                Nothing
++#endif
++        multi_errs = map closure_err_to_multi_err closure_errs
+         bad_units = OS.fromList $ concat $ do
+-            x <- bagToList $ mapBag errMsgDiagnostic $ unionManyBags $ map Compat.getMessages closure_errs
++            x <- map errMsgDiagnostic closure_errs
+             DriverHomePackagesNotClosed us <- pure x
+             pure us
+         isBad ci = (homeUnitId_ (componentDynFlags ci)) `OS.member` bad_units
+@@ -1223,6 +1233,6 @@ showPackageSetupException PackageSetupException{..} = unwords
+     , "failed to load packages:", message <> "."
+     , "\nPlease ensure that ghcide is compiled with the same GHC installation as the project."]
+ 
+-renderPackageSetupException :: FilePath -> PackageSetupException -> (NormalizedFilePath, ShowDiagnostic, Diagnostic)
++renderPackageSetupException :: FilePath -> PackageSetupException -> FileDiagnostic
+ renderPackageSetupException fp e =
+-    ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) (toNormalizedFilePath' fp) (T.pack $ showPackageSetupException e)
++  ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) (toNormalizedFilePath' fp) (T.pack $ showPackageSetupException e) Nothing
+diff --git a/session-loader/Development/IDE/Session/Diagnostics.hs b/session-loader/Development/IDE/Session/Diagnostics.hs
+index a8e35e5965..ac98ae453d 100644
+--- a/session-loader/Development/IDE/Session/Diagnostics.hs
++++ b/session-loader/Development/IDE/Session/Diagnostics.hs
+@@ -2,6 +2,7 @@
+ 
+ module Development.IDE.Session.Diagnostics where
+ import           Control.Applicative
++import           Control.Lens
+ import           Control.Monad
+ import qualified Data.Aeson                        as Aeson
+ import           Data.List
+@@ -27,11 +28,13 @@ data CradleErrorDetails =
+   Depicts the cradle error in a user-friendly way.
+ -}
+ renderCradleError :: CradleError -> Cradle a -> NormalizedFilePath -> FileDiagnostic
+-renderCradleError (CradleError deps _ec ms) cradle nfp
+-  | HieBios.isCabalCradle cradle =
+-      let (fp, showDiag, diag) = ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) nfp $ T.unlines $ map T.pack userFriendlyMessage in
+-        (fp, showDiag, diag{_data_ = Just $ Aeson.toJSON CradleErrorDetails{cabalProjectFiles=absDeps}})
+-  | otherwise = ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) nfp $ T.unlines $ map T.pack userFriendlyMessage
++renderCradleError (CradleError deps _ec ms) cradle nfp =
++  let noDetails =
++        ideErrorWithSource (Just "cradle") (Just DiagnosticSeverity_Error) nfp (T.unlines $ map T.pack userFriendlyMessage) Nothing
++  in
++  if HieBios.isCabalCradle cradle
++     then noDetails & fdLspDiagnosticL %~ \diag -> diag{_data_ = Just $ Aeson.toJSON CradleErrorDetails{cabalProjectFiles=absDeps}}
++     else noDetails
+   where
+     absDeps = fmap (cradleRootDir cradle </>) deps
+     userFriendlyMessage :: [String]
+diff --git a/src/Development/IDE/Core/Compile.hs b/src/Development/IDE/Core/Compile.hs
+index cb960dd2c9..47872b9255 100644
+--- a/src/Development/IDE/Core/Compile.hs
++++ b/src/Development/IDE/Core/Compile.hs
+@@ -111,6 +111,7 @@ import qualified Data.Set                               as Set
+ import qualified GHC                                    as G
+ import qualified GHC.Runtime.Loader                as Loader
+ import           GHC.Tc.Gen.Splice
++import           GHC.Types.Error
+ import           GHC.Types.ForeignStubs
+ import           GHC.Types.HpcInfo
+ import           GHC.Types.TypeEnv
+@@ -130,6 +131,8 @@ import           GHC.Unit.Module.Warnings
+ import           Development.IDE.Core.FileStore         (shareFilePath)
+ #endif
+ 
++import           Development.IDE.GHC.Compat.Driver (hscTypecheckRenameWithDiagnostics)
++
+ --Simple constants to make sure the source is consistently named
+ sourceTypecheck :: T.Text
+ sourceTypecheck = "typecheck"
+@@ -157,8 +160,12 @@ computePackageDeps
+     -> IO (Either [FileDiagnostic] [UnitId])
+ computePackageDeps env pkg = do
+     case lookupUnit env pkg of
+-        Nothing -> return $ Left [ideErrorText (toNormalizedFilePath' noFilePath) $
+-            T.pack $ "unknown package: " ++ show pkg]
++        Nothing ->
++          return $ Left
++            [ ideErrorText
++                (toNormalizedFilePath' noFilePath)
++                (T.pack $ "unknown package: " ++ show pkg)
++            ]
+         Just pkgInfo -> return $ Right $ unitDepends pkgInfo
+ 
+ newtype TypecheckHelpers
+@@ -179,20 +186,24 @@ typecheckModule (IdeDefer defer) hsc tc_helpers pm = do
+         case initialized of
+           Left errs -> return (errs, Nothing)
+           Right hscEnv -> do
+-            (warnings, etcm) <- withWarnings sourceTypecheck $ \tweak ->
++            etcm <-
+                 let
+-                  session = tweak (hscSetFlags dflags hscEnv)
+-                   -- TODO: maybe settings ms_hspp_opts is unnecessary?
+-                  mod_summary'' = modSummary { ms_hspp_opts = hsc_dflags session}
++                   -- TODO: maybe setting ms_hspp_opts is unnecessary?
++                  mod_summary' = modSummary { ms_hspp_opts = hsc_dflags hscEnv}
+                 in
+                   catchSrcErrors (hsc_dflags hscEnv) sourceTypecheck $ do
+-                    tcRnModule session tc_helpers $ demoteIfDefer pm{pm_mod_summary = mod_summary''}
+-            let errorPipeline = unDefer . hideDiag dflags . tagDiag
+-                diags = map errorPipeline warnings
+-                deferredError = any fst diags
++                    tcRnModule hscEnv tc_helpers $ demoteIfDefer pm{pm_mod_summary = mod_summary'}
+             case etcm of
+-              Left errs -> return (map snd diags ++ errs, Nothing)
+-              Right tcm -> return (map snd diags, Just $ tcm{tmrDeferredError = deferredError})
++              Left errs -> return (errs, Nothing)
++              Right tcm ->
++                let addReason diag =
++                      map (Just (diagnosticReason (errMsgDiagnostic diag)),) $
++                        diagFromErrMsg sourceTypecheck (hsc_dflags hscEnv) diag
++                    errorPipeline = map (unDefer . hideDiag dflags . tagDiag) . addReason
++                    diags = concatMap errorPipeline $ Compat.getMessages $ tmrWarnings tcm
++                    deferredError = any fst diags
++                in
++                return (map snd diags, Just $ tcm{tmrDeferredError = deferredError})
+     where
+         demoteIfDefer = if defer then demoteTypeErrorsToWarnings else id
+ 
+@@ -358,9 +369,9 @@ tcRnModule hsc_env tc_helpers pmod = do
+   let ms = pm_mod_summary pmod
+       hsc_env_tmp = hscSetFlags (ms_hspp_opts ms) hsc_env
+ 
+-  ((tc_gbl_env', mrn_info), splices, mod_env)
++  (((tc_gbl_env', mrn_info), warning_messages), splices, mod_env)
+       <- captureSplicesAndDeps tc_helpers hsc_env_tmp $ \hscEnvTmp ->
+-             do  hscTypecheckRename hscEnvTmp ms $
++             do  hscTypecheckRenameWithDiagnostics hscEnvTmp ms $
+                           HsParsedModule { hpm_module = parsedSource pmod
+                                          , hpm_src_files = pm_extra_src_files pmod
+                                          }
+@@ -372,7 +383,7 @@ tcRnModule hsc_env tc_helpers pmod = do
+       mod_env_anns = map (\(mod, hash) -> Annotation (ModuleTarget mod) $ toSerialized BS.unpack hash)
+                          (moduleEnvToList mod_env)
+       tc_gbl_env = tc_gbl_env' { tcg_ann_env = extendAnnEnvList (tcg_ann_env tc_gbl_env') mod_env_anns }
+-  pure (TcModuleResult pmod rn_info tc_gbl_env splices False mod_env)
++  pure (TcModuleResult pmod rn_info tc_gbl_env splices False mod_env warning_messages)
+ 
+ 
+ -- Note [Clearing mi_globals after generating an iface]
+@@ -535,8 +546,14 @@ mkHiFileResultCompile se session' tcm simplified_guts = catchErrs $ do
+     source = "compile"
+     catchErrs x = x `catches`
+       [ Handler $ return . (,Nothing) . diagFromGhcException source dflags
+-      , Handler $ return . (,Nothing) . diagFromString source DiagnosticSeverity_Error (noSpan "<internal>")
+-      . (("Error during " ++ T.unpack source) ++) . show @SomeException
++      , Handler $ \diag ->
++          return
++            ( diagFromString
++                source DiagnosticSeverity_Error (noSpan "<internal>")
++                ("Error during " ++ T.unpack source ++ show @SomeException diag)
++                Nothing
++            , Nothing
++            )
+       ]
+ 
+ -- | Whether we should run the -O0 simplifier when generating core.
+@@ -660,15 +677,16 @@ unDefer (Just (WarningWithFlag Opt_WarnDeferredOutOfScopeVariables), fd) = (True
+ unDefer ( _                                        , fd) = (False, fd)
+ 
+ upgradeWarningToError :: FileDiagnostic -> FileDiagnostic
+-upgradeWarningToError (nfp, sh, fd) =
+-  (nfp, sh, fd{_severity = Just DiagnosticSeverity_Error, _message = warn2err $ _message fd}) where
++upgradeWarningToError =
++  fdLspDiagnosticL %~ \diag -> diag {_severity = Just DiagnosticSeverity_Error, _message = warn2err $ _message diag}
++  where
+   warn2err :: T.Text -> T.Text
+   warn2err = T.intercalate ": error:" . T.splitOn ": warning:"
+ 
+ hideDiag :: DynFlags -> (Maybe DiagnosticReason, FileDiagnostic) -> (Maybe DiagnosticReason, FileDiagnostic)
+-hideDiag originalFlags (w@(Just (WarningWithFlag warning)), (nfp, _sh, fd))
++hideDiag originalFlags (w@(Just (WarningWithFlag warning)), fd)
+   | not (wopt warning originalFlags)
+-  = (w, (nfp, HideDiag, fd))
++  = (w, fd { fdShouldShowDiagnostic = HideDiag })
+ hideDiag _originalFlags t = t
+ 
+ -- | Warnings which lead to a diagnostic tag
+@@ -692,18 +710,18 @@ unnecessaryDeprecationWarningFlags
+ tagDiag :: (Maybe DiagnosticReason, FileDiagnostic) -> (Maybe DiagnosticReason, FileDiagnostic)
+ 
+ #if MIN_VERSION_ghc(9,7,0)
+-tagDiag (w@(Just (WarningWithCategory cat)), (nfp, sh, fd))
++tagDiag (w@(Just (WarningWithCategory cat)), fd)
+   | cat == defaultWarningCategory -- default warning category is for deprecations
+-  = (w, (nfp, sh, fd { _tags = Just $ DiagnosticTag_Deprecated : concat (_tags fd) }))
+-tagDiag (w@(Just (WarningWithFlags warnings)), (nfp, sh, fd))
++  = (w, fd & fdLspDiagnosticL %~ \diag -> diag { _tags = Just $ DiagnosticTag_Deprecated : concat (_tags diag) })
++tagDiag (w@(Just (WarningWithFlags warnings)), fd)
+   | tags <- mapMaybe requiresTag (toList warnings)
+-  = (w, (nfp, sh, fd { _tags = Just $ tags ++ concat (_tags fd) }))
++  = (w, fd & fdLspDiagnosticL %~ \diag -> diag { _tags = Just $ tags ++ concat (_tags diag) })
+ #else
+-tagDiag (w@(Just (WarningWithFlag warning)), (nfp, sh, fd))
++tagDiag (w@(Just (WarningWithFlag warning)), fd)
+   | Just tag <- requiresTag warning
+-  = (w, (nfp, sh, fd { _tags = Just $ tag : concat (_tags fd) }))
++  = (w, fd & fdLspDiagnosticL %~ \diag -> diag { _tags = Just $ tag : concat (_tags diag) })
+ #endif
+-  where
++    where
+     requiresTag :: WarningFlag -> Maybe DiagnosticTag
+ #if !MIN_VERSION_ghc(9,7,0)
+     -- doesn't exist on 9.8, we use WarningWithCategory instead
+@@ -859,16 +877,25 @@ handleGenerationErrors :: DynFlags -> T.Text -> IO () -> IO [FileDiagnostic]
+ handleGenerationErrors dflags source action =
+   action >> return [] `catches`
+     [ Handler $ return . diagFromGhcException source dflags
+-    , Handler $ return . diagFromString source DiagnosticSeverity_Error (noSpan "<internal>")
+-    . (("Error during " ++ T.unpack source) ++) . show @SomeException
++    , Handler $ \(exception :: SomeException) -> return $
++        diagFromString
++          source DiagnosticSeverity_Error (noSpan "<internal>")
++          ("Error during " ++ T.unpack source ++ show exception)
++          Nothing
+     ]
+ 
+ handleGenerationErrors' :: DynFlags -> T.Text -> IO (Maybe a) -> IO ([FileDiagnostic], Maybe a)
+ handleGenerationErrors' dflags source action =
+   fmap ([],) action `catches`
+     [ Handler $ return . (,Nothing) . diagFromGhcException source dflags
+-    , Handler $ return . (,Nothing) . diagFromString source DiagnosticSeverity_Error (noSpan "<internal>")
+-    . (("Error during " ++ T.unpack source) ++) . show @SomeException
++    , Handler $ \(exception :: SomeException) ->
++        return
++          ( diagFromString
++              source DiagnosticSeverity_Error (noSpan "<internal>")
++              ("Error during " ++ T.unpack source ++ show exception)
++              Nothing
++          , Nothing
++          )
+     ]
+ 
+ 
+@@ -1048,7 +1075,7 @@ parseHeader dflags filename contents = do
+    let loc  = mkRealSrcLoc (Util.mkFastString filename) 1 1
+    case unP Compat.parseHeader (initParserState (initParserOpts dflags) contents loc) of
+      PFailedWithErrorMessages msgs ->
+-        throwE $ diagFromErrMsgs sourceParser dflags $ msgs dflags
++        throwE $ diagFromGhcErrorMessages sourceParser dflags $ msgs dflags
+      POk pst rdr_module -> do
+         let (warns, errs) = renderMessages $ getPsMessages pst
+ 
+@@ -1062,9 +1089,9 @@ parseHeader dflags filename contents = do
+         -- errors are those from which a parse tree just can't
+         -- be produced.
+         unless (null errs) $
+-            throwE $ diagFromErrMsgs sourceParser dflags errs
++            throwE $ diagFromGhcErrorMessages sourceParser dflags errs
+ 
+-        let warnings = diagFromErrMsgs sourceParser dflags warns
++        let warnings = diagFromGhcErrorMessages sourceParser dflags warns
+         return (warnings, rdr_module)
+ 
+ -- | Given a buffer, flags, and file path, produce a
+@@ -1081,18 +1108,28 @@ parseFileContents env customPreprocessor filename ms = do
+        dflags = ms_hspp_opts ms
+        contents = fromJust $ ms_hspp_buf ms
+    case unP Compat.parseModule (initParserState (initParserOpts dflags) contents loc) of
+-     PFailedWithErrorMessages msgs -> throwE $ diagFromErrMsgs sourceParser dflags $ msgs dflags
++     PFailedWithErrorMessages msgs ->
++       throwE $ diagFromGhcErrorMessages sourceParser dflags $ msgs dflags
+      POk pst rdr_module ->
+          let
+              psMessages = getPsMessages pst
+          in
+            do
+-               let IdePreprocessedSource preproc_warns errs parsed = customPreprocessor rdr_module
+-
+-               unless (null errs) $
+-                  throwE $ diagFromStrings sourceParser DiagnosticSeverity_Error errs
+-
+-               let preproc_warnings = diagFromStrings sourceParser DiagnosticSeverity_Warning preproc_warns
++               let IdePreprocessedSource preproc_warns preproc_errs parsed = customPreprocessor rdr_module
++               let attachNoStructuredError (span, msg) = (span, msg, Nothing)
++
++               unless (null preproc_errs) $
++                  throwE $
++                    diagFromStrings
++                      sourceParser
++                      DiagnosticSeverity_Error
++                      (fmap attachNoStructuredError preproc_errs)
++
++               let preproc_warning_file_diagnostics =
++                     diagFromStrings
++                      sourceParser
++                      DiagnosticSeverity_Warning
++                      (fmap attachNoStructuredError preproc_warns)
+                (parsed', msgs) <- liftIO $ applyPluginsParsedResultAction env ms parsed psMessages
+                let (warns, errors) = renderMessages msgs
+ 
+@@ -1106,8 +1143,7 @@ parseFileContents env customPreprocessor filename ms = do
+                -- errors are those from which a parse tree just can't
+                -- be produced.
+                unless (null errors) $
+-                 throwE $ diagFromErrMsgs sourceParser dflags errors
+-
++                 throwE $ diagFromGhcErrorMessages sourceParser dflags errors
+ 
+                -- To get the list of extra source files, we take the list
+                -- that the parser gave us,
+@@ -1137,8 +1173,8 @@ parseFileContents env customPreprocessor filename ms = do
+                srcs2 <- liftIO $ filterM doesFileExist srcs1
+ 
+                let pm = ParsedModule ms parsed' srcs2
+-                   warnings = diagFromErrMsgs sourceParser dflags warns
+-               pure (warnings ++ preproc_warnings, pm)
++                   warnings = diagFromGhcErrorMessages sourceParser dflags warns
++               pure (warnings ++ preproc_warning_file_diagnostics, pm)
+ 
+ loadHieFile :: Compat.NameCacheUpdater -> FilePath -> IO GHC.HieFile
+ loadHieFile ncu f = do
+diff --git a/src/Development/IDE/Core/PluginUtils.hs b/src/Development/IDE/Core/PluginUtils.hs
+index 8f1da496e8..6ba633df26 100644
+--- a/src/Development/IDE/Core/PluginUtils.hs
++++ b/src/Development/IDE/Core/PluginUtils.hs
+@@ -1,6 +1,6 @@
+ {-# LANGUAGE GADTs #-}
+ module Development.IDE.Core.PluginUtils
+-(-- Wrapped Action functions
++(-- * Wrapped Action functions
+   runActionE
+ , runActionMT
+ , useE
+@@ -9,13 +9,13 @@ module Development.IDE.Core.PluginUtils
+ , usesMT
+ , useWithStaleE
+ , useWithStaleMT
+--- Wrapped IdeAction functions
++-- * Wrapped IdeAction functions
+ , runIdeActionE
+ , runIdeActionMT
+ , useWithStaleFastE
+ , useWithStaleFastMT
+ , uriToFilePathE
+--- Wrapped PositionMapping functions
++-- * Wrapped PositionMapping functions
+ , toCurrentPositionE
+ , toCurrentPositionMT
+ , fromCurrentPositionE
+@@ -24,9 +24,13 @@ module Development.IDE.Core.PluginUtils
+ , toCurrentRangeMT
+ , fromCurrentRangeE
+ , fromCurrentRangeMT
+--- Formatting handlers
++-- * Diagnostics
++, activeDiagnosticsInRange
++, activeDiagnosticsInRangeMT
++-- * Formatting handlers
+ , mkFormattingHandlers) where
+ 
++import           Control.Concurrent.STM
+ import           Control.Lens                         ((^.))
+ import           Control.Monad.Error.Class            (MonadError (throwError))
+ import           Control.Monad.Extra
+@@ -47,14 +51,17 @@ import           Development.IDE.Core.Shake           (IdeAction, IdeRule,
+ import qualified Development.IDE.Core.Shake           as Shake
+ import           Development.IDE.GHC.Orphans          ()
+ import           Development.IDE.Graph                hiding (ShakeValue)
++import           Development.IDE.Types.Diagnostics
+ import           Development.IDE.Types.Location       (NormalizedFilePath)
+ import qualified Development.IDE.Types.Location       as Location
+ import qualified Ide.Logger                           as Logger
+ import           Ide.Plugin.Error
++import           Ide.PluginUtils                      (rangesOverlap)
+ import           Ide.Types
+ import qualified Language.LSP.Protocol.Lens           as LSP
+ import           Language.LSP.Protocol.Message        (SMethod (..))
+ import qualified Language.LSP.Protocol.Types          as LSP
++import qualified StmContainers.Map                    as STM
+ 
+ -- ----------------------------------------------------------------------------
+ -- Action wrappers
+@@ -173,6 +180,49 @@ fromCurrentRangeE mapping = maybeToExceptT (PluginInvalidUserState "fromCurrentR
+ fromCurrentRangeMT :: Monad m => PositionMapping -> LSP.Range -> MaybeT m LSP.Range
+ fromCurrentRangeMT mapping = MaybeT . pure . fromCurrentRange mapping
+ 
++-- ----------------------------------------------------------------------------
++-- Diagnostics
++-- ----------------------------------------------------------------------------
++
++-- | @'activeDiagnosticsInRangeMT' shakeExtras nfp range@ computes the
++-- 'FileDiagnostic' 's that HLS produced and overlap with the given @range@.
++--
++-- This function is to be used whenever we need an authoritative source of truth
++-- for which diagnostics are shown to the user.
++-- These diagnostics can be used to provide various IDE features, for example
++-- CodeActions, CodeLenses, or refactorings.
++--
++-- However, why do we need this when computing 'CodeAction's? A 'CodeActionParam'
++-- has the 'CodeActionContext' which already contains the diagnostics!
++-- But according to the LSP docs, the server shouldn't rely that these Diagnostic
++-- are actually up-to-date and accurately reflect the state of the document.
++--
++-- From the LSP docs:
++-- > An array of diagnostics known on the client side overlapping the range
++-- > provided to the `textDocument/codeAction` request. They are provided so
++-- > that the server knows which errors are currently presented to the user
++-- > for the given range. There is no guarantee that these accurately reflect
++-- > the error state of the resource. The primary parameter
++-- > to compute code actions is the provided range.
++--
++-- Thus, even when the client sends us the context, we should compute the
++-- diagnostics on the server side.
++activeDiagnosticsInRangeMT :: MonadIO m => Shake.ShakeExtras -> NormalizedFilePath -> LSP.Range -> MaybeT m [FileDiagnostic]
++activeDiagnosticsInRangeMT ide nfp range = do
++    MaybeT $ liftIO $ atomically $ do
++        mDiags <- STM.lookup (LSP.normalizedFilePathToUri nfp) (Shake.publishedDiagnostics ide)
++        case mDiags of
++            Nothing -> pure Nothing
++            Just fileDiags -> do
++                pure $ Just $ filter diagRangeOverlaps fileDiags
++    where
++        diagRangeOverlaps = \fileDiag ->
++            rangesOverlap range (fileDiag ^. fdLspDiagnosticL . LSP.range)
++
++-- | Just like 'activeDiagnosticsInRangeMT'. See the docs of 'activeDiagnosticsInRangeMT' for details.
++activeDiagnosticsInRange :: MonadIO m => Shake.ShakeExtras -> NormalizedFilePath -> LSP.Range -> m (Maybe [FileDiagnostic])
++activeDiagnosticsInRange ide nfp range = runMaybeT (activeDiagnosticsInRangeMT ide nfp range)
++
+ -- ----------------------------------------------------------------------------
+ -- Formatting handlers
+ -- ----------------------------------------------------------------------------
+diff --git a/src/Development/IDE/Core/Preprocessor.hs b/src/Development/IDE/Core/Preprocessor.hs
+index 46fb03f191..b3614d89ad 100644
+--- a/src/Development/IDE/Core/Preprocessor.hs
++++ b/src/Development/IDE/Core/Preprocessor.hs
+@@ -104,7 +104,7 @@ data CPPDiag
+ 
+ diagsFromCPPLogs :: FilePath -> [CPPLog] -> [FileDiagnostic]
+ diagsFromCPPLogs filename logs =
+-  map (\d -> (toNormalizedFilePath' filename, ShowDiag, cppDiagToDiagnostic d)) $
++  map (\d -> ideErrorFromLspDiag (cppDiagToDiagnostic d) (toNormalizedFilePath' filename) Nothing) $
+     go [] logs
+   where
+     -- On errors, CPP calls logAction with a real span for the initial log and
+diff --git a/src/Development/IDE/Core/RuleTypes.hs b/src/Development/IDE/Core/RuleTypes.hs
+index 046cc9246e..fd6ef75cda 100644
+--- a/src/Development/IDE/Core/RuleTypes.hs
++++ b/src/Development/IDE/Core/RuleTypes.hs
+@@ -40,6 +40,7 @@ import           Development.IDE.Import.FindImports           (ArtifactsLocation
+ import           Development.IDE.Spans.Common
+ import           Development.IDE.Spans.LocalBindings
+ import           Development.IDE.Types.Diagnostics
++import           GHC.Driver.Errors.Types                      (WarningMessages)
+ import           GHC.Serialized                               (Serialized)
+ import           Ide.Logger                                   (Pretty (..),
+                                                                viaShow)
+@@ -157,6 +158,8 @@ data TcModuleResult = TcModuleResult
+         -- ^ Which modules did we need at runtime while compiling this file?
+         -- Used for recompilation checking in the presence of TH
+         -- Stores the hash of their core file
++    , tmrWarnings        :: WarningMessages
++        -- ^ Structured warnings for this module.
+     }
+ instance Show TcModuleResult where
+     show = show . pm_mod_summary . tmrParsed
+diff --git a/src/Development/IDE/Core/Rules.hs b/src/Development/IDE/Core/Rules.hs
+index 4f80b2e635..5650300a4c 100644
+--- a/src/Development/IDE/Core/Rules.hs
++++ b/src/Development/IDE/Core/Rules.hs
+@@ -64,6 +64,7 @@ import           Control.Concurrent.Strict
+ import           Control.DeepSeq
+ import           Control.Exception                            (evaluate)
+ import           Control.Exception.Safe
++import           Control.Lens                                 ((%~), (&), (.~))
+ import           Control.Monad.Extra
+ import           Control.Monad.IO.Unlift
+ import           Control.Monad.Reader
+@@ -161,6 +162,7 @@ import           Ide.Types                                    (DynFlagsModificat
+ import           Language.LSP.Protocol.Message                (SMethod (SMethod_CustomMethod, SMethod_WindowShowMessage))
+ import           Language.LSP.Protocol.Types                  (MessageType (MessageType_Info),
+                                                                ShowMessageParams (ShowMessageParams))
++import qualified Language.LSP.Protocol.Lens                   as JL
+ import           Language.LSP.Server                          (LspT)
+ import qualified Language.LSP.Server                          as LSP
+ import           Language.LSP.VFS
+@@ -486,17 +488,9 @@ reportImportCyclesRule recorder =
+     where cycleErrorInFile f (PartOfCycle imp fs)
+             | f `elem` fs = Just (imp, fs)
+           cycleErrorInFile _ _ = Nothing
+-          toDiag imp mods = (fp , ShowDiag , ) $ Diagnostic
+-            { _range = rng
+-            , _severity = Just DiagnosticSeverity_Error
+-            , _source = Just "Import cycle detection"
+-            , _message = "Cyclic module dependency between " <> showCycle mods
+-            , _code = Nothing
+-            , _relatedInformation = Nothing
+-            , _tags = Nothing
+-            , _codeDescription = Nothing
+-            , _data_ = Nothing
+-            }
++          toDiag imp mods =
++            ideErrorWithSource (Just "Import cycle detection") (Just DiagnosticSeverity_Error) fp ("Cyclic module dependency between " <> showCycle mods) Nothing
++              & fdLspDiagnosticL %~ JL.range .~ rng
+             where rng = fromMaybe noRange $ srcSpanToRange (getLoc imp)
+                   fp = toNormalizedFilePath' $ fromMaybe noFilePath $ srcSpanToFilename (getLoc imp)
+           getModuleName file = do
+diff --git a/src/Development/IDE/Core/Shake.hs b/src/Development/IDE/Core/Shake.hs
+index 1c25fa9ee0..ed27a2f608 100644
+--- a/src/Development/IDE/Core/Shake.hs
++++ b/src/Development/IDE/Core/Shake.hs
+@@ -83,7 +83,7 @@ import           Control.Concurrent.STM.Stats           (atomicallyNamed)
+ import           Control.Concurrent.Strict
+ import           Control.DeepSeq
+ import           Control.Exception.Extra                hiding (bracket_)
+-import           Control.Lens                           ((&), (?~))
++import           Control.Lens                           ((%~), (&), (?~))
+ import           Control.Monad.Extra
+ import           Control.Monad.IO.Class
+ import           Control.Monad.Reader
+@@ -163,7 +163,6 @@ import qualified Ide.Logger                             as Logger
+ import           Ide.Plugin.Config
+ import qualified Ide.PluginUtils                        as HLS
+ import           Ide.Types
+-import           Language.LSP.Diagnostics
+ import qualified Language.LSP.Protocol.Lens             as L
+ import           Language.LSP.Protocol.Message
+ import           Language.LSP.Protocol.Types
+@@ -281,7 +280,7 @@ data ShakeExtras = ShakeExtras
+     ,state :: Values
+     ,diagnostics :: STMDiagnosticStore
+     ,hiddenDiagnostics :: STMDiagnosticStore
+-    ,publishedDiagnostics :: STM.Map NormalizedUri [Diagnostic]
++    ,publishedDiagnostics :: STM.Map NormalizedUri [FileDiagnostic]
+     -- ^ This represents the set of diagnostics that we have published.
+     -- Due to debouncing not every change might get published.
+ 
+@@ -1173,7 +1172,7 @@ defineEarlyCutoff recorder (Rule op) = addRule $ \(Q (key, file)) (old :: Maybe
+     extras <- getShakeExtras
+     let diagnostics ver diags = do
+             traceDiagnostics diags
+-            updateFileDiagnostics recorder file ver (newKey key) extras . map (\(_,y,z) -> (y,z)) $ diags
++            updateFileDiagnostics recorder file ver (newKey key) extras diags
+     defineEarlyCutoff' diagnostics (==) key file old mode $ const $ op key file
+ defineEarlyCutoff recorder (RuleNoDiagnostics op) = addRule $ \(Q (key, file)) (old :: Maybe BS.ByteString) mode -> otTracedAction key file mode traceA $ \traceDiagnostics -> do
+     let diagnostics _ver diags = do
+@@ -1192,7 +1191,7 @@ defineEarlyCutoff recorder (RuleWithOldValue op) = addRule $ \(Q (key, file)) (o
+     extras <- getShakeExtras
+     let diagnostics ver diags = do
+             traceDiagnostics diags
+-            updateFileDiagnostics recorder file ver (newKey key) extras . map (\(_,y,z) -> (y,z)) $ diags
++            updateFileDiagnostics recorder file ver (newKey key) extras diags
+     defineEarlyCutoff' diagnostics (==) key file old mode $ op key file
+ 
+ defineNoFile :: IdeRule k v => Recorder (WithPriority Log) -> (k -> Action v) -> Rules ()
+@@ -1247,7 +1246,7 @@ defineEarlyCutoff' doDiagnostics cmp key file mbOld mode action = do
+                 (mbBs, (diags, mbRes)) <- actionCatch
+                     (do v <- action staleV; liftIO $ evaluate $ force v) $
+                     \(e :: SomeException) -> do
+-                        pure (Nothing, ([ideErrorText file $ T.pack $ show e | not $ isBadDependency e],Nothing))
++                        pure (Nothing, ([ideErrorText file (T.pack $ show e) | not $ isBadDependency e],Nothing))
+ 
+                 ver <- estimateFileVersionUnsafely key mbRes file
+                 (bs, res) <- case mbRes of
+@@ -1329,26 +1328,26 @@ updateFileDiagnostics :: MonadIO m
+   -> Maybe Int32
+   -> Key
+   -> ShakeExtras
+-  -> [(ShowDiagnostic,Diagnostic)] -- ^ current results
++  -> [FileDiagnostic] -- ^ current results
+   -> m ()
+-updateFileDiagnostics recorder fp ver k ShakeExtras{diagnostics, hiddenDiagnostics, publishedDiagnostics, debouncer, lspEnv, ideTesting} current0 =
++updateFileDiagnostics recorder fp ver k ShakeExtras{diagnostics, hiddenDiagnostics, publishedDiagnostics, debouncer, lspEnv, ideTesting} current0 = do
+   liftIO $ withTrace ("update diagnostics " <> fromString(fromNormalizedFilePath fp)) $ \ addTag -> do
+     addTag "key" (show k)
+-    let (currentShown, currentHidden) = partition ((== ShowDiag) . fst) current
++    let (currentShown, currentHidden) = partition ((== ShowDiag) . fdShouldShowDiagnostic) current
+         uri = filePathToUri' fp
+         addTagUnsafe :: String -> String -> String -> a -> a
+         addTagUnsafe msg t x v = unsafePerformIO(addTag (msg <> t) x) `seq` v
+-        update :: (forall a. String -> String -> a -> a) -> [Diagnostic] -> STMDiagnosticStore -> STM [Diagnostic]
++        update :: (forall a. String -> String -> a -> a) -> [FileDiagnostic] -> STMDiagnosticStore -> STM [FileDiagnostic]
+         update addTagUnsafeMethod new store = addTagUnsafeMethod "count" (show $ Prelude.length new) $ setStageDiagnostics addTagUnsafeMethod uri ver (renderKey k) new store
+-        current = second diagsFromRule <$> current0
++        current = map (fdLspDiagnosticL %~ diagsFromRule) current0
+     addTag "version" (show ver)
+     mask_ $ do
+         -- Mask async exceptions to ensure that updated diagnostics are always
+         -- published. Otherwise, we might never publish certain diagnostics if
+         -- an exception strikes between modifyVar but before
+         -- publishDiagnosticsNotification.
+-        newDiags <- liftIO $ atomicallyNamed "diagnostics - update" $ update (addTagUnsafe "shown ") (map snd currentShown) diagnostics
+-        _ <- liftIO $ atomicallyNamed "diagnostics - hidden" $ update (addTagUnsafe "hidden ") (map snd currentHidden) hiddenDiagnostics
++        newDiags <- liftIO $ atomicallyNamed "diagnostics - update" $ update (addTagUnsafe "shown ") currentShown diagnostics
++        _ <- liftIO $ atomicallyNamed "diagnostics - hidden" $ update (addTagUnsafe "hidden ") currentHidden hiddenDiagnostics
+         let uri' = filePathToUri' fp
+         let delay = if null newDiags then 0.1 else 0
+         registerEvent debouncer delay uri' $ withTrace ("report diagnostics " <> fromString (fromNormalizedFilePath fp)) $ \tag -> do
+@@ -1356,12 +1355,12 @@ updateFileDiagnostics recorder fp ver k ShakeExtras{diagnostics, hiddenDiagnosti
+                 lastPublish <- atomicallyNamed "diagnostics - publish" $ STM.focus (Focus.lookupWithDefault [] <* Focus.insert newDiags) uri' publishedDiagnostics
+                 let action = when (lastPublish /= newDiags) $ case lspEnv of
+                         Nothing -> -- Print an LSP event.
+-                            logWith recorder Info $ LogDiagsDiffButNoLspEnv (map (fp, ShowDiag,) newDiags)
++                            logWith recorder Info $ LogDiagsDiffButNoLspEnv newDiags
+                         Just env -> LSP.runLspT env $ do
+                             liftIO $ tag "count" (show $ Prelude.length newDiags)
+                             liftIO $ tag "key" (show k)
+                             LSP.sendNotification SMethod_TextDocumentPublishDiagnostics $
+-                                LSP.PublishDiagnosticsParams (fromNormalizedUri uri') (fmap fromIntegral ver) newDiags
++                                LSP.PublishDiagnosticsParams (fromNormalizedUri uri') (fmap fromIntegral ver) (map fdLspDiagnostic newDiags)
+                 return action
+     where
+         diagsFromRule :: Diagnostic -> Diagnostic
+@@ -1384,26 +1383,28 @@ actionLogger :: Action (Recorder (WithPriority Log))
+ actionLogger = shakeRecorder <$> getShakeExtras
+ 
+ --------------------------------------------------------------------------------
+-type STMDiagnosticStore = STM.Map NormalizedUri StoreItem
++type STMDiagnosticStore = STM.Map NormalizedUri StoreItem'
++data StoreItem' = StoreItem' (Maybe Int32) FileDiagnosticsBySource
++type FileDiagnosticsBySource = Map.Map (Maybe T.Text) (SL.SortedList FileDiagnostic)
+ 
+-getDiagnosticsFromStore :: StoreItem -> [Diagnostic]
+-getDiagnosticsFromStore (StoreItem _ diags) = concatMap SL.fromSortedList $ Map.elems diags
++getDiagnosticsFromStore :: StoreItem' -> [FileDiagnostic]
++getDiagnosticsFromStore (StoreItem' _ diags) = concatMap SL.fromSortedList $ Map.elems diags
+ 
+ updateSTMDiagnostics ::
+   (forall a. String -> String -> a -> a) ->
+   STMDiagnosticStore ->
+   NormalizedUri ->
+   Maybe Int32 ->
+-  DiagnosticsBySource ->
+-  STM [LSP.Diagnostic]
++  FileDiagnosticsBySource ->
++  STM [FileDiagnostic]
+ updateSTMDiagnostics addTag store uri mv newDiagsBySource =
+     getDiagnosticsFromStore . fromJust <$> STM.focus (Focus.alter update *> Focus.lookup) uri store
+   where
+-    update (Just(StoreItem mvs dbs))
++    update (Just(StoreItem' mvs dbs))
+       | addTag "previous version" (show mvs) $
+         addTag "previous count" (show $ Prelude.length $ filter (not.null) $ Map.elems dbs) False = undefined
+-      | mvs == mv = Just (StoreItem mv (newDiagsBySource <> dbs))
+-    update _ = Just (StoreItem mv newDiagsBySource)
++      | mvs == mv = Just (StoreItem' mv (newDiagsBySource <> dbs))
++    update _ = Just (StoreItem' mv newDiagsBySource)
+ 
+ -- | Sets the diagnostics for a file and compilation step
+ --   if you want to clear the diagnostics call this with an empty list
+@@ -1412,9 +1413,9 @@ setStageDiagnostics
+     -> NormalizedUri
+     -> Maybe Int32 -- ^ the time that the file these diagnostics originate from was last edited
+     -> T.Text
+-    -> [LSP.Diagnostic]
++    -> [FileDiagnostic]
+     -> STMDiagnosticStore
+-    -> STM [LSP.Diagnostic]
++    -> STM [FileDiagnostic]
+ setStageDiagnostics addTag uri ver stage diags ds = updateSTMDiagnostics addTag ds uri ver updatedDiags
+   where
+     !updatedDiags = Map.singleton (Just stage) $! SL.toSortedList diags
+@@ -1423,7 +1424,7 @@ getAllDiagnostics ::
+     STMDiagnosticStore ->
+     STM [FileDiagnostic]
+ getAllDiagnostics =
+-    fmap (concatMap (\(k,v) -> map (fromUri k,ShowDiag,) $ getDiagnosticsFromStore v)) . ListT.toList . STM.listT
++    fmap (concatMap (\(_,v) -> getDiagnosticsFromStore v)) . ListT.toList . STM.listT
+ 
+ updatePositionMapping :: IdeState -> VersionedTextDocumentIdentifier -> [TextDocumentContentChangeEvent] -> STM ()
+ updatePositionMapping IdeState{shakeExtras = ShakeExtras{positionMapping}} VersionedTextDocumentIdentifier{..} changes =
+diff --git a/src/Development/IDE/GHC/Compat.hs b/src/Development/IDE/GHC/Compat.hs
+index d6184bcd50..5f66625ee5 100644
+--- a/src/Development/IDE/GHC/Compat.hs
++++ b/src/Development/IDE/GHC/Compat.hs
+@@ -310,12 +310,25 @@ corePrepExpr _ = GHC.corePrepExpr
+ 
+ renderMessages :: PsMessages -> (Bag WarnMsg, Bag ErrMsg)
+ renderMessages msgs =
++#if MIN_VERSION_ghc(9,5,0)
++  let renderMsgs extractor = (fmap . fmap) GhcPsMessage . getMessages $ extractor msgs
++  in (renderMsgs psWarnings, renderMsgs psErrors)
++#else
+   let renderMsgs extractor = (fmap . fmap) renderDiagnosticMessageWithHints . getMessages $ extractor msgs
+   in (renderMsgs psWarnings, renderMsgs psErrors)
++#endif
+ 
++#if MIN_VERSION_ghc(9,5,0)
++pattern PFailedWithErrorMessages :: forall a b. (b -> Bag (MsgEnvelope GhcMessage)) -> ParseResult a
++#else
+ pattern PFailedWithErrorMessages :: forall a b. (b -> Bag (MsgEnvelope DecoratedSDoc)) -> ParseResult a
++#endif
+ pattern PFailedWithErrorMessages msgs
++#if MIN_VERSION_ghc(9,5,0)
++     <- PFailed (const . fmap (fmap GhcPsMessage) . getMessages . getPsErrorMessages -> msgs)
++#else
+      <- PFailed (const . fmap (fmap renderDiagnosticMessageWithHints) . getMessages . getPsErrorMessages -> msgs)
++#endif
+ {-# COMPLETE POk, PFailedWithErrorMessages #-}
+ 
+ hieExportNames :: HieFile -> [(SrcSpan, Name)]
+diff --git a/src/Development/IDE/GHC/Compat/Driver.hs b/src/Development/IDE/GHC/Compat/Driver.hs
+new file mode 100644
+index 0000000000..c88d0963d6
+--- /dev/null
++++ b/src/Development/IDE/GHC/Compat/Driver.hs
+@@ -0,0 +1,147 @@
++-- ============================================================================
++-- DO NOT EDIT
++-- This module copies parts of the driver code in GHC.Driver.Main to provide
++-- `hscTypecheckRenameWithDiagnostics`.
++-- Issue to add this function: https://gitlab.haskell.org/ghc/ghc/-/issues/24996
++-- MR to add this function: https://gitlab.haskell.org/ghc/ghc/-/merge_requests/12891
++-- ============================================================================
++
++{-# LANGUAGE CPP #-}
++
++module Development.IDE.GHC.Compat.Driver
++    ( hscTypecheckRenameWithDiagnostics
++    ) where
++
++import           Control.Monad
++import           GHC.Core
++import           GHC.Data.FastString
++import           GHC.Data.Maybe
++import           GHC.Driver.Env
++import           GHC.Driver.Errors.Types
++import           GHC.Driver.Main
++import           GHC.Driver.Session
++import           GHC.Hs
++import           GHC.Hs.Dump
++import           GHC.Iface.Ext.Ast          (mkHieFile)
++import           GHC.Iface.Ext.Binary       (hie_file_result, readHieFile,
++                                             writeHieFile)
++import           GHC.Iface.Ext.Debug        (diffFile, validateScopes)
++import           GHC.Iface.Ext.Types        (getAsts, hie_asts, hie_module)
++import           GHC.Tc.Module
++import           GHC.Tc.Utils.Monad
++import           GHC.Types.SourceFile
++import           GHC.Types.SrcLoc
++import           GHC.Unit
++import           GHC.Unit.Module.ModDetails
++import           GHC.Unit.Module.ModIface
++import           GHC.Unit.Module.ModSummary
++import           GHC.Utils.Error
++import           GHC.Utils.Logger
++import           GHC.Utils.Outputable
++import           GHC.Utils.Panic.Plain
++
++hscTypecheckRenameWithDiagnostics :: HscEnv -> ModSummary -> HsParsedModule
++                   -> IO ((TcGblEnv, RenamedStuff), Messages GhcMessage)
++hscTypecheckRenameWithDiagnostics hsc_env mod_summary rdr_module =
++    runHsc' hsc_env $ hsc_typecheck True mod_summary (Just rdr_module)
++
++-- ============================================================================
++-- DO NOT EDIT - Refer to top of file
++-- ============================================================================
++hsc_typecheck :: Bool -- ^ Keep renamed source?
++              -> ModSummary -> Maybe HsParsedModule
++              -> Hsc (TcGblEnv, RenamedStuff)
++hsc_typecheck keep_rn mod_summary mb_rdr_module = do
++    hsc_env <- getHscEnv
++    let hsc_src = ms_hsc_src mod_summary
++        dflags = hsc_dflags hsc_env
++        home_unit = hsc_home_unit hsc_env
++        outer_mod = ms_mod mod_summary
++        mod_name = moduleName outer_mod
++        outer_mod' = mkHomeModule home_unit mod_name
++        inner_mod = homeModuleNameInstantiation home_unit mod_name
++        src_filename  = ms_hspp_file mod_summary
++        real_loc = realSrcLocSpan $ mkRealSrcLoc (mkFastString src_filename) 1 1
++        keep_rn' = gopt Opt_WriteHie dflags || keep_rn
++    massert (isHomeModule home_unit outer_mod)
++    tc_result <- if hsc_src == HsigFile && not (isHoleModule inner_mod)
++        then ioMsgMaybe $ hoistTcRnMessage $ tcRnInstantiateSignature hsc_env outer_mod' real_loc
++        else
++         do hpm <- case mb_rdr_module of
++                    Just hpm -> return hpm
++                    Nothing  -> hscParse' mod_summary
++            tc_result0 <- tcRnModule' mod_summary keep_rn' hpm
++            if hsc_src == HsigFile
++                then
++#if MIN_VERSION_ghc(9,5,0)
++                     do (iface, _) <- liftIO $ hscSimpleIface hsc_env Nothing tc_result0 mod_summary
++#else
++                     do (iface, _) <- liftIO $ hscSimpleIface hsc_env tc_result0 mod_summary
++#endif
++                        ioMsgMaybe $ hoistTcRnMessage $
++                            tcRnMergeSignatures hsc_env hpm tc_result0 iface
++                else return tc_result0
++    rn_info <- extract_renamed_stuff mod_summary tc_result
++    return (tc_result, rn_info)
++
++-- ============================================================================
++-- DO NOT EDIT - Refer to top of file
++-- ============================================================================
++extract_renamed_stuff :: ModSummary -> TcGblEnv -> Hsc RenamedStuff
++extract_renamed_stuff mod_summary tc_result = do
++    let rn_info = getRenamedStuff tc_result
++
++    dflags <- getDynFlags
++    logger <- getLogger
++    liftIO $ putDumpFileMaybe logger Opt_D_dump_rn_ast "Renamer"
++                FormatHaskell (showAstData NoBlankSrcSpan NoBlankEpAnnotations rn_info)
++
++    -- Create HIE files
++    when (gopt Opt_WriteHie dflags) $ do
++        -- I assume this fromJust is safe because `-fwrite-hie-file`
++        -- enables the option which keeps the renamed source.
++        hieFile <- mkHieFile mod_summary tc_result (fromJust rn_info)
++        let out_file = ml_hie_file $ ms_location mod_summary
++        liftIO $ writeHieFile out_file hieFile
++        liftIO $ putDumpFileMaybe logger Opt_D_dump_hie "HIE AST" FormatHaskell (ppr $ hie_asts hieFile)
++
++        -- Validate HIE files
++        when (gopt Opt_ValidateHie dflags) $ do
++            hs_env <- Hsc $ \e w -> return (e, w)
++            liftIO $ do
++              -- Validate Scopes
++              case validateScopes (hie_module hieFile) $ getAsts $ hie_asts hieFile of
++                  [] -> putMsg logger $ text "Got valid scopes"
++                  xs -> do
++                    putMsg logger $ text "Got invalid scopes"
++                    mapM_ (putMsg logger) xs
++              -- Roundtrip testing
++              file' <- readHieFile (hsc_NC hs_env) out_file
++              case diffFile hieFile (hie_file_result file') of
++                [] ->
++                  putMsg logger $ text "Got no roundtrip errors"
++                xs -> do
++                  putMsg logger $ text "Got roundtrip errors"
++                  let logger' = updateLogFlags logger (log_set_dopt Opt_D_ppr_debug)
++                  mapM_ (putMsg logger') xs
++    return rn_info
++
++-- ============================================================================
++-- DO NOT EDIT - Refer to top of file
++-- ============================================================================
++#if MIN_VERSION_ghc(9,5,0)
++hscSimpleIface :: HscEnv
++               -> Maybe CoreProgram
++               -> TcGblEnv
++               -> ModSummary
++               -> IO (ModIface, ModDetails)
++hscSimpleIface hsc_env mb_core_program tc_result summary
++    = runHsc hsc_env $ hscSimpleIface' mb_core_program tc_result summary
++#else
++hscSimpleIface :: HscEnv
++               -> TcGblEnv
++               -> ModSummary
++               -> IO (ModIface, ModDetails)
++hscSimpleIface hsc_env tc_result summary
++    = runHsc hsc_env $ hscSimpleIface' tc_result summary
++#endif
+diff --git a/src/Development/IDE/GHC/Compat/Error.hs b/src/Development/IDE/GHC/Compat/Error.hs
+new file mode 100644
+index 0000000000..06b6a9876b
+--- /dev/null
++++ b/src/Development/IDE/GHC/Compat/Error.hs
+@@ -0,0 +1,68 @@
++{-# LANGUAGE CPP             #-}
++{-# LANGUAGE TemplateHaskell #-}
++module Development.IDE.GHC.Compat.Error (
++  -- * Top-level error types and lens for easy access
++  MsgEnvelope(..),
++  msgEnvelopeErrorL,
++  GhcMessage(..),
++  -- * Error messages for the typechecking and renamer phase
++  TcRnMessage (..),
++  TcRnMessageDetailed (..),
++  stripTcRnMessageContext,
++  -- * Parsing error message
++  PsMessage(..),
++  -- * Desugaring diagnostic
++  DsMessage (..),
++  -- * Driver error message
++  DriverMessage (..),
++  -- * General Diagnostics
++  Diagnostic(..),
++  -- * Prisms for error selection
++  _TcRnMessage,
++  _GhcPsMessage,
++  _GhcDsMessage,
++  _GhcDriverMessage,
++  ) where
++
++import           Control.Lens
++import           GHC.Driver.Errors.Types
++import           GHC.HsToCore.Errors.Types
++import           GHC.Tc.Errors.Types
++import           GHC.Types.Error
++
++_TcRnMessage :: Prism' GhcMessage TcRnMessage
++_TcRnMessage = prism' GhcTcRnMessage (\case
++  GhcTcRnMessage tcRnMsg -> Just tcRnMsg
++  _ -> Nothing)
++
++_GhcPsMessage :: Prism' GhcMessage PsMessage
++_GhcPsMessage = prism' GhcPsMessage (\case
++  GhcPsMessage psMsg -> Just psMsg
++  _ -> Nothing)
++
++_GhcDsMessage :: Prism' GhcMessage DsMessage
++_GhcDsMessage = prism' GhcDsMessage (\case
++  GhcDsMessage dsMsg -> Just dsMsg
++  _ -> Nothing)
++
++_GhcDriverMessage :: Prism' GhcMessage DriverMessage
++_GhcDriverMessage = prism' GhcDriverMessage (\case
++  GhcDriverMessage driverMsg -> Just driverMsg
++  _ -> Nothing)
++
++-- | Some 'TcRnMessage's are nested in other constructors for additional context.
++-- For example, 'TcRnWithHsDocContext' and 'TcRnMessageWithInfo'.
++-- However, in some occasions you don't need the additional context and you just want
++-- the error message. @'stripTcRnMessageContext'@ recursively unwraps these constructors,
++-- until there are no more constructors with additional context.
++--
++stripTcRnMessageContext :: TcRnMessage -> TcRnMessage
++stripTcRnMessageContext = \case
++#if MIN_VERSION_ghc(9, 6, 1)
++  TcRnWithHsDocContext _ tcMsg -> stripTcRnMessageContext tcMsg
++#endif
++  TcRnMessageWithInfo _ (TcRnMessageDetailed _ tcMsg) -> stripTcRnMessageContext tcMsg
++  msg -> msg
++
++msgEnvelopeErrorL :: Lens' (MsgEnvelope e) e
++msgEnvelopeErrorL = lens errMsgDiagnostic (\envelope e -> envelope { errMsgDiagnostic = e } )
+diff --git a/src/Development/IDE/GHC/Compat/Outputable.hs b/src/Development/IDE/GHC/Compat/Outputable.hs
+index 078d116434..d1053ebffc 100644
+--- a/src/Development/IDE/GHC/Compat/Outputable.hs
++++ b/src/Development/IDE/GHC/Compat/Outputable.hs
+@@ -118,8 +118,13 @@ pprNoLocMsgEnvelope (MsgEnvelope { errMsgDiagnostic = e
+ 
+ 
+ 
++#if MIN_VERSION_ghc(9,5,0)
++type ErrMsg  = MsgEnvelope GhcMessage
++type WarnMsg  = MsgEnvelope GhcMessage
++#else
+ type ErrMsg  = MsgEnvelope DecoratedSDoc
+ type WarnMsg  = MsgEnvelope DecoratedSDoc
++#endif
+ 
+ mkPrintUnqualifiedDefault :: HscEnv -> GlobalRdrEnv -> PrintUnqualified
+ #if MIN_VERSION_ghc(9,5,0)
+diff --git a/src/Development/IDE/GHC/Error.hs b/src/Development/IDE/GHC/Error.hs
+index 651fa5a34d..8f919a3bf2 100644
+--- a/src/Development/IDE/GHC/Error.hs
++++ b/src/Development/IDE/GHC/Error.hs
+@@ -1,11 +1,15 @@
+-{-# LANGUAGE CPP #-}
++{-# LANGUAGE CPP                      #-}
++{-# LANGUAGE DisambiguateRecordFields #-}
+ -- Copyright (c) 2019 The DAML Authors. All rights reserved.
+ -- SPDX-License-Identifier: Apache-2.0
+ module Development.IDE.GHC.Error
+   (
+     -- * Producing Diagnostic values
+-    diagFromErrMsgs
++    diagFromGhcErrorMessages
++  , diagFromErrMsgs
+   , diagFromErrMsg
++  , diagFromSDocErrMsgs
++  , diagFromSDocErrMsg
+   , diagFromString
+   , diagFromStrings
+   , diagFromGhcException
+@@ -33,10 +37,13 @@ module Development.IDE.GHC.Error
+   , toDSeverity
+   ) where
+ 
++import           Control.Lens
+ import           Data.Maybe
+ import           Data.String                       (fromString)
+ import qualified Data.Text                         as T
+-import           Development.IDE.GHC.Compat        (DecoratedSDoc, MsgEnvelope,
++import           Data.Tuple.Extra                  (uncurry3)
++import           Development.IDE.GHC.Compat        (GhcMessage, MsgEnvelope,
++                                                    errMsgDiagnostic,
+                                                     errMsgSeverity, errMsgSpan,
+                                                     formatErrorWithQual,
+                                                     srcErrorMessages)
+@@ -51,30 +58,51 @@ import           Language.LSP.VFS                  (CodePointPosition (CodePoint
+                                                     CodePointRange (CodePointRange))
+ 
+ 
+-diagFromText :: T.Text -> D.DiagnosticSeverity -> SrcSpan -> T.Text -> FileDiagnostic
+-diagFromText diagSource sev loc msg = (toNormalizedFilePath' $ fromMaybe noFilePath $ srcSpanToFilename loc,ShowDiag,)
+-    Diagnostic
+-    { _range    = fromMaybe noRange $ srcSpanToRange loc
+-    , _severity = Just sev
+-    , _source   = Just diagSource -- not shown in the IDE, but useful for ghcide developers
+-    , _message  = msg
+-    , _code     = Nothing
+-    , _relatedInformation = Nothing
+-    , _tags     = Nothing
+-    , _codeDescription = Nothing
+-    , _data_   = Nothing
+-    }
++diagFromText :: T.Text -> D.DiagnosticSeverity -> SrcSpan -> T.Text -> Maybe (MsgEnvelope GhcMessage) -> FileDiagnostic
++diagFromText diagSource sev loc msg origMsg =
++  D.ideErrorWithSource
++    (Just diagSource) (Just sev)
++    (toNormalizedFilePath' $ fromMaybe noFilePath $ srcSpanToFilename loc)
++    msg origMsg
++    & fdLspDiagnosticL %~ \diag -> diag { D._range = fromMaybe noRange $ srcSpanToRange loc }
+ 
+ -- | Produce a GHC-style error from a source span and a message.
+-diagFromErrMsg :: T.Text -> DynFlags -> MsgEnvelope DecoratedSDoc -> [FileDiagnostic]
+-diagFromErrMsg diagSource dflags e =
+-    [ diagFromText diagSource sev (errMsgSpan e)
+-      $ T.pack $ formatErrorWithQual dflags e
+-    | Just sev <- [toDSeverity $ errMsgSeverity e]]
+-
+-diagFromErrMsgs :: T.Text -> DynFlags -> Compat.Bag (MsgEnvelope DecoratedSDoc) -> [FileDiagnostic]
++diagFromErrMsg :: T.Text -> DynFlags -> MsgEnvelope GhcMessage -> [FileDiagnostic]
++diagFromErrMsg diagSource dflags origErr =
++    let err = fmap (\e -> (Compat.renderDiagnosticMessageWithHints e, Just origErr)) origErr
++    in
++    diagFromSDocWithOptionalOrigMsg diagSource dflags err
++
++-- | Compatibility function for creating '[FileDiagnostic]' from
++-- a 'Compat.Bag' of GHC error messages.
++-- The function signature changes based on the GHC version.
++-- While this is not desirable, it avoids more CPP statements in code
++-- that implements actual logic.
++#if MIN_VERSION_ghc(9,5,0)
++diagFromGhcErrorMessages :: T.Text -> DynFlags -> Compat.Bag (MsgEnvelope GhcMessage) -> [FileDiagnostic]
++diagFromGhcErrorMessages sourceParser dflags errs =
++    diagFromErrMsgs sourceParser dflags errs
++#else
++diagFromGhcErrorMessages :: T.Text -> DynFlags -> Compat.Bag (MsgEnvelope Compat.DecoratedSDoc) -> [FileDiagnostic]
++diagFromGhcErrorMessages sourceParser dflags errs =
++    diagFromSDocErrMsgs sourceParser dflags errs
++#endif
++
++diagFromErrMsgs :: T.Text -> DynFlags -> Compat.Bag (MsgEnvelope GhcMessage) -> [FileDiagnostic]
+ diagFromErrMsgs diagSource dflags = concatMap (diagFromErrMsg diagSource dflags) . Compat.bagToList
+ 
++diagFromSDocErrMsg :: T.Text -> DynFlags -> MsgEnvelope Compat.DecoratedSDoc -> [FileDiagnostic]
++diagFromSDocErrMsg diagSource dflags err =
++    diagFromSDocWithOptionalOrigMsg diagSource dflags (fmap (,Nothing) err)
++
++diagFromSDocErrMsgs :: T.Text -> DynFlags -> Compat.Bag (MsgEnvelope Compat.DecoratedSDoc) -> [FileDiagnostic]
++diagFromSDocErrMsgs diagSource dflags = concatMap (diagFromSDocErrMsg diagSource dflags) . Compat.bagToList
++
++diagFromSDocWithOptionalOrigMsg :: T.Text -> DynFlags -> MsgEnvelope (Compat.DecoratedSDoc, Maybe (MsgEnvelope GhcMessage)) -> [FileDiagnostic]
++diagFromSDocWithOptionalOrigMsg diagSource dflags err =
++    [ diagFromText diagSource sev (errMsgSpan err) (T.pack (formatErrorWithQual dflags (fmap fst err))) (snd (errMsgDiagnostic err))
++    | Just sev <- [toDSeverity $ errMsgSeverity err]]
++
+ -- | Convert a GHC SrcSpan to a DAML compiler Range
+ srcSpanToRange :: SrcSpan -> Maybe Range
+ srcSpanToRange (UnhelpfulSpan _)           = Nothing
+@@ -164,12 +192,12 @@ toDSeverity SevError   = Just DiagnosticSeverity_Error
+ 
+ -- | Produce a bag of GHC-style errors (@ErrorMessages@) from the given
+ --   (optional) locations and message strings.
+-diagFromStrings :: T.Text -> D.DiagnosticSeverity -> [(SrcSpan, String)] -> [FileDiagnostic]
+-diagFromStrings diagSource sev = concatMap (uncurry (diagFromString diagSource sev))
++diagFromStrings :: T.Text -> D.DiagnosticSeverity -> [(SrcSpan, String, Maybe (MsgEnvelope GhcMessage))] -> [FileDiagnostic]
++diagFromStrings diagSource sev = concatMap (uncurry3 (diagFromString diagSource sev))
+ 
+ -- | Produce a GHC-style error from a source span and a message.
+-diagFromString :: T.Text -> D.DiagnosticSeverity -> SrcSpan -> String -> [FileDiagnostic]
+-diagFromString diagSource sev sp x = [diagFromText diagSource sev sp $ T.pack x]
++diagFromString :: T.Text -> D.DiagnosticSeverity -> SrcSpan -> String -> Maybe (MsgEnvelope GhcMessage) -> [FileDiagnostic]
++diagFromString diagSource sev sp x origMsg = [diagFromText diagSource sev sp (T.pack x) origMsg]
+ 
+ 
+ -- | Produces an "unhelpful" source span with the given string.
+@@ -199,13 +227,11 @@ catchSrcErrors dflags fromWhere ghcM = do
+       Right <$> ghcM
+     where
+         ghcExceptionToDiagnostics = return . Left . diagFromGhcException fromWhere dflags
+-        sourceErrorToDiagnostics = return . Left . diagFromErrMsgs fromWhere dflags
+-                                        . fmap (fmap Compat.renderDiagnosticMessageWithHints) . Compat.getMessages
+-                                        . srcErrorMessages
+-
++        sourceErrorToDiagnostics diag = pure $ Left $
++          diagFromErrMsgs fromWhere dflags (Compat.getMessages (srcErrorMessages diag))
+ 
+ diagFromGhcException :: T.Text -> DynFlags -> GhcException -> [FileDiagnostic]
+-diagFromGhcException diagSource dflags exc = diagFromString diagSource DiagnosticSeverity_Error (noSpan "<Internal>") (showGHCE dflags exc)
++diagFromGhcException diagSource dflags exc = diagFromString diagSource DiagnosticSeverity_Error (noSpan "<Internal>") (showGHCE dflags exc) Nothing
+ 
+ showGHCE :: DynFlags -> GhcException -> String
+ showGHCE dflags exc = case exc of
+diff --git a/src/Development/IDE/GHC/Warnings.hs b/src/Development/IDE/GHC/Warnings.hs
+index 5e0d9b1d46..fe77ea8456 100644
+--- a/src/Development/IDE/GHC/Warnings.hs
++++ b/src/Development/IDE/GHC/Warnings.hs
+@@ -6,14 +6,36 @@
+ module Development.IDE.GHC.Warnings(withWarnings) where
+ 
+ import           Control.Concurrent.Strict
+-import           Data.List
++import           Control.Lens                      (over)
+ import qualified Data.Text                         as T
+ 
+ import           Development.IDE.GHC.Compat
+ import           Development.IDE.GHC.Error
+ import           Development.IDE.Types.Diagnostics
+-import           Language.LSP.Protocol.Types       (type (|?) (..))
+ 
++{-
++ Note [withWarnings and its dangers]
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++    withWarnings collects warnings by registering a custom logger which extracts
++    the SDocs of those warnings. If you receive warnings this way, you will not
++    get them in a structured form. In the medium term we'd like to remove all
++    uses of withWarnings to get structured messages everywhere we can.
++
++    For the time being, withWarnings is no longer used for anything in the main
++    typecheckModule codepath, but it is still used for bytecode/object code
++    generation, as well as a few other places.
++
++    I suspect some of these functions (e.g. codegen) will need deeper changes to
++    be able to get diagnostics as a list, though I don't have great evidence for
++    that atm. I haven't taken a look to see if those functions that are wrapped
++    with this could produce diagnostics another way.
++
++    It would be good for someone to take a look. What we've done so far gives us
++    diagnostics for renaming and typechecking, and doesn't require us to copy
++    too much code from GHC or make any deeper changes, and lets us get started
++    with the bulk of the useful plugin work, but it would be good to have all
++    diagnostics with structure be collected that way.
++-}
+ 
+ -- | Take a GHC monadic action (e.g. @typecheckModule pm@ for some
+ -- parsed module 'pm@') and produce a "decorated" action that will
+@@ -24,28 +46,16 @@ import           Language.LSP.Protocol.Types       (type (|?) (..))
+ --   https://github.com/ghc/ghc/blob/5f1d949ab9e09b8d95319633854b7959df06eb58/compiler/main/GHC.hs#L623-L640
+ --   which basically says that log_action is taken from the ModSummary when GHC feels like it.
+ --   The given argument lets you refresh a ModSummary log_action
++--
++-- Also, See Note [withWarnings and its dangers] for some commentary on this function.
+ withWarnings :: T.Text -> ((HscEnv -> HscEnv) -> IO a) -> IO ([(Maybe DiagnosticReason, FileDiagnostic)], a)
+ withWarnings diagSource action = do
+   warnings <- newVar []
+   let newAction :: DynFlags -> LogActionCompat
+       newAction dynFlags logFlags wr _ loc prUnqual msg = do
+-        let wr_d = map ((wr,) . third3 (attachReason wr)) $ diagFromErrMsg diagSource dynFlags $ mkWarnMsg dynFlags wr logFlags loc prUnqual msg
++        let wr_d = map ((wr,) . over fdLspDiagnosticL (attachReason wr)) $ diagFromSDocErrMsg diagSource dynFlags (mkWarnMsg dynFlags wr logFlags loc prUnqual msg)
+         modifyVar_ warnings $ return . (wr_d:)
+       newLogger env = pushLogHook (const (logActionCompat (newAction (hsc_dflags env)))) (hsc_logger env)
+   res <- action $ \env -> putLogHook (newLogger env) env
+   warns <- readVar warnings
+   return (reverse $ concat warns, res)
+-  where
+-    third3 :: (c -> d) -> (a, b, c) -> (a, b, d)
+-    third3 f (a, b, c) = (a, b, f c)
+-
+-attachReason :: Maybe DiagnosticReason -> Diagnostic -> Diagnostic
+-attachReason Nothing d = d
+-attachReason (Just wr) d = d{_code = InR <$> showReason wr}
+- where
+-  showReason = \case
+-    WarningWithFlag flag -> showFlag flag
+-    _                    -> Nothing
+-
+-showFlag :: WarningFlag -> Maybe T.Text
+-showFlag flag = ("-W" <>) . T.pack . flagSpecName <$> find ((== flag) . flagSpecFlag) wWarningFlags
+diff --git a/src/Development/IDE/Import/FindImports.hs b/src/Development/IDE/Import/FindImports.hs
+index e17c490c5a..7fa287836b 100644
+--- a/src/Development/IDE/Import/FindImports.hs
++++ b/src/Development/IDE/Import/FindImports.hs
+@@ -187,7 +187,7 @@ notFoundErr env modName reason =
+   mkError' $ ppr' $ cannotFindModule env modName0 $ lookupToFindResult reason
+   where
+     dfs = hsc_dflags env
+-    mkError' = diagFromString "not found" DiagnosticSeverity_Error (Compat.getLoc modName)
++    mkError' doc = diagFromString "not found" DiagnosticSeverity_Error (Compat.getLoc modName) doc Nothing
+     modName0 = unLoc modName
+     ppr' = showSDoc dfs
+     -- We convert the lookup result to a find result to reuse GHC's cannotFindModule pretty printer.
+diff --git a/src/Development/IDE/Plugin/TypeLenses.hs b/src/Development/IDE/Plugin/TypeLenses.hs
+index 51d25e995b..a1aa237de8 100644
+--- a/src/Development/IDE/Plugin/TypeLenses.hs
++++ b/src/Development/IDE/Plugin/TypeLenses.hs
+@@ -26,7 +26,8 @@ import           Data.List                            (find)
+ import qualified Data.Map                             as Map
+ import           Data.Maybe                           (catMaybes, maybeToList)
+ import qualified Data.Text                            as T
+-import           Development.IDE                      (GhcSession (..),
++import           Development.IDE                      (FileDiagnostic (..),
++                                                       GhcSession (..),
+                                                        HscEnvEq (hscEnv),
+                                                        RuleResult, Rules, Uri,
+                                                        define, srcSpanToRange,
+@@ -126,9 +127,10 @@ codeLensProvider ideState pId CodeLensParams{_textDocument = TextDocumentIdentif
+           -- We don't actually pass any data to resolve, however we need this
+           -- dummy type to make sure HLS resolves our lens
+           [ CodeLens _range Nothing (Just $ toJSON TypeLensesResolve)
+-            | (dFile, _, diag@Diagnostic{_range}) <- diags
+-            , dFile == nfp
+-            , isGlobalDiagnostic diag]
++            | diag <- diags
++            , let lspDiag@Diagnostic {_range} = fdLspDiagnostic diag
++            , fdFilePath diag == nfp
++            , isGlobalDiagnostic lspDiag]
+         -- The second option is to generate lenses from the GlobalBindingTypeSig
+         -- rule. This is the only type that needs to have the range adjusted
+         -- with PositionMapping.
+diff --git a/src/Development/IDE/Types/Diagnostics.hs b/src/Development/IDE/Types/Diagnostics.hs
+index 8189ff89c1..cbd49a91f8 100644
+--- a/src/Development/IDE/Types/Diagnostics.hs
++++ b/src/Development/IDE/Types/Diagnostics.hs
+@@ -1,32 +1,69 @@
+ -- Copyright (c) 2019 The DAML Authors. All rights reserved.
+ -- SPDX-License-Identifier: Apache-2.0
+ 
++{-# LANGUAGE CPP             #-}
++{-# LANGUAGE DeriveGeneric   #-}
++{-# LANGUAGE TemplateHaskell #-}
+ 
+ module Development.IDE.Types.Diagnostics (
+   LSP.Diagnostic(..),
+   ShowDiagnostic(..),
+-  FileDiagnostic,
++  FileDiagnostic(..),
++  fdFilePathL,
++  fdLspDiagnosticL,
++  fdShouldShowDiagnosticL,
++  fdStructuredMessageL,
++  StructuredMessage(..),
++  _NoStructuredMessage,
++  _SomeStructuredMessage,
+   IdeResult,
+   LSP.DiagnosticSeverity(..),
+   DiagnosticStore,
+   ideErrorText,
+   ideErrorWithSource,
++  ideErrorFromLspDiag,
+   showDiagnostics,
+   showDiagnosticsColored,
+-  IdeResultNoDiagnosticsEarlyCutoff) where
++#if MIN_VERSION_ghc(9,5,0)
++  showGhcCode,
++#endif
++  IdeResultNoDiagnosticsEarlyCutoff,
++  attachReason,
++  attachedReason) where
+ 
++import           Control.Applicative            ((<|>))
+ import           Control.DeepSeq
++import           Control.Lens
++import qualified Data.Aeson                     as JSON
++import qualified Data.Aeson.Lens                as JSON
+ import           Data.ByteString                (ByteString)
++import           Data.List
+ import           Data.Maybe                     as Maybe
+ import qualified Data.Text                      as T
++import           Development.IDE.GHC.Compat     (GhcMessage, MsgEnvelope,
++                                                 WarningFlag, flagSpecFlag,
++                                                 flagSpecName, wWarningFlags)
+ import           Development.IDE.Types.Location
++import           GHC.Generics
++#if MIN_VERSION_ghc(9,5,0)
++import           GHC.Types.Error                (DiagnosticCode (..),
++                                                 DiagnosticReason (..),
++                                                 diagnosticCode,
++                                                 diagnosticReason,
++                                                 errMsgDiagnostic)
++#else
++import           GHC.Types.Error                (DiagnosticReason (..),
++                                                 diagnosticReason,
++                                                 errMsgDiagnostic)
++#endif
+ import           Language.LSP.Diagnostics
+-import           Language.LSP.Protocol.Types    as LSP (Diagnostic (..),
+-                                                        DiagnosticSeverity (..))
++import           Language.LSP.Protocol.Lens     (data_)
++import           Language.LSP.Protocol.Types    as LSP
+ import           Prettyprinter
+ import           Prettyprinter.Render.Terminal  (Color (..), color)
+ import qualified Prettyprinter.Render.Terminal  as Terminal
+ import           Prettyprinter.Render.Text
++import           Text.Printf                    (printf)
+ 
+ 
+ -- | The result of an IDE operation. Warnings and errors are in the Diagnostic,
+@@ -44,26 +81,99 @@ type IdeResult v = ([FileDiagnostic], Maybe v)
+ -- | an IdeResult with a fingerprint
+ type IdeResultNoDiagnosticsEarlyCutoff  v = (Maybe ByteString, Maybe v)
+ 
++-- | Produce a 'FileDiagnostic' for the given 'NormalizedFilePath'
++-- with an error message.
+ ideErrorText :: NormalizedFilePath -> T.Text -> FileDiagnostic
+-ideErrorText = ideErrorWithSource (Just "compiler") (Just DiagnosticSeverity_Error)
++ideErrorText nfp msg =
++  ideErrorWithSource (Just "compiler") (Just DiagnosticSeverity_Error) nfp msg Nothing
++
++-- | Create a 'FileDiagnostic' from an existing 'LSP.Diagnostic' for a
++-- specific 'NormalizedFilePath'.
++-- The optional 'MsgEnvelope GhcMessage' is the original error message
++-- that was used for creating the 'LSP.Diagnostic'.
++-- It is included here, to allow downstream consumers, such as HLS plugins,
++-- to provide LSP features based on the structured error messages.
++-- Additionally, if available, we insert the ghc error code into the
++-- 'LSP.Diagnostic'. These error codes are used in https://errors.haskell.org/
++-- to provide documentation and explanations for error messages.
++ideErrorFromLspDiag
++  :: LSP.Diagnostic
++  -> NormalizedFilePath
++  -> Maybe (MsgEnvelope GhcMessage)
++  -> FileDiagnostic
++ideErrorFromLspDiag lspDiag fdFilePath mbOrigMsg =
++  let fdShouldShowDiagnostic = ShowDiag
++      fdStructuredMessage =
++        case mbOrigMsg of
++          Nothing  -> NoStructuredMessage
++          Just msg -> SomeStructuredMessage msg
++      fdLspDiagnostic =
++        lspDiag
++          & attachReason (fmap (diagnosticReason . errMsgDiagnostic) mbOrigMsg)
++          & setGhcCode mbOrigMsg
++  in
++  FileDiagnostic {..}
++
++-- | Set the code of the 'LSP.Diagnostic' to the GHC diagnostic code which is linked
++-- to https://errors.haskell.org/.
++setGhcCode :: Maybe (MsgEnvelope GhcMessage) -> LSP.Diagnostic -> LSP.Diagnostic
++#if MIN_VERSION_ghc(9,5,0)
++setGhcCode mbOrigMsg diag =
++  let mbGhcCode = do
++          origMsg <- mbOrigMsg
++          code <- diagnosticCode (errMsgDiagnostic origMsg)
++          pure (InR (showGhcCode code))
++  in
++  diag { _code = mbGhcCode <|> _code diag }
++#else
++setGhcCode _ diag = diag
++#endif
++
++#if MIN_VERSION_ghc(9,9,0)
++-- DiagnosticCode only got a show instance in 9.10.1
++showGhcCode :: DiagnosticCode -> T.Text
++showGhcCode = T.pack . show
++#elif MIN_VERSION_ghc(9,5,0)
++showGhcCode :: DiagnosticCode -> T.Text
++showGhcCode (DiagnosticCode prefix c) = T.pack $ prefix ++ "-" ++ printf "%05d" c
++#endif
++
++attachedReason :: Traversal' Diagnostic (Maybe JSON.Value)
++attachedReason = data_ . non (JSON.object []) . JSON.atKey "attachedReason"
++
++attachReason :: Maybe DiagnosticReason -> Diagnostic -> Diagnostic
++attachReason Nothing = id
++attachReason (Just wr) = attachedReason .~ fmap JSON.toJSON (showReason wr)
++ where
++  showReason = \case
++    WarningWithFlag flag -> showFlag flag
++    _                    -> Nothing
++
++showFlag :: WarningFlag -> Maybe T.Text
++showFlag flag = ("-W" <>) . T.pack . flagSpecName <$> find ((== flag) . flagSpecFlag) wWarningFlags
+ 
+ ideErrorWithSource
+   :: Maybe T.Text
+   -> Maybe DiagnosticSeverity
+-  -> a
++  -> NormalizedFilePath
+   -> T.Text
+-  -> (a, ShowDiagnostic, Diagnostic)
+-ideErrorWithSource source sev fp msg = (fp, ShowDiag, LSP.Diagnostic {
+-    _range = noRange,
+-    _severity = sev,
+-    _code = Nothing,
+-    _source = source,
+-    _message = msg,
+-    _relatedInformation = Nothing,
+-    _tags = Nothing,
+-    _codeDescription = Nothing,
+-    _data_ = Nothing
+-    })
++  -> Maybe (MsgEnvelope GhcMessage)
++  -> FileDiagnostic
++ideErrorWithSource source sev fdFilePath msg origMsg =
++  let lspDiagnostic =
++        LSP.Diagnostic {
++          _range = noRange,
++          _severity = sev,
++          _code = Nothing,
++          _source = source,
++          _message = msg,
++          _relatedInformation = Nothing,
++          _tags = Nothing,
++          _codeDescription = Nothing,
++          _data_ = Nothing
++        }
++  in
++  ideErrorFromLspDiag lspDiagnostic fdFilePath origMsg
+ 
+ -- | Defines whether a particular diagnostic should be reported
+ --   back to the user.
+@@ -80,13 +190,78 @@ data ShowDiagnostic
+ instance NFData ShowDiagnostic where
+     rnf = rwhnf
+ 
++-- | A Maybe-like wrapper for a GhcMessage that doesn't try to compare, show, or
++-- force the GhcMessage inside, so that we can derive Show, Eq, Ord, NFData on
++-- FileDiagnostic. FileDiagnostic only uses this as metadata so we can safely
++-- ignore it in fields.
++--
++-- Instead of pattern matching on these constructors directly, consider 'Prism' from
++-- the 'lens' package. This allows to conveniently pattern match deeply into the 'MsgEnvelope GhcMessage'
++-- constructor.
++-- The module 'Development.IDE.GHC.Compat.Error' implements additional 'Lens's and 'Prism's,
++-- allowing you to avoid importing GHC modules directly.
++--
++-- For example, to pattern match on a 'TcRnMessage' you can use the lens:
++--
++-- @
++--   message ^? _SomeStructuredMessage . msgEnvelopeErrorL . _TcRnMessage
++-- @
++--
++-- This produces a value of type `Maybe TcRnMessage`.
++--
++-- Further, consider utility functions such as 'stripTcRnMessageContext', which strip
++-- context from error messages which may be more convenient in certain situations.
++data StructuredMessage
++  = NoStructuredMessage
++  | SomeStructuredMessage (MsgEnvelope GhcMessage)
++  deriving (Generic)
++
++instance Show StructuredMessage where
++  show NoStructuredMessage      = "NoStructuredMessage"
++  show SomeStructuredMessage {} = "SomeStructuredMessage"
++
++instance Eq StructuredMessage where
++  (==) NoStructuredMessage NoStructuredMessage           = True
++  (==) SomeStructuredMessage {} SomeStructuredMessage {} = True
++  (==) _ _                                               = False
++
++instance Ord StructuredMessage where
++  compare NoStructuredMessage NoStructuredMessage           = EQ
++  compare SomeStructuredMessage {} SomeStructuredMessage {} = EQ
++  compare NoStructuredMessage SomeStructuredMessage {}      = GT
++  compare SomeStructuredMessage {} NoStructuredMessage      = LT
++
++instance NFData StructuredMessage where
++  rnf NoStructuredMessage      = ()
++  rnf SomeStructuredMessage {} = ()
++
+ -- | Human readable diagnostics for a specific file.
+ --
+ --   This type packages a pretty printed, human readable error message
+ --   along with the related source location so that we can display the error
+ --   on either the console or in the IDE at the right source location.
+ --
+-type FileDiagnostic = (NormalizedFilePath, ShowDiagnostic, Diagnostic)
++--   It also optionally keeps a structured diagnostic message GhcMessage in
++--   StructuredMessage.
++--
++data FileDiagnostic = FileDiagnostic
++  { fdFilePath             :: NormalizedFilePath
++  , fdShouldShowDiagnostic :: ShowDiagnostic
++  , fdLspDiagnostic        :: Diagnostic
++    -- | The original diagnostic that was used to produce 'fdLspDiagnostic'.
++    -- We keep it here, so downstream consumers, e.g. HLS plugins, can use the
++    -- the structured error messages and don't have to resort to parsing
++    -- error messages via regexes or similar.
++    --
++    -- The optional GhcMessage inside of this StructuredMessage is ignored for
++    -- Eq, Ord, Show, and NFData instances. This is fine because this field
++    -- should only ever be metadata and should never be used to distinguish
++    -- between FileDiagnostics.
++  , fdStructuredMessage    :: StructuredMessage
++  }
++  deriving (Eq, Ord, Show, Generic)
++
++instance NFData FileDiagnostic
+ 
+ prettyRange :: Range -> Doc Terminal.AnsiStyle
+ prettyRange Range{..} = f _start <> "-" <> f _end
+@@ -106,13 +281,17 @@ prettyDiagnostics :: [FileDiagnostic] -> Doc Terminal.AnsiStyle
+ prettyDiagnostics = vcat . map prettyDiagnostic
+ 
+ prettyDiagnostic :: FileDiagnostic -> Doc Terminal.AnsiStyle
+-prettyDiagnostic (fp, sh, LSP.Diagnostic{..}) =
++prettyDiagnostic FileDiagnostic { fdFilePath, fdShouldShowDiagnostic, fdLspDiagnostic = LSP.Diagnostic{..} } =
+     vcat
+-        [ slabel_ "File:    " $ pretty (fromNormalizedFilePath fp)
+-        , slabel_ "Hidden:  " $ if sh == ShowDiag then "no" else "yes"
++        [ slabel_ "File:    " $ pretty (fromNormalizedFilePath fdFilePath)
++        , slabel_ "Hidden:  " $ if fdShouldShowDiagnostic == ShowDiag then "no" else "yes"
+         , slabel_ "Range:   " $ prettyRange _range
+         , slabel_ "Source:  " $ pretty _source
+         , slabel_ "Severity:" $ pretty $ show sev
++        , slabel_ "Code:    " $ case _code of
++                                  Just (InR text) -> pretty text
++                                  Just (InL i)    -> pretty i
++                                  Nothing         -> "<none>"
+         , slabel_ "Message: "
+             $ case sev of
+               LSP.DiagnosticSeverity_Error       -> annotate $ color Red
+@@ -150,3 +329,9 @@ srenderColored =
+ 
+ defaultTermWidth :: Int
+ defaultTermWidth = 80
++
++makePrisms ''StructuredMessage
++
++makeLensesWith
++    (lensRules & lensField .~ mappingNamer (pure . (++ "L")))
++    ''FileDiagnostic
+diff --git a/src/Development/IDE/Types/Options.hs b/src/Development/IDE/Types/Options.hs
+index d330cd4cd3..be3ea20932 100644
+--- a/src/Development/IDE/Types/Options.hs
++++ b/src/Development/IDE/Types/Options.hs
+@@ -89,9 +89,9 @@ data OptHaddockParse = HaddockParse | NoHaddockParse
+   deriving (Eq,Ord,Show,Enum)
+ 
+ data IdePreprocessedSource = IdePreprocessedSource
+-  { preprocWarnings :: [(GHC.SrcSpan, String)]
++  { preprocWarnings :: [(GHC.SrcSpan, String)] -- TODO: Future work could we make these warnings structured as well?
+     -- ^ Warnings emitted by the preprocessor.
+-  , preprocErrors   :: [(GHC.SrcSpan, String)]
++  , preprocErrors   :: [(GHC.SrcSpan, String)] -- TODO: Future work could we make these errors structured as well?
+     -- ^ Errors emitted by the preprocessor.
+   , preprocSource   :: GHC.ParsedSource
+     -- ^ New parse tree emitted by the preprocessor.
+diff --git a/src/Text/Fuzzy/Parallel.hs b/src/Text/Fuzzy/Parallel.hs
+index 13039e1e55..4d7a1d67e0 100644
+--- a/src/Text/Fuzzy/Parallel.hs
++++ b/src/Text/Fuzzy/Parallel.hs
+@@ -89,8 +89,7 @@ simpleFilter :: Int      -- ^ Chunk size. 1000 works well.
+              -> T.Text   -- ^ Pattern to look for.
+              -> [T.Text] -- ^ List of texts to check.
+              -> [Scored T.Text] -- ^ The ones that match.
+-simpleFilter chunk maxRes pattern xs =
+-  filter chunk maxRes pattern xs id
++simpleFilter chunk maxRes pat xs = filter chunk maxRes pat xs id
+ 
+ 
+ -- | The function to filter a list of values by fuzzy search on the text extracted from them,
+@@ -104,15 +103,15 @@ filter' :: Int           -- ^ Chunk size. 1000 works well.
+        -- ^ Custom scoring function to use for calculating how close words are
+        -- When the function returns Nothing, this means the values are incomparable.
+        -> [Scored t]    -- ^ The list of results, sorted, highest score first.
+-filter' chunkSize maxRes pattern ts extract match' = partialSortByAscScore maxRes perfectScore (concat vss)
++filter' chunkSize maxRes pat ts extract match' = partialSortByAscScore maxRes perfectScore (concat vss)
+   where
+       -- Preserve case for the first character, make all others lowercase
+-      pattern' = case T.uncons pattern of
++      pat' = case T.uncons pat of
+         Just (c, rest) -> T.cons c (T.toLower rest)
+-        _              -> pattern
+-      vss = map (mapMaybe (\t -> flip Scored t <$> match' pattern' (extract t))) (chunkList chunkSize ts)
++        _              -> pat
++      vss = map (mapMaybe (\t -> flip Scored t <$> match' pat' (extract t))) (chunkList chunkSize ts)
+         `using` parList (evalList rseq)
+-      perfectScore = fromMaybe (error $ T.unpack pattern) $ match' pattern' pattern'
++      perfectScore = fromMaybe (error $ T.unpack pat) $ match' pat' pat'
+ 
+ -- | The function to filter a list of values by fuzzy search on the text extracted from them,
+ -- using a custom matching function which determines how close words are.
+@@ -122,8 +121,8 @@ filter :: Int           -- ^ Chunk size. 1000 works well.
+        -> [t]           -- ^ The list of values containing the text to search in.
+        -> (t -> T.Text) -- ^ The function to extract the text from the container.
+        -> [Scored t]    -- ^ The list of results, sorted, highest score first.
+-filter chunkSize maxRes pattern ts extract =
+-  filter' chunkSize maxRes pattern ts extract match
++filter chunkSize maxRes pat ts extract =
++  filter' chunkSize maxRes pat ts extract match
+ 
+ -- | Return all elements of the list that have a fuzzy match against the pattern,
+ -- the closeness of the match is determined using the custom scoring match function that is passed.
+@@ -136,8 +135,8 @@ simpleFilter' :: Int      -- ^ Chunk size. 1000 works well.
+              -> (T.Text -> T.Text -> Maybe Int)
+              -- ^ Custom scoring function to use for calculating how close words are
+              -> [Scored T.Text] -- ^ The ones that match.
+-simpleFilter' chunk maxRes pattern xs match' =
+-  filter' chunk maxRes pattern xs id match'
++simpleFilter' chunk maxRes pat xs match' =
++  filter' chunk maxRes pat xs id match'
+ --------------------------------------------------------------------------------
+ 
+ chunkList :: Int -> [a] -> [[a]]
+diff --git a/test/exe/CPPTests.hs b/test/exe/CPPTests.hs
+index 91a59adc76..762e6632f1 100644
+--- a/test/exe/CPPTests.hs
++++ b/test/exe/CPPTests.hs
+@@ -42,7 +42,7 @@ tests =
+           ,"  failed"
+           ,"#endif"
+           ]
+-        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 2), "Variable not in scope: worked")])]
++        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 2), "Variable not in scope: worked", Just "GHC-88464")])]
+     ]
+   where
+     expectError :: T.Text -> Cursor -> Session ()
+@@ -50,7 +50,7 @@ tests =
+       _ <- createDoc "Testing.hs" "haskell" content
+       expectDiagnostics
+         [ ( "Testing.hs",
+-            [(DiagnosticSeverity_Error, cursor, "error: unterminated")]
++            [(DiagnosticSeverity_Error, cursor, "error: unterminated", Nothing)]
+           )
+         ]
+       expectNoMoreDiagnostics 0.5
+diff --git a/test/exe/CradleTests.hs b/test/exe/CradleTests.hs
+index bd3e351f28..046b8bbf2f 100644
+--- a/test/exe/CradleTests.hs
++++ b/test/exe/CradleTests.hs
+@@ -111,7 +111,7 @@ simpleSubDirectoryTest =
+     mainSource <- liftIO $ readFileUtf8 mainPath
+     _mdoc <- createDoc mainPath "haskell" mainSource
+     expectDiagnosticsWithTags
+-      [("a/src/Main.hs", [(DiagnosticSeverity_Warning,(2,0), "Top-level binding", Nothing)]) -- So that we know P has been loaded
++      [("a/src/Main.hs", [(DiagnosticSeverity_Warning,(2,0), "Top-level binding", Just "GHC-38417", Nothing)]) -- So that we know P has been loaded
+       ]
+     expectNoMoreDiagnostics 0.5
+ 
+@@ -215,7 +215,7 @@ sessionDepsArePickedUp = testWithDummyPluginEmpty'
+         "cradle: {direct: {arguments: []}}"
+     -- Open without OverloadedStrings and expect an error.
+     doc <- createDoc "Foo.hs" "haskell" fooContent
+-    expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (3, 6), "Couldn't match type")])]
++    expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (3, 6), "Couldn't match type", Just "GHC-83865")])]
+ 
+     -- Update hie.yaml to enable OverloadedStrings.
+     liftIO $
+diff --git a/test/exe/DependentFileTest.hs b/test/exe/DependentFileTest.hs
+index d2d19cf88d..1f243819e3 100644
+--- a/test/exe/DependentFileTest.hs
++++ b/test/exe/DependentFileTest.hs
+@@ -46,7 +46,7 @@ tests = testGroup "addDependentFile"
+         _fooDoc <- createDoc "Foo.hs" "haskell" fooContent
+         doc <- createDoc "Baz.hs" "haskell" bazContent
+         expectDiagnostics
+-            [("Foo.hs", [(DiagnosticSeverity_Error, (4,11), "Couldn't match type")])]
++            [("Foo.hs", [(DiagnosticSeverity_Error, (4,11), "Couldn't match type", Just "GHC-83865")])]
+         -- Now modify the dependent file
+         liftIO $ writeFile depFilePath "B"
+         sendNotification SMethod_WorkspaceDidChangeWatchedFiles $ DidChangeWatchedFilesParams
+diff --git a/test/exe/DiagnosticTests.hs b/test/exe/DiagnosticTests.hs
+index 660dcb3241..615e6ad69e 100644
+--- a/test/exe/DiagnosticTests.hs
++++ b/test/exe/DiagnosticTests.hs
+@@ -48,7 +48,7 @@ tests = testGroup "diagnostics"
+   [ testWithDummyPluginEmpty "fix syntax error" $ do
+       let content = T.unlines [ "module Testing wher" ]
+       doc <- createDoc "Testing.hs" "haskell" content
+-      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "parse error")])]
++      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "parse error", Just "GHC-58481")])]
+       let change = TextDocumentContentChangeEvent $ InL TextDocumentContentChangePartial
+               { _range = Range (Position 0 15) (Position 0 19)
+               , _rangeLength = Nothing
+@@ -67,18 +67,18 @@ tests = testGroup "diagnostics"
+               , _text = "wher"
+               }
+       changeDoc doc [change]
+-      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "parse error")])]
++      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "parse error", Just "GHC-58481")])]
+   , testWithDummyPluginEmpty "update syntax error" $ do
+       let content = T.unlines [ "module Testing(missing) where" ]
+       doc <- createDoc "Testing.hs" "haskell" content
+-      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "Not in scope: 'missing'")])]
++      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "Not in scope: 'missing'", Just "GHC-76037")])]
+       let change = TextDocumentContentChangeEvent $ InL TextDocumentContentChangePartial
+               { _range = Range (Position 0 15) (Position 0 16)
+               , _rangeLength = Nothing
+               , _text = "l"
+               }
+       changeDoc doc [change]
+-      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "Not in scope: 'lissing'")])]
++      expectDiagnostics [("Testing.hs", [(DiagnosticSeverity_Error, (0, 15), "Not in scope: 'lissing'", Just "GHC-76037")])]
+   , testWithDummyPluginEmpty "variable not in scope" $ do
+       let content = T.unlines
+             [ "module Testing where"
+@@ -90,8 +90,8 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "Testing.hs" "haskell" content
+       expectDiagnostics
+         [ ( "Testing.hs"
+-          , [ (DiagnosticSeverity_Error, (2, 15), "Variable not in scope: ab")
+-            , (DiagnosticSeverity_Error, (4, 11), "Variable not in scope: cd")
++          , [ (DiagnosticSeverity_Error, (2, 15), "Variable not in scope: ab", Just "GHC-88464")
++            , (DiagnosticSeverity_Error, (4, 11), "Variable not in scope: cd", Just "GHC-88464")
+             ]
+           )
+         ]
+@@ -104,7 +104,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "Testing.hs" "haskell" content
+       expectDiagnostics
+         [ ( "Testing.hs"
+-          , [(DiagnosticSeverity_Error, (2, 14), "Couldn't match type '[Char]' with 'Int'")]
++          , [(DiagnosticSeverity_Error, (2, 14), "Couldn't match type '[Char]' with 'Int'", Just "GHC-83865")]
+           )
+         ]
+   , testWithDummyPluginEmpty "typed hole" $ do
+@@ -116,7 +116,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "Testing.hs" "haskell" content
+       expectDiagnostics
+         [ ( "Testing.hs"
+-          , [(DiagnosticSeverity_Error, (2, 8), "Found hole: _ :: Int -> String")]
++          , [(DiagnosticSeverity_Error, (2, 8), "Found hole: _ :: Int -> String", Just "GHC-88464")]
+           )
+         ]
+ 
+@@ -131,17 +131,17 @@ tests = testGroup "diagnostics"
+           , "b :: Float"
+           , "b = True"]
+         bMessage = "Couldn't match expected type 'Float' with actual type 'Bool'"
+-        expectedDs aMessage =
+-          [ ("A.hs", [(DiagnosticSeverity_Error, (2,4), aMessage)])
+-          , ("B.hs", [(DiagnosticSeverity_Error, (3,4), bMessage)])]
+-        deferralTest title binding msg = testWithDummyPluginEmpty title $ do
++        expectedDs aMessage aCode =
++          [ ("A.hs", [(DiagnosticSeverity_Error, (2,4), aMessage, aCode)])
++          , ("B.hs", [(DiagnosticSeverity_Error, (3,4), bMessage, Just "GHC-83865")])]
++        deferralTest title binding msg code = testWithDummyPluginEmpty title $ do
+           _ <- createDoc "A.hs" "haskell" $ sourceA binding
+           _ <- createDoc "B.hs" "haskell"   sourceB
+-          expectDiagnostics $ expectedDs msg
++          expectDiagnostics $ expectedDs msg code
+     in
+-    [ deferralTest "type error"          "True"    "Couldn't match expected type"
+-    , deferralTest "typed hole"          "_"       "Found hole"
+-    , deferralTest "out of scope var"    "unbound" "Variable not in scope"
++    [ deferralTest "type error"          "True"    "Couldn't match expected type" (Just "GHC-83865")
++    , deferralTest "typed hole"          "_"       "Found hole" (Just "GHC-88464")
++    , deferralTest "out of scope var"    "unbound" "Variable not in scope" (Just "GHC-88464")
+     ]
+ 
+   , testWithDummyPluginEmpty "remove required module" $ do
+@@ -158,14 +158,14 @@ tests = testGroup "diagnostics"
+               , _text = ""
+               }
+       changeDoc docA [change]
+-      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Error, (1, 0), "Could not find module")])]
++      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Error, (1, 0), "Could not find module", Nothing)])]
+   , testWithDummyPluginEmpty "add missing module" $ do
+       let contentB = T.unlines
+             [ "module ModuleB where"
+             , "import ModuleA ()"
+             ]
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+-      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Error, (1, 7), "Could not find module")])]
++      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Error, (1, 7), "Could not find module", Nothing)])]
+       let contentA = T.unlines [ "module ModuleA where" ]
+       _ <- createDoc "ModuleA.hs" "haskell" contentA
+       expectDiagnostics [("ModuleB.hs", [])]
+@@ -185,7 +185,7 @@ tests = testGroup "diagnostics"
+             , "import ModuleA ()"
+             ]
+       _ <- createDoc (tmpDir </> "ModuleB.hs") "haskell" contentB
+-      expectDiagnostics [(tmpDir </> "ModuleB.hs", [(DiagnosticSeverity_Error, (1, 7), "Could not find module")])]
++      expectDiagnostics [(tmpDir </> "ModuleB.hs", [(DiagnosticSeverity_Error, (1, 7), "Could not find module", Nothing)])]
+       let contentA = T.unlines [ "module ModuleA where" ]
+       _ <- createDoc (tmpDir </> "ModuleA.hs") "haskell" contentA
+       expectDiagnostics [(tmpDir </> "ModuleB.hs", [])]
+@@ -202,10 +202,10 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+       expectDiagnostics
+         [ ( "ModuleA.hs"
+-          , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB")]
++          , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB", Nothing)]
+           )
+         , ( "ModuleB.hs"
+-          , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB")]
++          , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB", Nothing)]
+           )
+         ]
+   , let contentA = T.unlines [ "module ModuleA where" , "import ModuleB" ]
+@@ -222,8 +222,8 @@ tests = testGroup "diagnostics"
+         ]) $ do
+       _ <- createDoc "ModuleD.hs" "haskell" contentD
+       expectDiagnostics
+-        [ ( "ModuleB.hs" , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB")])
+-        , ( "ModuleA.hs" , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB")])
++        [ ( "ModuleB.hs" , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB", Nothing)])
++        , ( "ModuleA.hs" , [(DiagnosticSeverity_Error, (1, 7), "Cyclic module dependency between ModuleA, ModuleB", Nothing)])
+         ]
+   , testWithDummyPluginEmpty "cyclic module dependency with hs-boot" $ do
+       let contentA = T.unlines
+@@ -243,7 +243,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "ModuleA.hs" "haskell" contentA
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+       _ <- createDoc "ModuleB.hs-boot" "haskell" contentBboot
+-      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding")])]
++      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding", Just "GHC-38417")])]
+   , testWithDummyPlugin "bidirectional module dependency with hs-boot"
+         (mkIdeTestFs [directCradle ["ModuleA", "ModuleB"]])
+         $ do
+@@ -268,7 +268,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "ModuleA.hs-boot" "haskell" contentAboot
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+       _ <- createDoc "ModuleB.hs-boot" "haskell" contentBboot
+-      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding")])]
++      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding", Just "GHC-38417")])]
+   , testWithDummyPluginEmpty "correct reference used with hs-boot" $ do
+       let contentB = T.unlines
+             [ "module ModuleB where"
+@@ -294,7 +294,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "ModuleA.hs" "haskell" contentA
+       _ <- createDoc "ModuleA.hs-boot" "haskell" contentAboot
+       _ <- createDoc "ModuleC.hs" "haskell" contentC
+-      expectDiagnostics [("ModuleC.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding")])]
++      expectDiagnostics [("ModuleC.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding", Just "GHC-38417")])]
+   , testWithDummyPluginEmpty "redundant import" $ do
+       let contentA = T.unlines ["module ModuleA where"]
+       let contentB = T.unlines
+@@ -306,7 +306,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+       expectDiagnosticsWithTags
+         [ ( "ModuleB.hs"
+-          , [(DiagnosticSeverity_Warning, (2, 0), "The import of 'ModuleA' is redundant", Just DiagnosticTag_Unnecessary)]
++          , [(DiagnosticSeverity_Warning, (2, 0), "The import of 'ModuleA' is redundant", Nothing, Just DiagnosticTag_Unnecessary)]
+           )
+         ]
+   , testWithDummyPluginEmpty "redundant import even without warning" $ do
+@@ -320,7 +320,7 @@ tests = testGroup "diagnostics"
+             ]
+       _ <- createDoc "ModuleA.hs" "haskell" contentA
+       _ <- createDoc "ModuleB.hs" "haskell" contentB
+-      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding")])]
++      expectDiagnostics [("ModuleB.hs", [(DiagnosticSeverity_Warning, (3,0), "Top-level binding", Just "GHC-38417")])]
+   , testWithDummyPluginEmpty "package imports" $ do
+       let thisDataListContent = T.unlines
+             [ "module Data.List where"
+@@ -348,14 +348,14 @@ tests = testGroup "diagnostics"
+                 else if ghcVersion >= GHC94 then
+                   "Variable not in scope: map" -- See https://gitlab.haskell.org/ghc/ghc/-/issues/22130
+                 else
+-                  "Not in scope: \8216ThisList.map\8217")
++                  "Not in scope: \8216ThisList.map\8217", Just "GHC-88464")
+             ,(DiagnosticSeverity_Error, (7, 9),
+                 if ghcVersion >= GHC96 then
+                   "Variable not in scope: BaseList.x"
+                 else if ghcVersion >= GHC94 then
+                   "Variable not in scope: x" -- See https://gitlab.haskell.org/ghc/ghc/-/issues/22130
+                 else
+-                  "Not in scope: \8216BaseList.x\8217")
++                  "Not in scope: \8216BaseList.x\8217", Just "GHC-88464")
+             ]
+           )
+         ]
+@@ -373,7 +373,7 @@ tests = testGroup "diagnostics"
+       -- where appropriate. The warning should use an unqualified name 'Ord', not
+       -- something like 'GHC.Classes.Ord'. The choice of redundant-constraints to
+       -- test this is fairly arbitrary.
+-          , [(DiagnosticSeverity_Warning, (2, if ghcVersion >= GHC94 then 7 else 0), "Redundant constraint: Ord a")
++          , [(DiagnosticSeverity_Warning, (2, if ghcVersion >= GHC94 then 7 else 0), "Redundant constraint: Ord a", Just "GHC-30606")
+             ]
+           )
+         ]
+@@ -439,7 +439,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "Foo.hs" "haskell" fooContent
+       expectDiagnostics
+         [ ( "Foo.hs"
+-          , [(DiagnosticSeverity_Warning, (1, 0), "Top-level binding with no type signature:")
++          , [(DiagnosticSeverity_Warning, (1, 0), "Top-level binding with no type signature:", Nothing)
+             ]
+           )
+         ]
+@@ -453,7 +453,7 @@ tests = testGroup "diagnostics"
+       _ <- createDoc "Foo.hs" "haskell" fooContent
+       expectDiagnostics
+         [ ( "Foo.hs"
+-          , [(DiagnosticSeverity_Warning, (3, 0), "Defined but not used:")
++          , [(DiagnosticSeverity_Warning, (3, 0), "Defined but not used:", Nothing)
+             ]
+           )
+         ]
+@@ -469,13 +469,13 @@ tests = testGroup "diagnostics"
+     bdoc <- createDoc bPath "haskell" bSource
+     _pdoc <- createDoc pPath "haskell" pSource
+     expectDiagnostics
+-      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])] -- So that we know P has been loaded
++      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])] -- So that we know P has been loaded
+ 
+     -- Change y from Int to B which introduces a type error in A (imported from P)
+     changeDoc bdoc [TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $
+                     T.unlines ["module B where", "y :: Bool", "y = undefined"]]
+     expectDiagnostics
+-      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'")])
++      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'", Just "GHC-83865")])
+       ]
+ 
+     -- Open A and edit to fix the type error
+@@ -485,8 +485,8 @@ tests = testGroup "diagnostics"
+ 
+     expectDiagnostics
+       [ ( "P.hs",
+-          [ (DiagnosticSeverity_Error, (4, 6), "Couldn't match expected type 'Int' with actual type 'Bool'"),
+-            (DiagnosticSeverity_Warning, (4, 0), "Top-level binding")
++          [ (DiagnosticSeverity_Error, (4, 6), "Couldn't match expected type 'Int' with actual type 'Bool'", Just "GHC-83865"),
++            (DiagnosticSeverity_Warning, (4, 0), "Top-level binding", Just "GHC-38417")
+           ]
+         ),
+         ("A.hs", [])
+@@ -496,14 +496,14 @@ tests = testGroup "diagnostics"
+   , testWithDummyPluginEmpty "deduplicate missing module diagnostics" $  do
+       let fooContent = T.unlines [ "module Foo() where" , "import MissingModule" ]
+       doc <- createDoc "Foo.hs" "haskell" fooContent
+-      expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (1,7), "Could not find module 'MissingModule'")])]
++      expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (1,7), "Could not find module 'MissingModule'", Nothing)])]
+ 
+       changeDoc doc [TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $ "module Foo() where" ]
+       expectDiagnostics []
+ 
+       changeDoc doc [TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $ T.unlines
+             [ "module Foo() where" , "import MissingModule" ] ]
+-      expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (1,7), "Could not find module 'MissingModule'")])]
++      expectDiagnostics [("Foo.hs", [(DiagnosticSeverity_Error, (1,7), "Could not find module 'MissingModule'", Nothing)])]
+ 
+   , testGroup "Cancellation"
+     [ cancellationTestGroup "edit header" editHeader yesSession noParse  noTc
+@@ -564,7 +564,7 @@ cancellationTemplate (edit, undoEdit) mbKey = testCase (maybe "-" fst mbKey) $ r
+             ]
+ 
+       -- for the example above we expect one warning
+-      let missingSigDiags = [(DiagnosticSeverity_Warning, (3, 0), "Top-level binding") ]
++      let missingSigDiags = [(DiagnosticSeverity_Warning, (3, 0), "Top-level binding", Just "GHC-38417") ]
+       typeCheck doc >> expectCurrentDiagnostics doc missingSigDiags
+ 
+       -- Now we edit the document and wait for the given key (if any)
+diff --git a/test/exe/FindDefinitionAndHoverTests.hs b/test/exe/FindDefinitionAndHoverTests.hs
+index dbca38c681..e46141df4e 100644
+--- a/test/exe/FindDefinitionAndHoverTests.hs
++++ b/test/exe/FindDefinitionAndHoverTests.hs
+@@ -109,8 +109,8 @@ tests = let
+     , testGroup "hover"      $ mapMaybe snd tests
+     , testGroup "hover compile" [checkFileCompiles sourceFilePath $
+         expectDiagnostics
+-          [ ( "GotoHover.hs", [(DiagnosticSeverity_Error, (62, 7), "Found hole: _")])
+-          , ( "GotoHover.hs", [(DiagnosticSeverity_Error, (65, 8), "Found hole: _")])
++          [ ( "GotoHover.hs", [(DiagnosticSeverity_Error, (62, 7), "Found hole: _", Just "GHC-88464")])
++          , ( "GotoHover.hs", [(DiagnosticSeverity_Error, (65, 8), "Found hole: _", Just "GHC-88464")])
+           ]]
+     , testGroup "type-definition" typeDefinitionTests
+     , testGroup "hover-record-dot-syntax" recordDotSyntaxTests ]
+diff --git a/test/exe/FuzzySearch.hs b/test/exe/FuzzySearch.hs
+index f565b94526..3bc3ecb4b1 100644
+--- a/test/exe/FuzzySearch.hs
++++ b/test/exe/FuzzySearch.hs
+@@ -65,6 +65,7 @@ replaceAt t i c =
+ dictionaryPath :: FilePath
+ dictionaryPath = "/usr/share/dict/words"
+ 
++{-# ANN dictionary ("HLint: ignore Avoid restricted function" :: String) #-}
+ {-# NOINLINE dictionary #-}
+ dictionary :: [Text]
+ dictionary = unsafePerformIO $ do
+@@ -73,7 +74,7 @@ dictionary = unsafePerformIO $ do
+     then map pack . words <$> readFile dictionaryPath
+     else pure []
+ 
+-referenceImplementation ::
++referenceImplementation :: forall s t.
+   (T.TextualMonoid s) =>
+   -- | Pattern in lowercase except for first character
+   s ->
+@@ -87,7 +88,7 @@ referenceImplementation ::
+   (t -> s) ->
+   -- | The original value, rendered string and score.
+   Maybe (Fuzzy t s)
+-referenceImplementation pattern t pre post extract =
++referenceImplementation pat t pre post extract =
+   if null pat then Just (Fuzzy t result totalScore) else Nothing
+   where
+     null :: (T.TextualMonoid s) => s -> Bool
+@@ -118,7 +119,7 @@ referenceImplementation pattern t pre post extract =
+         ( 0,
+           1, -- matching at the start gives a bonus (cur = 1)
+           mempty,
+-          pattern,
++          pat,
+           True
+         )
+         s
+diff --git a/test/exe/GarbageCollectionTests.hs b/test/exe/GarbageCollectionTests.hs
+index 8c0c428c1a..5cc9935352 100644
+--- a/test/exe/GarbageCollectionTests.hs
++++ b/test/exe/GarbageCollectionTests.hs
+@@ -72,7 +72,7 @@ tests = testGroup "garbage collection"
+             changeDoc doc [TextDocumentContentChangeEvent . InR $ TextDocumentContentChangeWholeDocument edit]
+             builds <- waitForTypecheck doc
+             liftIO $ assertBool "it still builds" builds
+-            expectCurrentDiagnostics doc [(DiagnosticSeverity_Error, (2,4), "Couldn't match expected type")]
++            expectCurrentDiagnostics doc [(DiagnosticSeverity_Error, (2,4), "Couldn't match expected type", Just "GHC-83865")]
+         ]
+   ]
+   where
+diff --git a/test/exe/IfaceTests.hs b/test/exe/IfaceTests.hs
+index 330d372d73..d7dc533550 100644
+--- a/test/exe/IfaceTests.hs
++++ b/test/exe/IfaceTests.hs
+@@ -50,8 +50,8 @@ ifaceTHTest = testWithExtraFiles "iface-th-test" "TH" $ \dir -> do
+     -- Check that the change propagates to C
+     changeDoc cdoc [TextDocumentContentChangeEvent . InR $ TextDocumentContentChangeWholeDocument cSource]
+     expectDiagnostics
+-      [("THC.hs", [(DiagnosticSeverity_Error, (4, 4), "Couldn't match expected type '()' with actual type 'Bool'")])
+-      ,("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding")])]
++      [("THC.hs", [(DiagnosticSeverity_Error, (4, 4), "Couldn't match expected type '()' with actual type 'Bool'", Just "GHC-83865")])
++      ,("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding", Just "GHC-38417")])]
+     closeDoc cdoc
+ 
+ ifaceErrorTest :: TestTree
+@@ -65,7 +65,7 @@ ifaceErrorTest = testWithExtraFiles "iface-error-test-1" "recomp" $ \dir -> do
+ 
+     bdoc <- createDoc bPath "haskell" bSource
+     expectDiagnostics
+-      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])] -- So what we know P has been loaded
++      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])] -- So what we know P has been loaded
+ 
+     -- Change y from Int to B
+     changeDoc bdoc [ TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $
+@@ -77,7 +77,7 @@ ifaceErrorTest = testWithExtraFiles "iface-error-test-1" "recomp" $ \dir -> do
+ 
+     -- Check that the error propagates to A
+     expectDiagnostics
+-      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'")])]
++      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'", Just "GHC-83865")])]
+ 
+     -- Check that we wrote the interfaces for B when we saved
+     hidir <- getInterfaceFilesDir bdoc
+@@ -86,7 +86,7 @@ ifaceErrorTest = testWithExtraFiles "iface-error-test-1" "recomp" $ \dir -> do
+ 
+     pdoc <- openDoc pPath "haskell"
+     expectDiagnostics
+-      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])
++      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])
+       ]
+     changeDoc pdoc [TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $ pSource <> "\nfoo = y :: Bool" ]
+     -- Now in P we have
+@@ -98,8 +98,8 @@ ifaceErrorTest = testWithExtraFiles "iface-error-test-1" "recomp" $ \dir -> do
+     --   - The diagnostic for A has already been received. Ghcide does not repeat diagnostics
+     --   - P is being typechecked with the last successful artifacts for A.
+     expectDiagnostics
+-      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])
+-      ,("P.hs", [(DiagnosticSeverity_Warning,(6,0), "Top-level binding")])
++      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])
++      ,("P.hs", [(DiagnosticSeverity_Warning,(6,0), "Top-level binding", Just "GHC-38417")])
+       ]
+     expectNoMoreDiagnostics 2
+ 
+@@ -114,7 +114,7 @@ ifaceErrorTest2 = testWithExtraFiles "iface-error-test-2" "recomp" $ \dir -> do
+     bdoc <- createDoc bPath "haskell" bSource
+     pdoc <- createDoc pPath "haskell" pSource
+     expectDiagnostics
+-      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])] -- So that we know P has been loaded
++      [("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])] -- So that we know P has been loaded
+ 
+     -- Change y from Int to B
+     changeDoc bdoc [TextDocumentContentChangeEvent . InR . TextDocumentContentChangeWholeDocument $
+@@ -130,9 +130,9 @@ ifaceErrorTest2 = testWithExtraFiles "iface-error-test-2" "recomp" $ \dir -> do
+     expectDiagnostics
+     -- As in the other test, P is being typechecked with the last successful artifacts for A
+     -- (ot thanks to -fdeferred-type-errors)
+-      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'")])
+-      ,("P.hs", [(DiagnosticSeverity_Warning, (4, 0), "Top-level binding")])
+-      ,("P.hs", [(DiagnosticSeverity_Warning, (6, 0), "Top-level binding")])
++      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'", Just "GHC-83865")])
++      ,("P.hs", [(DiagnosticSeverity_Warning, (4, 0), "Top-level binding", Just "GHC-38417")])
++      ,("P.hs", [(DiagnosticSeverity_Warning, (6, 0), "Top-level binding", Just "GHC-38417")])
+       ]
+ 
+     expectNoMoreDiagnostics 2
+@@ -156,7 +156,7 @@ ifaceErrorTest3 = testWithExtraFiles "iface-error-test-3" "recomp" $ \dir -> do
+     -- In this example the interface file for A should not exist (modulo the cache folder)
+     -- Despite that P still type checks, as we can generate an interface file for A thanks to -fdeferred-type-errors
+     expectDiagnostics
+-      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'")])
+-      ,("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding")])
++      [("A.hs", [(DiagnosticSeverity_Error, (5, 4), "Couldn't match expected type 'Int' with actual type 'Bool'", Just "GHC-83865")])
++      ,("P.hs", [(DiagnosticSeverity_Warning,(4,0), "Top-level binding", Just "GHC-38417")])
+       ]
+     expectNoMoreDiagnostics 2
+diff --git a/test/exe/PluginSimpleTests.hs b/test/exe/PluginSimpleTests.hs
+index 05eb76ba81..c160d2461c 100644
+--- a/test/exe/PluginSimpleTests.hs
++++ b/test/exe/PluginSimpleTests.hs
+@@ -41,6 +41,6 @@ tests =
+ 
+     expectDiagnostics
+       [ ( "KnownNat.hs",
+-          [(DiagnosticSeverity_Error, (9, 15), "Variable not in scope: c")]
++          [(DiagnosticSeverity_Error, (9, 15), "Variable not in scope: c", Just "GHC-88464")]
+           )
+       ]
+diff --git a/test/exe/PreprocessorTests.hs b/test/exe/PreprocessorTests.hs
+index 1846a31964..24e2e80a10 100644
+--- a/test/exe/PreprocessorTests.hs
++++ b/test/exe/PreprocessorTests.hs
+@@ -22,6 +22,6 @@ tests = testWithDummyPluginEmpty "preprocessor" $ do
+   _ <- createDoc "Testing.hs" "haskell" content
+   expectDiagnostics
+     [ ( "Testing.hs",
+-        [(DiagnosticSeverity_Error, (2, 8), "Variable not in scope: z")]
++        [(DiagnosticSeverity_Error, (2, 8), "Variable not in scope: z", Nothing)] -- TODO: Why doesn't this work with expected code "GHC-88464"?
+       )
+     ]
+diff --git a/test/exe/SymlinkTests.hs b/test/exe/SymlinkTests.hs
+index ade13bfc41..dda41922f0 100644
+--- a/test/exe/SymlinkTests.hs
++++ b/test/exe/SymlinkTests.hs
+@@ -22,6 +22,6 @@ tests =
+         liftIO $ createFileLink (dir </> "some_loc" </> "Sym.hs") (dir </> "other_loc" </> "Sym.hs")
+         let fooPath = dir </> "src" </> "Foo.hs"
+         _ <- openDoc fooPath "haskell"
+-        expectDiagnosticsWithTags  [("src" </> "Foo.hs", [(DiagnosticSeverity_Warning, (2, 0), "The import of 'Sym' is redundant", Just DiagnosticTag_Unnecessary)])]
++        expectDiagnosticsWithTags  [("src" </> "Foo.hs", [(DiagnosticSeverity_Warning, (2, 0), "The import of 'Sym' is redundant", Nothing, Just DiagnosticTag_Unnecessary)])]
+         pure ()
+     ]
+diff --git a/test/exe/THTests.hs b/test/exe/THTests.hs
+index 42a5650ed7..59b06431f5 100644
+--- a/test/exe/THTests.hs
++++ b/test/exe/THTests.hs
+@@ -43,7 +43,7 @@ tests =
+                 ]
+         _ <- createDoc "A.hs" "haskell" sourceA
+         _ <- createDoc "B.hs" "haskell" sourceB
+-        expectDiagnostics [ ( "B.hs", [(DiagnosticSeverity_Error, (6, 29), "Variable not in scope: n")] ) ]
++        expectDiagnostics [ ( "B.hs", [(DiagnosticSeverity_Error, (6, 29), "Variable not in scope: n", Just "GHC-88464")] ) ]
+     , testWithDummyPluginEmpty "newtype-closure" $ do
+         let sourceA =
+               T.unlines
+@@ -91,7 +91,7 @@ tests =
+                 , "main = $a (putStrLn \"success!\")"]
+         _ <- createDoc "A.hs" "haskell" sourceA
+         _ <- createDoc "B.hs" "haskell" sourceB
+-        expectDiagnostics [ ( "B.hs", [(DiagnosticSeverity_Warning, (4, 0), "Top-level binding with no type signature: main :: IO ()")] ) ]
++        expectDiagnostics [ ( "B.hs", [(DiagnosticSeverity_Warning, (4, 0), "Top-level binding with no type signature: main :: IO ()", Just "GHC-38417")] ) ]
+     , testCase "findsTHnewNameConstructor" $ runWithExtraFiles "THNewName" $ \dir -> do
+ 
+     -- This test defines a TH value with the meaning "data A = A" in A.hs
+@@ -102,7 +102,7 @@ tests =
+ 
+     let cPath = dir </> "C.hs"
+     _ <- openDoc cPath "haskell"
+-    expectDiagnostics [ ( cPath, [(DiagnosticSeverity_Warning, (3, 0), "Top-level binding with no type signature: a :: A")] ) ]
++    expectDiagnostics [ ( cPath, [(DiagnosticSeverity_Warning, (3, 0), "Top-level binding with no type signature: a :: A", Just "GHC-38417")] ) ]
+     ]
+ 
+ 
+@@ -135,7 +135,7 @@ thReloadingTest unboxed = testCase name $ runWithExtraFiles dir $ \dir -> do
+     bdoc <- createDoc bPath "haskell" bSource
+     cdoc <- createDoc cPath "haskell" cSource
+ 
+-    expectDiagnostics [("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding")])]
++    expectDiagnostics [("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding", Just "GHC-38417")])]
+ 
+     -- Change th from () to Bool
+     let aSource' = T.unlines $ init (T.lines aSource) ++ ["th_a = [d| a = False|]"]
+@@ -145,9 +145,9 @@ thReloadingTest unboxed = testCase name $ runWithExtraFiles dir $ \dir -> do
+ 
+     -- Check that the change propagates to C
+     expectDiagnostics
+-        [("THC.hs", [(DiagnosticSeverity_Error, (4, 4), "Couldn't match expected type '()' with actual type 'Bool'")])
+-        ,("THC.hs", [(DiagnosticSeverity_Warning, (6,0), "Top-level binding")])
+-        ,("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level bindin")])
++        [("THC.hs", [(DiagnosticSeverity_Error, (4, 4), "Couldn't match expected type '()' with actual type 'Bool'", Just "GHC-83865")])
++        ,("THC.hs", [(DiagnosticSeverity_Warning, (6,0), "Top-level binding", Just "GHC-38417")])
++        ,("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level bindin", Just "GHC-38417")])
+         ]
+ 
+     closeDoc adoc
+@@ -170,7 +170,7 @@ thLinkingTest unboxed = testCase name $ runWithExtraFiles dir $ \dir -> do
+     adoc <- createDoc aPath "haskell" aSource
+     bdoc <- createDoc bPath "haskell" bSource
+ 
+-    expectDiagnostics [("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding")])]
++    expectDiagnostics [("THB.hs", [(DiagnosticSeverity_Warning, (4,1), "Top-level binding", Just "GHC-38417")])]
+ 
+     let aSource' = T.unlines $ init (init (T.lines aSource)) ++ ["th :: DecsQ", "th = [d| a = False|]"]
+     changeDoc adoc [TextDocumentContentChangeEvent . InR $ TextDocumentContentChangeWholeDocument aSource']
+@@ -180,7 +180,7 @@ thLinkingTest unboxed = testCase name $ runWithExtraFiles dir $ \dir -> do
+     changeDoc bdoc [TextDocumentContentChangeEvent . InR $ TextDocumentContentChangeWholeDocument bSource']
+     _ <- waitForDiagnostics
+ 
+-    expectCurrentDiagnostics bdoc [(DiagnosticSeverity_Warning, (4,1), "Top-level binding")]
++    expectCurrentDiagnostics bdoc [(DiagnosticSeverity_Warning, (4,1), "Top-level binding", Just "GHC-38417")]
+ 
+     closeDoc adoc
+     closeDoc bdoc
+diff --git a/test/exe/UnitTests.hs b/test/exe/UnitTests.hs
+index 68e6f3e1f0..b2940ab27f 100644
+--- a/test/exe/UnitTests.hs
++++ b/test/exe/UnitTests.hs
+@@ -51,7 +51,7 @@ tests = do
+          let uri = Uri "file://"
+          uriToFilePath' uri @?= Just ""
+      , testCase "showDiagnostics prints ranges 1-based (like vscode)" $ do
+-         let diag = ("", Diagnostics.ShowDiag, Diagnostic
++         let diag = Diagnostics.FileDiagnostic "" Diagnostics.ShowDiag Diagnostic
+                {  _codeDescription = Nothing
+                 , _data_ = Nothing
+                 , _range = Range
+@@ -64,7 +64,7 @@ tests = do
+                , _message = ""
+                , _relatedInformation = Nothing
+                , _tags = Nothing
+-               })
++               } Diagnostics.NoStructuredMessage
+          let shown = T.unpack (Diagnostics.showDiagnostics [diag])
+          let expected = "1:2-3:4"
+          assertBool (unwords ["expected to find range", expected, "in diagnostic", shown]) $
+diff --git a/test/exe/WatchedFileTests.hs b/test/exe/WatchedFileTests.hs
+index d013f673a9..d89a4ca84b 100644
+--- a/test/exe/WatchedFileTests.hs
++++ b/test/exe/WatchedFileTests.hs
+@@ -60,7 +60,7 @@ tests = testGroup "watched files"
+           ,"a :: ()"
+           ,"a = b"
+           ]
+-        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 4), "Couldn't match expected type '()' with actual type 'Bool'")])]
++        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 4), "Couldn't match expected type '()' with actual type 'Bool'", Just "GHC-83865")])]
+         -- modify B off editor
+         liftIO $ writeFile (sessionDir </> "B.hs") $ unlines
+           ["module B where"
+@@ -68,7 +68,7 @@ tests = testGroup "watched files"
+           ,"b = 0"]
+         sendNotification SMethod_WorkspaceDidChangeWatchedFiles $ DidChangeWatchedFilesParams
+                [FileEvent (filePathToUri $ sessionDir </> "B.hs") FileChangeType_Changed ]
+-        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 4), "Couldn't match expected type '()' with actual type 'Int'")])]
++        expectDiagnostics [("A.hs", [(DiagnosticSeverity_Error, (3, 4), "Couldn't match expected type '()' with actual type 'Int'", Just "GHC-83865")])]
+     ]
+   ]
+ 

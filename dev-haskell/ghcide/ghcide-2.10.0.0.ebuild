@@ -23,6 +23,7 @@ IUSE="executable test-exe"
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
 PATCHES=(
+	"${FILESDIR}/structured-diagnostics.patch"
 	"${FILESDIR}/${P}-ghc-9_12_1.patch"
 )
 

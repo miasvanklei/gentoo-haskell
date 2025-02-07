@@ -638,7 +638,7 @@ diff --color -ur a/src/Development/IDE/Core/Shake.hs b/src/Development/IDE/Core/
                  (mbBs, (diags, mbRes)) <- actionCatch
                      (do v <- action staleV; liftIO $ evaluate $ force v) $
                      \(e :: SomeException) -> do
--                        pure (Nothing, ([ideErrorText file $ T.pack $ show e | not $ isBadDependency e],Nothing))
+-                        pure (Nothing, ([ideErrorText file (T.pack $ show e) | not $ isBadDependency e],Nothing))
 +                        pure (Nothing, ([ideErrorText file (T.pack $ show key ++ show e) | not $ isBadDependency e],Nothing))
  
                  ver <- estimateFileVersionUnsafely key mbRes file
@@ -734,6 +734,29 @@ diff --color -ur a/src/Development/IDE/GHC/Compat/Core.hs b/src/Development/IDE/
  collectHsBindsBinders x = GHC.collectHsBindsBinders CollNoDictBinders x
  
  
+diff --git a/ghcide/src/Development/IDE/GHC/Compat/Driver.hs b/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
+index c88d0963d6..f71a25fe15 100644
+--- a/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
++++ b/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
+@@ -12,6 +12,12 @@ module Development.IDE.GHC.Compat.Driver
+     ( hscTypecheckRenameWithDiagnostics
+     ) where
+ 
++#if MIN_VERSION_ghc(9,11,0)
++
++import GHC.Driver.Main (hscTypecheckRenameWithDiagnostics)
++
++#else
++
+ import           Control.Monad
+ import           GHC.Core
+ import           GHC.Data.FastString
+@@ -145,3 +151,5 @@ hscSimpleIface :: HscEnv
+ hscSimpleIface hsc_env tc_result summary
+     = runHsc hsc_env $ hscSimpleIface' tc_result summary
+ #endif
++
++#endif
 diff --color -ur a/src/Development/IDE/GHC/Compat/Iface.hs b/src/Development/IDE/GHC/Compat/Iface.hs
 --- a/src/Development/IDE/GHC/Compat/Iface.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Compat/Iface.hs	2025-02-03 13:57:15.856468010 +0100
