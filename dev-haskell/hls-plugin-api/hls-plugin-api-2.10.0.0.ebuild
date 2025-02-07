@@ -57,11 +57,16 @@ DEPEND="${RDEPEND}
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}"/structured-diagnostics.patch
+)
+
+S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
+CABAL_FILE="${S}/${CABAL_PN}.cabal"
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-pedantic \
 		$(cabal_flag fingertree use-fingertree)
 }
 
-S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
-CABAL_FILE="${S}/${CABAL_PN}.cabal"
