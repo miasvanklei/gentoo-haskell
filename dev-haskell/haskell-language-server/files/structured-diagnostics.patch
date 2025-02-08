@@ -19,8 +19,8 @@ index 6f0aec554e..08f58f64c4 100644
 +    , aeson
      , extra
      , fuzzy
-     , ghcide                == 2.9.0.1
-     , hls-plugin-api        == 2.9.0.1
+     , ghcide                == 2.10.0.0
+     , hls-plugin-api        == 2.10.0.0
      , lens
 +    , lens-aeson
      , lsp

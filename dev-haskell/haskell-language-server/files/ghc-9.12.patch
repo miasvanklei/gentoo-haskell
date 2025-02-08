@@ -241,6 +241,20 @@
                          (unLoc -> HsVar _ (unLoc -> d)) re) | d == dollarName =
      ( [ RecordSelectorExpr (realSrcSpanToRange realSpan')  se re
        | RealSrcSpan realSpan' _ <- [ getLoc e ] ], False )
+--- a/plugins/hls-rename-plugin/src/Ide/Plugin/Rename.hs
++++ b/plugins/hls-rename-plugin/src/Ide/Plugin/Rename.hs
+@@ -207,9 +207,9 @@ refsAtName state nfp name = do
+     pure $ nameLocs name ast ++ dbRefs
+
+ nameLocs :: Name -> HieAstResult -> [Location]
+-nameLocs name (HAR _ _ rm _ _) =
++nameLocs name (HAR {..}) =
+     concatMap (map (realSrcSpanToLocation . fst))
+-              (M.lookup (Right name) rm)
++              (M.lookup (Right name) refMap)
+
+ ---------------------------------------------------------------------------------------------------
+ -- Util
 --- a/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2025-02-02 16:59:06.770029553 +0100
 @@ -20,7 +20,7 @@
@@ -252,3 +266,924 @@
  import           Development.IDE.GHC.Error        (realSrcSpanToCodePointRange)
  import           Ide.Plugin.SemanticTokens.Types  (HsSemanticTokenType (TModule),
                                                     RangeHsSemanticTokenTypes (..))
+--- a/plugins/hls-refactor-plugin/src/Development/IDE/GHC/Dump.hs
++++ b/plugins/hls-refactor-plugin/src/Development/IDE/GHC/Dump.hs
+@@ -8,6 +8,9 @@ import           Development.IDE.GHC.Compat.ExactPrint (ExactPrint, exactPrint)
+ import           Development.IDE.GHC.Compat.Util
+ import           Generics.SYB                          (ext1Q, ext2Q, extQ)
+ import           GHC.Hs                                hiding (AnnLet)
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC.TypeLits                          (KnownSymbol)
++#endif
+ import           GHC.Hs.Dump
+ import           GHC.Plugins                           hiding (AnnLet)
+ import           Prelude                               hiding ((<>))
+@@ -41,31 +44,67 @@ showAstDataHtml a0 = html $
+     showAstDataHtml' =
+       generic
+               `ext1Q` list
++#if MIN_VERSION_ghc(9,11,0)
++              `extQ` list_epaLocation
++              `extQ` list_epTokenOpenP
++#endif
++              `extQ` list_epTokenCloseP
+               `extQ` string `extQ` fastString `extQ` srcSpan `extQ` realSrcSpan
++#if !MIN_VERSION_ghc(9,11,0)
+               `extQ` annotation
+-              `extQ` annotationModule
+               `extQ` annotationAddEpAnn
+-              `extQ` annotationGrhsAnn
+               `extQ` annotationEpAnnHsCase
+               `extQ` annotationEpAnnHsLet
++#endif
++              `extQ` annotationModule
++              `extQ` annotationGrhsAnn
+               `extQ` annotationAnnList
++#if MIN_VERSION_ghc(9,11,0)
++              `extQ` annotationAnnListWhere
++              `extQ` annotationAnnListCommas
++              `extQ` annotationAnnListIE
++#endif
+               `extQ` annotationEpAnnImportDecl
++#if !MIN_VERSION_ghc(9,11,0)
+               `extQ` annotationAnnParen
+               `extQ` annotationTrailingAnn
+               `extQ` annotationEpaLocation
+               `extQ` addEpAnn
++#endif
++#if MIN_VERSION_ghc(9,11,0)
++              `extQ` annotationNoEpAnns
++              `extQ` annotationExprBracket
++              `extQ` annotationTypedBracket
++              `extQ` epTokenOC
++              `extQ` epTokenCC
++              `extQ` epTokenInstance
++              `extQ` epTokenForall
++              `extQ` annParen
++              `extQ` annClassDecl
++              `extQ` annSynDecl
++              `extQ` annDataDefn
++              `extQ` annFamilyDecl
++              `extQ` annClsInstDecl
++#endif
+               `extQ` lit `extQ` litr `extQ` litt
+               `extQ` sourceText
+               `extQ` deltaPos
++#if MIN_VERSION_ghc(9,11,0)
++              `extQ` epaLocation
++              `extQ` maybe_epaLocation
++#else
+               `extQ` epaAnchor
+ #if !MIN_VERSION_ghc(9,9,0)
+               `extQ` anchorOp
++#endif
+ #endif
+               `extQ` bytestring
+               `extQ` name `extQ` occName `extQ` moduleName `extQ` var
+               `extQ` dataCon
+               `extQ` bagName `extQ` bagRdrName `extQ` bagVar `extQ` nameSet
++#if !MIN_VERSION_ghc(9,11,0)
+               `extQ` fixity
++#endif
+               `ext2Q` located
+               `extQ` srcSpanAnnA
+               `extQ` srcSpanAnnL
+@@ -88,6 +127,17 @@ showAstDataHtml a0 = html $
+             bytestring :: B.ByteString -> SDoc
+             bytestring = text . normalize_newlines . show
+ 
++#if MIN_VERSION_ghc(9,11,0)
++            list_epaLocation :: [EpaLocation] -> SDoc
++            list_epaLocation ls = list ls
++
++            list_epTokenOpenP :: [EpToken "("] -> SDoc
++            list_epTokenOpenP ls = list ls
++
++            list_epTokenCloseP :: [EpToken ")"] -> SDoc
++            list_epTokenCloseP ls = list ls
++#endif
++
+             list []  = brackets empty
+             list [x] = "[]" $$ showAstDataHtml' x
+             list xs  = nested "[]" (vcat $ map (li . showAstDataHtml') xs)
+@@ -127,15 +177,19 @@ showAstDataHtml a0 = html $
+             sourceText (SourceText src) = text "SourceText" <+> text src
+ #endif
+ 
+-            epaAnchor :: EpaLocation -> SDoc
++            epaLocation :: EpaLocation -> SDoc
+ #if MIN_VERSION_ghc(9,9,0)
+-            epaAnchor (EpaSpan s) = parens $ text "EpaSpan" <+> srcSpan s
++            epaLocation (EpaSpan s) = parens $ text "EpaSpan" <+> srcSpan s
+ #elif MIN_VERSION_ghc(9,5,0)
+-            epaAnchor (EpaSpan r _)  = text "EpaSpan" <+> realSrcSpan r
++            epaLocation (EpaSpan r _)  = text "EpaSpan" <+> realSrcSpan r
++#else
++            epaLocation (EpaSpan r)  = text "EpaSpan" <+> realSrcSpan r
++#endif
++#if MIN_VERSION_ghc(9,11,0)
++            epaLocation (EpaDelta s d cs) = text "EpaDelta" <+> srcSpan s <+> deltaPos d <+> showAstDataHtml' cs
+ #else
+-            epaAnchor (EpaSpan r)  = text "EpaSpan" <+> realSrcSpan r
++            epaLocation (EpaDelta d cs) = text "EpaDelta" <+> deltaPos d <+> showAstDataHtml' cs
+ #endif
+-            epaAnchor (EpaDelta d cs) = text "EpaDelta" <+> deltaPos d <+> showAstDataHtml' cs
+ 
+ #if !MIN_VERSION_ghc(9,9,0)
+             anchorOp :: AnchorOperation -> SDoc
+@@ -143,6 +197,13 @@ showAstDataHtml a0 = html $
+             anchorOp (MovedAnchor dp) = "MovedAnchor " <> deltaPos dp
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++            maybe_epaLocation :: Maybe EpaLocation -> SDoc
++            maybe_epaLocation ml = case ml of
++              Nothing -> parens $ text "Nothing"
++              Just l -> parens (text "Just" $$ showAstDataHtml' l)
++#endif
++
+             deltaPos :: DeltaPos -> SDoc
+             deltaPos (SameLine c) = text "SameLine" <+> ppr c
+             deltaPos (DifferentLine l c) = text "DifferentLine" <+> ppr l <+> ppr c
+@@ -169,8 +230,92 @@ showAstDataHtml a0 = html $
+                                    -- TODO: show annotations here
+                                    (text "")
+ 
++#if !MIN_VERSION_ghc(9,11,0)
+             addEpAnn :: AddEpAnn -> SDoc
+             addEpAnn (AddEpAnn a s) = text "AddEpAnn" <+> ppr a <+> epaAnchor s
++#endif
++
++#if MIN_VERSION_ghc(9,11,0)
++            annParen :: AnnParen -> SDoc
++            annParen ap = parens rs
++              where rs = case ap of
++                           (AnnParens       o c) -> text "AnnParens"       $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
++                           (AnnParensHash   o c) -> text "AnnParensHash"   $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
++                           (AnnParensSquare o c) -> text "AnnParensSquare" $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
++
++            annClassDecl :: AnnClassDecl -> SDoc
++            annClassDecl (AnnClassDecl c ops cps v w oc cc s) =
++              parens $ text "AnnClassDecl"
++                        $$ vcat [showAstDataHtml' c, showAstDataHtml' ops, showAstDataHtml' cps,
++                                 showAstDataHtml' v, showAstDataHtml' w, showAstDataHtml' oc,
++                                 showAstDataHtml' cc, showAstDataHtml' s]
++
++            annSynDecl :: AnnSynDecl -> SDoc
++            annSynDecl (AnnSynDecl ops cps t e) =
++              parens $ text "AnnSynDecl"
++                        $$ vcat [showAstDataHtml' ops, showAstDataHtml' cps,
++                                 showAstDataHtml' t, showAstDataHtml' e]
++
++            annDataDefn :: AnnDataDefn -> SDoc
++            annDataDefn (AnnDataDefn a b c d e f g h i j k) =
++              parens $ text "AnnDataDefn"
++                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
++                                 showAstDataHtml' d, showAstDataHtml' e, showAstDataHtml' f,
++                                 showAstDataHtml' g, showAstDataHtml' h, showAstDataHtml' i,
++                                 showAstDataHtml' j, showAstDataHtml' k]
++
++            annFamilyDecl :: AnnFamilyDecl -> SDoc
++            annFamilyDecl (AnnFamilyDecl a b c d e f g h i j k l) =
++              parens $ text "AnnFamilyDecl"
++                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
++                                 showAstDataHtml' d, showAstDataHtml' e, showAstDataHtml' f,
++                                 showAstDataHtml' g, showAstDataHtml' h, showAstDataHtml' i,
++                                 showAstDataHtml' j, showAstDataHtml' k, showAstDataHtml' l]
++
++            annClsInstDecl :: AnnClsInstDecl -> SDoc
++            annClsInstDecl (AnnClsInstDecl a b c d e) =
++              parens $ text "AnnClsInstDecl"
++                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
++                                 showAstDataHtml' d, showAstDataHtml' e]
++
++
++            annotationExprBracket :: BracketAnn (EpUniToken "[|" "⟦") (EpToken "[e|") -> SDoc
++            annotationExprBracket = annotationBracket
++
++            annotationTypedBracket :: BracketAnn (EpToken "[||") (EpToken "[e||") -> SDoc
++            annotationTypedBracket = annotationBracket
++
++            annotationBracket :: forall n h .(Data n, Data h, Typeable n, Typeable h)
++              => BracketAnn n h -> SDoc
++            annotationBracket a =
++              parens $ case a of
++                BracketNoE  t -> text "BracketNoE"  <+> showAstDataHtml' t
++                BracketHasE t -> text "BracketHasE" <+> showAstDataHtml' t
++
++            epTokenOC :: EpToken "{" -> SDoc
++            epTokenOC  = epToken'
++
++            epTokenCC :: EpToken "}" -> SDoc
++            epTokenCC = epToken'
++
++            epTokenInstance :: EpToken "instance" -> SDoc
++            epTokenInstance = epToken'
++
++            epTokenForall :: TokForall -> SDoc
++            epTokenForall = epUniToken'
++
++            epToken' :: KnownSymbol sym => EpToken sym -> SDoc
++            epToken' (EpTok s) =
++              parens $ text "EpTok" <+> epaLocation s
++            epToken' NoEpTok =
++              parens $ text "NoEpTok"
++
++            epUniToken' :: EpUniToken sym1 sym2 -> SDoc
++            epUniToken' (EpUniTok s f) =
++              parens $ text "EpUniTok" <+> epaLocation s <+> ppr f
++            epUniToken' NoEpUniTok =
++              parens $ text "NoEpUniTok"
++#endif
+ 
+             var  :: Var -> SDoc
+             var v      = braces $ text "Var:" <+> ppr v
+@@ -197,10 +342,12 @@ showAstDataHtml a0 = html $
+                           text "NameSet:"
+                        $$ (list . nameSetElemsStable $ ns)
+ 
++#if !MIN_VERSION_ghc(9,11,0)
+             fixity :: Fixity -> SDoc
+             fixity fx =  braces $
+                          text "Fixity:"
+                      <+> ppr fx
++#endif
+ 
+             located :: (Data a, Data b) => GenLocated a b -> SDoc
+             located (L ss a)
+@@ -208,18 +355,13 @@ showAstDataHtml a0 = html $
+ 
+             -- -------------------------
+ 
++#if !MIN_VERSION_ghc(9,11,0)
+             annotation :: EpAnn [AddEpAnn] -> SDoc
+             annotation = annotation' (text "EpAnn [AddEpAnn]")
+ 
+-            annotationModule :: EpAnn AnnsModule -> SDoc
+-            annotationModule = annotation' (text "EpAnn AnnsModule")
+-
+             annotationAddEpAnn :: EpAnn AddEpAnn -> SDoc
+             annotationAddEpAnn = annotation' (text "EpAnn AddEpAnn")
+ 
+-            annotationGrhsAnn :: EpAnn GrhsAnn -> SDoc
+-            annotationGrhsAnn = annotation' (text "EpAnn GrhsAnn")
+-
+             annotationEpAnnHsCase :: EpAnn EpAnnHsCase -> SDoc
+             annotationEpAnnHsCase = annotation' (text "EpAnn EpAnnHsCase")
+ 
+@@ -230,21 +372,51 @@ showAstDataHtml a0 = html $
+             annotationEpAnnHsLet :: EpAnn AnnsLet -> SDoc
+             annotationEpAnnHsLet = annotation' (text "EpAnn AnnsLet")
+ #endif
++#endif
++
++            annotationModule :: EpAnn AnnsModule -> SDoc
++            annotationModule = annotation' (text "EpAnn AnnsModule")
++
++            annotationGrhsAnn :: EpAnn GrhsAnn -> SDoc
++            annotationGrhsAnn = annotation' (text "EpAnn GrhsAnn")
+ 
++#if MIN_VERSION_ghc(9,11,0)
++            annotationAnnList :: EpAnn (AnnList ()) -> SDoc
++            annotationAnnList = annotation' (text "EpAnn (AnnList ())")
++#else
+             annotationAnnList :: EpAnn AnnList -> SDoc
+             annotationAnnList = annotation' (text "EpAnn AnnList")
++#endif
+ 
+             annotationEpAnnImportDecl :: EpAnn EpAnnImportDecl -> SDoc
+             annotationEpAnnImportDecl = annotation' (text "EpAnn EpAnnImportDecl")
+ 
++#if !MIN_VERSION_ghc(9,11,0)
+             annotationAnnParen :: EpAnn AnnParen -> SDoc
+             annotationAnnParen = annotation' (text "EpAnn AnnParen")
+ 
+             annotationTrailingAnn :: EpAnn TrailingAnn -> SDoc
+             annotationTrailingAnn = annotation' (text "EpAnn TrailingAnn")
++#endif
++
++#if MIN_VERSION_ghc(9,11,0)
++            annotationAnnListWhere :: EpAnn (AnnList (EpToken "where")) -> SDoc
++            annotationAnnListWhere = annotation' (text "EpAnn (AnnList (EpToken \"where\"))")
++
++            annotationAnnListCommas :: EpAnn (AnnList [EpToken ","]) -> SDoc
++            annotationAnnListCommas = annotation' (text "EpAnn (AnnList [EpToken \",\"])")
+ 
++            annotationAnnListIE :: EpAnn (AnnList (EpToken "hiding", [EpToken ","])) -> SDoc
++            annotationAnnListIE = annotation' (text "EpAnn (AnnList (EpToken \"hiding\", [EpToken \",\"]))")
++
++            annotationNoEpAnns :: EpAnn NoEpAnns -> SDoc
++            annotationNoEpAnns = annotation' (text "EpAnn NoEpAnns")
++#endif
++
++#if !MIN_VERSION_ghc(9,11,0)
+             annotationEpaLocation :: EpAnn EpaLocation -> SDoc
+             annotationEpaLocation = annotation' (text "EpAnn EpaLocation")
++#endif
+ 
+             annotation' :: forall a. Data a => SDoc -> EpAnn a -> SDoc
+             annotation' _tag anns = nested (text $ showConstr (toConstr anns))
+@@ -256,7 +428,11 @@ showAstDataHtml a0 = html $
+             srcSpanAnnA :: EpAnn AnnListItem -> SDoc
+             srcSpanAnnA = locatedAnn'' (text "SrcSpanAnnA")
+ 
++#if MIN_VERSION_ghc(9,11,0)
++            srcSpanAnnL :: EpAnn (AnnList ()) -> SDoc
++#else
+             srcSpanAnnL :: EpAnn AnnList -> SDoc
++#endif
+             srcSpanAnnL = locatedAnn'' (text "SrcSpanAnnL")
+ 
+             srcSpanAnnP :: EpAnn AnnPragma -> SDoc
+--- a/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs
++++ b/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs
+@@ -1,6 +1,7 @@
+ {-# LANGUAGE GADTs        #-}
+ {-# LANGUAGE TypeFamilies #-}
+ {-# OPTIONS_GHC -Wno-orphans #-}
++{-# LANGUAGE CPP            #-}
+ 
+ -- | This module hosts various abstractions and utility functions to work with ghc-exactprint.
+ module Development.IDE.GHC.ExactPrint
+@@ -31,6 +32,9 @@ module Development.IDE.GHC.ExactPrint
+       -- * Helper function
+       eqSrcSpan,
+       epl,
++#if MIN_VERSION_ghc(9,11,0)
++      epTok,
++#endif
+       epAnn,
+       removeTrailingComma,
+       annotateParsedSource,
+@@ -85,6 +89,7 @@ import           Control.Lens.Operators                  ((%~))
+ import           Data.List                               (partition)
+ import           GHC                                     (DeltaPos (..),
+                                                           SrcSpanAnnN)
++import           GHC.Types.SrcLoc                        (generatedSrcSpan)
+ 
+ -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
+ 
+@@ -104,11 +109,10 @@ import           GHC                                     (Anchor (..),
+ import           GHC.Parser.Annotation                   (AnnContext (..),
+                                                           EpaLocation (EpaDelta),
+                                                           deltaPos)
+-import           GHC.Types.SrcLoc                        (generatedSrcSpan)
+ #endif
+ 
+ #if MIN_VERSION_ghc(9,9,0)
+-import           GHC                                     (Anchor,
++import           GHC                                     (
+                                                           AnnContext (..),
+                                                           EpAnn (..),
+                                                           EpaLocation,
+@@ -122,6 +126,10 @@ import           GHC                                     (Anchor,
+                                                           spanAsAnchor)
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC                                     (EpToken (..))
++#endif
++
+ setPrecedingLines ::
+ #if !MIN_VERSION_ghc(9,9,0)
+      Default t =>
+@@ -463,7 +471,10 @@ modifySmallestDeclWithM validSpan f a = do
+             False -> first (DL.singleton ldecl <>) <$> modifyMatchingDecl rest
+   modifyDeclsT' (fmap (first DL.toList) . modifyMatchingDecl) a
+ 
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++generatedAnchor :: DeltaPos -> EpaLocation
++generatedAnchor dp = EpaDelta generatedSrcSpan dp []
++#elif MIN_VERSION_ghc(9,9,0)
+ generatedAnchor :: DeltaPos -> Anchor
+ generatedAnchor dp = EpaDelta dp []
+ #else
+@@ -471,7 +482,7 @@ generatedAnchor :: AnchorOperation -> Anchor
+ generatedAnchor anchorOp = GHC.Anchor (GHC.realSrcSpan generatedSrcSpan) anchorOp
+ #endif
+ 
+-setAnchor :: Anchor -> SrcSpanAnnN -> SrcSpanAnnN
++setAnchor :: EpaLocation -> SrcSpanAnnN -> SrcSpanAnnN
+ #if MIN_VERSION_ghc(9,9,0)
+ setAnchor anc (EpAnn _ nameAnn comments) =
+   EpAnn anc nameAnn comments
+@@ -560,10 +571,10 @@ modifySigWithM queryId f a = do
+       modifyMatchingSigD (ldecl : rest) = (DL.singleton ldecl <>) <$> modifyMatchingSigD rest
+   modifyDeclsT (fmap DL.toList . modifyMatchingSigD) $ makeDeltaAst a
+ 
+-genAnchor0 :: Anchor
++genAnchor0 :: EpaLocation
+ genAnchor0 = generatedAnchor m0
+ 
+-genAnchor1 :: Anchor
++genAnchor1 :: EpaLocation
+ genAnchor1 = generatedAnchor m1
+ 
+ #if MIN_VERSION_ghc(9,9,0)
+@@ -578,9 +589,15 @@ modifyDeclsT' :: (HasDecls t, HasTransform m)
+              => ([LHsDecl GhcPs] -> m ([LHsDecl GhcPs], r))
+              -> t -> m (t, r)
+ modifyDeclsT' action t = do
++#if MIN_VERSION_ghc(9,11,0)
++  let decls = hsDecls t
++  (decls', r) <- action decls
++  let t' = replaceDecls t decls'
++#else
+   decls <- liftT $ hsDecls t
+   (decls', r) <- action decls
+   t' <- liftT $ replaceDecls t decls'
++#endif
+   pure (t', r)
+ 
+ -- | Modify each LMatch in a MatchGroup
+@@ -752,6 +769,17 @@ parenthesize = parenthesizeHsExpr appPrec
+ eqSrcSpan :: SrcSpan -> SrcSpan -> Bool
+ eqSrcSpan l r = leftmost_smallest l r == EQ
+ 
++#if MIN_VERSION_ghc(9,11,0)
++addParensToCtxt :: Maybe (EpToken ")") -> AnnContext -> AnnContext
++addParensToCtxt close_dp = addOpen . addClose
++  where
++      addOpen it@AnnContext{ac_open = []} = it{ac_open = [epTok 0]}
++      addOpen other                       = other
++      addClose it
++        | Just c <- close_dp = it{ac_close = [c]}
++        | AnnContext{ac_close = []} <- it = it{ac_close = [epTok 0]}
++        | otherwise = it
++#else
+ addParensToCtxt :: Maybe EpaLocation -> AnnContext -> AnnContext
+ addParensToCtxt close_dp = addOpen . addClose
+   where
+@@ -761,9 +789,18 @@ addParensToCtxt close_dp = addOpen . addClose
+         | Just c <- close_dp = it{ac_close = [c]}
+         | AnnContext{ac_close = []} <- it = it{ac_close = [epl 0]}
+         | otherwise = it
++#endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++epl :: Int -> EpaLocation
++epl n = EpaDelta noSrcSpan (SameLine n) []
++
++epTok :: Int -> EpToken a
++epTok n = EpTok $ epl n
++#else
+ epl :: Int -> EpaLocation
+ epl n = EpaDelta (SameLine n) []
++#endif
+ 
+ epAnn :: SrcSpan -> ann -> EpAnn ann
+ epAnn srcSpan anns = EpAnn (spanAsAnchor srcSpan) anns emptyComments
+@@ -791,6 +828,18 @@ removeComma (SrcSpanAnn (EpAnn anc (AnnListItem as) cs) l)
+       isCommaAnn _             = False
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++addParens :: Bool -> GHC.NameAnn -> GHC.NameAnn
++addParens True it@NameAnn{} =
++        it{nann_adornment = NameParens (epTok 0) (epTok 0) }
++addParens True it@NameAnnCommas{} =
++        it{nann_adornment = NameParens (epTok 0) (epTok 0) }
++addParens True it@NameAnnOnly{} =
++        it{nann_adornment = NameParens (epTok 0) (epTok 0) }
++addParens True NameAnnTrailing{..} =
++        NameAnn{nann_adornment = NameParens (epTok 0) (epTok 0), nann_name = epl 0, ..}
++addParens _ it = it
++#else
+ addParens :: Bool -> GHC.NameAnn -> GHC.NameAnn
+ addParens True it@NameAnn{} =
+         it{nann_adornment = NameParens, nann_open = epl 0, nann_close = epl 0 }
+@@ -801,6 +850,7 @@ addParens True it@NameAnnOnly{} =
+ addParens True NameAnnTrailing{..} =
+         NameAnn{nann_adornment = NameParens, nann_open = epl 0, nann_close = epl 0, nann_name = epl 0, ..}
+ addParens _ it = it
++#endif
+ 
+ removeTrailingComma :: GenLocated SrcSpanAnnA ast -> GenLocated SrcSpanAnnA ast
+ removeTrailingComma = flip modifyAnns $ \(AnnListItem l) -> AnnListItem $ filter (not . isCommaAnn) l
+--- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs
++++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs
+@@ -69,8 +69,7 @@
+ import           Development.IDE.Types.Exports
+ import           Development.IDE.Types.Location
+ import           Development.IDE.Types.Options
+-import           GHC                                               (AddEpAnn (AddEpAnn),
+-                                                                    AnnsModule (am_main),
++import           GHC                                               (AnnsModule (..),
+                                                                     DeltaPos (..),
+                                                                     EpAnn (..),
+                                                                     LEpaComment)
+@@ -103,6 +104,12 @@ import           Text.Regex.TDFA                                   ((=~), (=~~))
+ 
+ -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
+ 
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC                                               (EpToken (..))
++#else
++import           GHC                                               (AddEpAnn (AddEpAnn))
++#endif
++
+ #if !MIN_VERSION_ghc(9,9,0)
+ import           Development.IDE.GHC.Compat.ExactPrint             (makeDeltaAst)
+ import           GHC                                               (Anchor (anchor_op),
+@@ -339,7 +346,11 @@ findSigOfBinds range = go
+         case unLoc <$> findDeclContainingLoc (_start range) lsigs of
+           Just sig' -> Just sig'
+           Nothing -> do
++#if MIN_VERSION_ghc(9,11,0)
++            lHsBindLR <- findDeclContainingLoc (_start range) binds
++#else
+             lHsBindLR <- findDeclContainingLoc (_start range) (bagToList binds)
++#endif
+             findSigOfBind range (unLoc lHsBindLR)
+     go _ = Nothing
+ 
+@@ -420,7 +431,11 @@ isUnusedImportedId
+   modName
+   importSpan
+     | occ <- mkVarOcc identifier,
++#if MIN_VERSION_ghc(9,11,0)
++      impModsVals <- importedByUser . concat $ moduleEnvElts (mkModuleEnv $ M.toList imp_mods),
++#else
+       impModsVals <- importedByUser . concat $ moduleEnvElts imp_mods,
++#endif
+       Just rdrEnv <-
+         listToMaybe
+           [ imv_all_exports
+@@ -658,12 +673,12 @@ suggestDeleteUnusedBinding
+         indexedContent
+         name
+         (L _ Match{m_grhss=GRHSs{grhssLocalBinds}}) = do
+-        let go bag lsigs =
+-                if isEmptyBag bag
++        let go binds lsigs =
++                if null binds
+                 then []
+-                else concatMap (findRelatedSpanForHsBind indexedContent name lsigs) bag
++                else concatMap (findRelatedSpanForHsBind indexedContent name lsigs) binds
+         case grhssLocalBinds of
+-          (HsValBinds _ (ValBinds _ bag lsigs)) -> go bag lsigs
++          (HsValBinds _ (ValBinds _ binds lsigs)) -> go binds lsigs
+           _                                     -> []
+ 
+       findRelatedSpanForHsBind
+@@ -1699,15 +1714,23 @@ findPositionAfterModuleName ps _hsmodName' = do
+     whereKeywordLineOffset = case hsmodAnn of
+ #endif
+         EpAnn _ annsModule _ -> do
++#if MIN_VERSION_ghc(9,11,0)
++            case am_where annsModule of
++                NoEpTok -> Nothing
++                EpTok loc -> epaLocationToLine loc
++#else
+             -- Find the first 'where'
+             whereLocation <- listToMaybe . mapMaybe filterWhere $ am_main annsModule
+             epaLocationToLine whereLocation
++#endif
+ #if !MIN_VERSION_ghc(9,9,0)
+         EpAnnNotUsed -> Nothing
+ #endif
++
++#if !MIN_VERSION_ghc(9,11,0)
+     filterWhere (AddEpAnn AnnWhere loc) = Just loc
+     filterWhere _                       = Nothing
+-
++#endif
+     epaLocationToLine :: EpaLocation -> Maybe Int
+ #if MIN_VERSION_ghc(9,9,0)
+     epaLocationToLine (EpaSpan sp)
+@@ -1719,11 +1742,12 @@ findPositionAfterModuleName ps _hsmodName' = do
+     epaLocationToLine (EpaSpan sp)
+       = Just . srcLocLine . realSrcSpanEnd $ sp
+ #endif
+-    epaLocationToLine (EpaDelta (SameLine _) priorComments) = Just $ sumCommentsOffset priorComments
++
++    epaLocationToLine (EpaDelta' (SameLine _) priorComments) = Just $ sumCommentsOffset priorComments
+     -- 'priorComments' contains the comments right before the current EpaLocation
+     -- Summing line offset of priorComments is necessary, as 'line' is the gap between the last comment and
+     -- the current AST node
+-    epaLocationToLine (EpaDelta (DifferentLine line _) priorComments) = Just (line + sumCommentsOffset priorComments)
++    epaLocationToLine (EpaDelta' (DifferentLine line _) priorComments) = Just (line + sumCommentsOffset priorComments)
+ 
+     sumCommentsOffset :: [LEpaComment] -> Int
+ #if MIN_VERSION_ghc(9,9,0)
+@@ -1735,8 +1759,8 @@ findPositionAfterModuleName ps _hsmodName' = do
+ #if MIN_VERSION_ghc(9,9,0)
+     anchorOpLine :: EpaLocation' a -> Int
+     anchorOpLine EpaSpan{}                           = 0
+-    anchorOpLine (EpaDelta (SameLine _) _)           = 0
+-    anchorOpLine (EpaDelta (DifferentLine line _) _) = line
++    anchorOpLine (EpaDelta' (SameLine _) _)           = 0
++    anchorOpLine (EpaDelta' (DifferentLine line _) _) = line
+ #else
+     anchorOpLine :: AnchorOperation -> Int
+     anchorOpLine UnchangedAnchor                      = 0
+@@ -1744,6 +1768,14 @@ findPositionAfterModuleName ps _hsmodName' = do
+     anchorOpLine (MovedAnchor (DifferentLine line _)) = line
+ #endif
+ 
++{-# COMPLETE EpaDelta' #-}
++pattern EpaDelta' :: DeltaPos -> a -> EpaLocation' a
++#if MIN_VERSION_ghc(9,11,0)
++pattern EpaDelta' n at <- EpaDelta _ n at
++#else
++pattern EpaDelta' n at <- EpaDelta n at
++#endif
++
+ findPositionFromImports :: HasSrcSpan a => t -> (t -> a) -> Maybe ((Int, Int), Int)
+ findPositionFromImports hsField f = case getLoc (f hsField) of
+   RealSrcSpan s _ ->
+--- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs
++++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs
+@@ -1,5 +1,7 @@
+ {-# LANGUAGE GADTs        #-}
+ {-# LANGUAGE TypeFamilies #-}
++{-# LANGUAGE CPP                      #-}
++
+ module Development.IDE.Plugin.CodeAction.ExactPrint (
+   Rewrite (..),
+   rewriteToEdit,
+@@ -32,13 +34,12 @@ import           Language.Haskell.GHC.ExactPrint
+ import           Language.LSP.Protocol.Types
+ 
+ import           Control.Lens                           (_head, _last, over)
+-import           Data.Bifunctor                         (first)
++import           Data.Bifunctor                         (first, second)
+ import           Data.Maybe                             (fromMaybe, mapMaybe)
+ import           Development.IDE.Plugin.CodeAction.Util
+-import           GHC                                    (AddEpAnn (..),
++import           GHC                                    (
+                                                          AnnContext (..),
+                                                          AnnList (..),
+-                                                         AnnParen (..),
+                                                          DeltaPos (SameLine),
+                                                          EpAnn (..),
+                                                          IsUnicodeSyntax (NormalSyntax),
+@@ -48,6 +49,15 @@ import           GHC                                    (AddEpAnn (..),
+ 
+ -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
+ 
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC                                    (EpUniToken(..),
++                                                         EpToken (..),
++                                                         NoEpAnns,
++                                                         AnnListBrackets (..))
++#else
++import           GHC                                    (AddEpAnn (..))
++#endif
++
+ #if !MIN_VERSION_ghc(9,9,0)
+ import           Data.Default                           (Default (..))
+ import           GHC                                    (addAnns, ann)
+@@ -179,7 +189,9 @@ appendConstraint constraintT = go . traceAst "appendConstraint"
+     -- For singleton constraints, the close Paren DP is attached to an HsPar wrapping the constraint
+     -- we have to reposition it manually into the AnnContext
+         close_dp = case ctxt of
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++            [L _ (HsParTy (_, c) _)] -> Just c
++#elif MIN_VERSION_ghc(9,9,0)
+             [L _ (HsParTy AnnParen{ap_close} _)] -> Just ap_close
+ #else
+             [L _ (HsParTy EpAnn{anns=AnnParen{ap_close}} _)] -> Just ap_close
+@@ -203,7 +215,11 @@ appendConstraint constraintT = go . traceAst "appendConstraint"
+ #else
+     let context = Just $ reAnnL annCtxt emptyComments $ L lContext [resetEntryDP constraint]
+ #endif
++#if MIN_VERSION_ghc(9,11,0)
++        annCtxt = AnnContext (Just (EpUniTok (epl 1) NormalSyntax )) [epTok 0 | needsParens] [epTok 0 | needsParens]
++#else
+         annCtxt = AnnContext (Just (NormalSyntax, epl 1)) [epl 0 | needsParens] [epl 0 | needsParens]
++#endif
+         needsParens = hsTypeNeedsParens sigPrec $ unLoc constraint
+     ast <- pure $ setEntryDP (makeDeltaAst ast) (SameLine 1)
+ 
+@@ -346,7 +362,9 @@ extendImportViaParent df parent child (L l it@ImportDecl{..})
+ #endif
+                                              childRdr
+           x :: LIE GhcPs = L ll' $ IEThingWith
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++                                     (Nothing, (EpTok d1, NoEpTok, NoEpTok, EpTok noAnn))
++#elif MIN_VERSION_ghc(9,9,0)
+                                      (Nothing, [AddEpAnn AnnOpenP d1, AddEpAnn AnnCloseP noAnn])
+ #elif MIN_VERSION_ghc(9,7,0)
+                                      (Nothing, addAnns mempty [AddEpAnn AnnOpenP d1, AddEpAnn AnnCloseP def] emptyComments)
+@@ -382,7 +400,9 @@ extendImportViaParent df parent child (L l it@ImportDecl{..})
+ #if MIN_VERSION_ghc(9,9,0)
+                                 docs
+ #endif
+-#if MIN_VERSION_ghc(9,7,0) && !MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++            newl = second (\(op, _, _, cl) -> (op, EpTok d0, NoEpTok, cl)) l'''
++#elif MIN_VERSION_ghc(9,7,0) && !MIN_VERSION_ghc(9,9,0)
+             newl = fmap (\ann -> ann ++ [AddEpAnn AnnDotdot d0]) <$> l'''
+ #else
+             newl = (\ann -> ann ++ [AddEpAnn AnnDotdot d0]) <$> l'''
+@@ -427,21 +447,31 @@ extendImportViaParent df parent child (L l it@ImportDecl{..})
+       parentRdr <- liftParseAST df parent
+       let childRdr = reLocA $ L srcChild $ mkRdrUnqual $ mkVarOcc child
+           isParentOperator = hasParen parent
++#if MIN_VERSION_ghc(9,11,0)
++      let parentLIE = reLocA $ L srcParent $ if isParentOperator then IEType (epTok 0) parentRdr'
++#else
+       let parentLIE = reLocA $ L srcParent $ if isParentOperator then IEType (epl 0) parentRdr'
++#endif
+                                                else IEName
+ #if MIN_VERSION_ghc(9,5,0)
+                                                       noExtField
+ #endif
+                                                       parentRdr'
+           parentRdr' = modifyAnns parentRdr $ \case
+-              it@NameAnn{nann_adornment = NameParens} -> it{nann_open = epl 1, nann_close = epl 0}
++#if MIN_VERSION_ghc(9,11,0)
++              it@NameAnn{nann_adornment = NameParens _ _} -> it{nann_adornment = NameParens (epTok 1) (epTok 0)}
++#else
++              it@NameAnn{nann_adornment = NameParens _ _} -> it{nann_open = epl 1, nann_close = epl 0}
++#endif
+               other -> other
+           childLIE = reLocA $ L srcChild $ IEName
+ #if MIN_VERSION_ghc(9,5,0)
+                                              noExtField
+ #endif
+                                              childRdr
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++          listAnn = (Nothing, (epTok 1, NoEpTok, NoEpTok, epTok 0))
++#elif MIN_VERSION_ghc(9,9,0)
+           listAnn = (Nothing, [AddEpAnn AnnOpenP (epl 1), AddEpAnn AnnCloseP (epl 0)])
+ #elif MIN_VERSION_ghc(9,7,0)
+           listAnn = (Nothing, epAnn srcParent [AddEpAnn AnnOpenP (epl 1), AddEpAnn AnnCloseP (epl 0)])
+@@ -538,7 +568,10 @@ extendHiding ::
+ extendHiding symbol (L l idecls) mlies df = do
+   L l' lies <- case mlies of
+     Nothing -> do
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++        let ann :: EpAnn (AnnList NoEpAnns)
++            ann = noAnnSrcSpanDP0
++#elif MIN_VERSION_ghc(9,9,0)
+         let ann = noAnnSrcSpanDP0
+ #else
+         src <- uniqueSrcSpanT
+@@ -549,9 +582,14 @@ extendHiding symbol (L l idecls) mlies df = do
+ #else
+             ann' = flip (fmap.fmap) ann $ \x -> x
+ #endif
++#if MIN_VERSION_ghc(9,11,0)
++                {al_rest = (epTok 1, [])
++                ,al_brackets = ListParens (epTok 1) (epTok 0)
++#else
+                 {al_rest = [AddEpAnn AnnHiding (epl 1)]
+                 ,al_open = Just $ AddEpAnn AnnOpenP (epl 1)
+                 ,al_close = Just $ AddEpAnn AnnCloseP (epl 0)
++#endif
+                 }
+         return $ L ann' []
+     Just pr -> pure pr
+--- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs
++++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs
+@@ -47,6 +47,7 @@ import           GHC.Types.SrcLoc                          (generatedSrcSpan)
+ #if MIN_VERSION_ghc(9,9,0)
+ import           GHC                                       (DeltaPos (..),
+                                                             EpUniToken (..),
++                                                            EpToken(..),
+                                                             IsUnicodeSyntax (NormalSyntax))
+ import           Language.Haskell.GHC.ExactPrint           (d1, setEntryDP)
+ #endif
+@@ -81,15 +82,23 @@ addArgToMatch name (L locMatch (Match xMatch ctxMatch pats rhs)) =
+   let unqualName = mkRdrUnqual $ mkVarOcc $ T.unpack name
+ #if MIN_VERSION_ghc(9,9,0)
+       newPat = L noAnnSrcSpanDP1 $ VarPat NoExtField $ L noAnn unqualName
++#else
++      newPat = L (noAnnSrcSpanDP1 generatedSrcSpan) $ VarPat NoExtField (noLocA unqualName)
++#endif
++#if MIN_VERSION_ghc(9,11,0)
++      newPats = (<> [newPat]) <$> pats
++#else
++      newPats = pats <> [newPat]
++#endif
++#if MIN_VERSION_ghc(9,9,0)
+       -- The intention is to move `= ...` (right-hand side with equals) to the right so there's 1 space between
+       -- the newly added pattern and the rest
+       indentRhs :: GRHSs GhcPs (LocatedA (HsExpr GhcPs)) -> GRHSs GhcPs (LocatedA (HsExpr GhcPs))
+       indentRhs rhs@GRHSs{grhssGRHSs} = rhs {grhssGRHSs = fmap (`setEntryDP` (SameLine 1)) grhssGRHSs }
+ #else
+-      newPat = L (noAnnSrcSpanDP1 generatedSrcSpan) $ VarPat NoExtField (noLocA unqualName)
+       indentRhs = id
+ #endif
+-  in (L locMatch (Match xMatch ctxMatch (pats <> [newPat]) (indentRhs rhs)), Prelude.length pats)
++  in (L locMatch (Match xMatch ctxMatch newPats (indentRhs rhs)), Prelude.length pats)
+ 
+ -- Attempt to insert a binding pattern into each match for the given LHsDecl; succeeds only if the function is a FunBind.
+ -- Also return:
+@@ -171,7 +180,11 @@ addTyHoleToTySigArg loc (L annHsSig (HsSig xHsSig tyVarBndrs lsigTy)) =
+           ( noAnn
+           , noExtField
+           , HsUnrestrictedArrow (EpUniTok d1 NormalSyntax)
++#if MIN_VERSION_ghc(9,11,0)
++          , L wildCardAnn $ HsWildCardTy NoEpTok
++#else
+           , L wildCardAnn $ HsWildCardTy noExtField
++#endif
+           )
+ #elif MIN_VERSION_ghc(9,4,0)
+         wildCardAnn = SrcSpanAnn (EpAnn genAnchor1 (AnnListItem []) emptyComments) generatedSrcSpan 
+--- a/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
++++ b/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
+@@ -13,7 +13,7 @@ import qualified Data.Text                               as T
+ import           Development.IDE
+ import           Development.IDE.GHC.Compat
+ import           Development.IDE.GHC.Compat.ExactPrint
+-import           GHC.Parser.Annotation                   (AddEpAnn (..),
++import           GHC.Parser.Annotation                   (
+                                                           DeltaPos (..),
+                                                           EpAnn (..),
+                                                           EpAnnComments (EpaComments))
+@@ -30,6 +30,12 @@ import qualified Data.List.NonEmpty                      as NE
+ import           GHC.Parser.Annotation                   (TokenLocation (..))
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC.Parser.Annotation                   (EpToken (..))
++#else
++import           GHC.Parser.Annotation                   (AddEpAnn (..))
++#endif
++
+ #if !MIN_VERSION_ghc(9,9,0)
+ import           GHC.Parser.Annotation                   (Anchor (Anchor),
+                                                           AnchorOperation (MovedAnchor),
+@@ -97,7 +103,9 @@ h98ToGADTConDecl ::
+ h98ToGADTConDecl dataName tyVars ctxt = \case
+     ConDeclH98{..} ->
+         ConDeclGADT
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++            (AnnConDeclGADT [NoEpTok] [NoEpTok] NoEpUniTok)
++#elif MIN_VERSION_ghc(9,9,0)
+             (NoEpUniTok, con_ext)
+ #else
+             con_ext
+@@ -207,10 +215,17 @@ prettyGADTDecl df decl =
+                 Left err -> Left $ printWithoutUniques err
+ 
+         adjustDataDecl DataDecl{..} = DataDecl
++#if MIN_VERSION_ghc(9,11,0)
++            { tcdDataDefn = tcdDataDefn
++#else
+             { tcdDExt = adjustWhere tcdDExt
+             , tcdDataDefn = tcdDataDefn
++#endif
+                 { dd_cons =
+                       fmap adjustCon (dd_cons tcdDataDefn)
++#if MIN_VERSION_ghc(9,11,0)
++                , dd_ext = adjustWhere (dd_ext tcdDataDefn)
++#endif
+                 }
+             , ..
+             }
+@@ -218,7 +233,11 @@ prettyGADTDecl df decl =
+ 
+         -- Make every data constructor start with a new line and 2 spaces
+         adjustCon :: LConDecl GP -> LConDecl GP
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++        adjustCon (L (EpAnn (EpaSpan loc) _ _) r) =
++            let delta = EpaDelta loc (DifferentLine 1 3) []
++            in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
++#elif MIN_VERSION_ghc(9,9,0)
+         adjustCon (L _ r) =
+             let delta = EpaDelta (DifferentLine 1 3) []
+             in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
+@@ -228,6 +247,12 @@ prettyGADTDecl df decl =
+             in L (SrcSpanAnn (EpAnn (go (spanAsAnchor loc)) (AnnListItem []) (EpaComments [])) loc) r
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++        adjustWhere :: XCHsDataDefn GP -> XCHsDataDefn GP
++        adjustWhere AnnDataDefn{..}= AnnDataDefn{
++            andd_where = EpTok d1,
++            ..}
++#else
+         -- Adjust where annotation to the same line of the type constructor
+         adjustWhere tcdDExt = tcdDExt <&>
+ #if !MIN_VERSION_ghc(9,9,0)
+@@ -238,6 +263,7 @@ prettyGADTDecl df decl =
+                 then AddEpAnn AnnWhere d1
+                 else AddEpAnn ann l
+             )
++#endif
+ 
+         -- Remove the first extra line if exist
+         removeExtraEmptyLine s = case stripInfix "\n\n" s of
+@@ -257,6 +283,10 @@ noUsed = EpAnnNotUsed
+ #endif
+ 
+ pattern UserTyVar' :: LIdP pass -> HsTyVarBndr flag pass
++#if MIN_VERSION_ghc(9,11,0)
++pattern UserTyVar' s <- HsTvb _ _ (HsBndrVar _ s) _
++#else
+ pattern UserTyVar' s <- UserTyVar _ _ s
++#endif
+ 
+ implicitTyVars = wrapXRec @GP mkHsOuterImplicit
