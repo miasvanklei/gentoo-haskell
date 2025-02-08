@@ -1,4 +1,3 @@
-diff --color -ur a/src/Development/IDE/Core/Actions.hs b/src/Development/IDE/Core/Actions.hs
 --- a/src/Development/IDE/Core/Actions.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Core/Actions.hs	2025-02-03 13:57:15.852468052 +0100
 @@ -132,7 +132,7 @@
@@ -10,7 +9,6 @@ diff --color -ur a/src/Development/IDE/Core/Actions.hs b/src/Development/IDE/Cor
      !pos' <- MaybeT (return $ fromCurrentPosition mapping pos)
      let toCurrentHighlight (DocumentHighlight range t) = flip DocumentHighlight t <$> toCurrentRange mapping range
      mapMaybe toCurrentHighlight <$>AtPoint.documentHighlight hf rf pos'
-diff --color -ur a/src/Development/IDE/Core/Compile.hs b/src/Development/IDE/Core/Compile.hs
 --- a/src/Development/IDE/Core/Compile.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Core/Compile.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -62,11 +62,12 @@
@@ -363,7 +361,6 @@ diff --color -ur a/src/Development/IDE/Core/Compile.hs b/src/Development/IDE/Cor
  #else
    pure $ CgGuts this_mod tyCons (_implicit_binds ++ core_binds) [] NoStubs [] mempty (emptyHpcInfo False) Nothing []
  #endif
-diff --color -ur a/src/Development/IDE/Core/RuleTypes.hs b/src/Development/IDE/Core/RuleTypes.hs
 --- a/src/Development/IDE/Core/RuleTypes.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Core/RuleTypes.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -24,7 +24,7 @@
@@ -414,7 +411,6 @@ diff --color -ur a/src/Development/IDE/Core/RuleTypes.hs b/src/Development/IDE/C
  data FileOfInterestStatus
    = OnDisk
    | Modified { firstOpen :: !Bool -- ^ was this file just opened
-diff --color -ur a/src/Development/IDE/Core/Rules.hs b/src/Development/IDE/Core/Rules.hs
 --- a/src/Development/IDE/Core/Rules.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Core/Rules.hs	2025-02-03 14:22:50.332249907 +0100
 @@ -521,7 +521,7 @@
@@ -631,7 +627,6 @@ diff --color -ur a/src/Development/IDE/Core/Rules.hs b/src/Development/IDE/Core/
    typedAst <- MaybeT $ pure $ cast hieAst
 -  liftIO $ runHsc (hscEnv ghc) $ mkHieFile' (msrModSummary msr) exports typedAst source
 +  liftIO $ runHsc (hscEnv ghc) $ mkHieFile' (msrModSummary msr) exports typedAst entity_infos source
-diff --color -ur a/src/Development/IDE/Core/Shake.hs b/src/Development/IDE/Core/Shake.hs
 --- a/src/Development/IDE/Core/Shake.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Core/Shake.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -1247,7 +1247,7 @@
@@ -643,7 +638,6 @@ diff --color -ur a/src/Development/IDE/Core/Shake.hs b/src/Development/IDE/Core/
  
                  ver <- estimateFileVersionUnsafely key mbRes file
                  (bs, res) <- case mbRes of
-diff --color -ur a/src/Development/IDE/GHC/CPP.hs b/src/Development/IDE/GHC/CPP.hs
 --- a/src/Development/IDE/GHC/CPP.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/CPP.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -34,6 +34,10 @@
@@ -657,7 +651,6 @@ diff --color -ur a/src/Development/IDE/GHC/CPP.hs b/src/Development/IDE/GHC/CPP.
  addOptP :: String -> DynFlags -> DynFlags
  addOptP f = alterToolSettings $ \s -> s
            { toolSettings_opt_P             = f : toolSettings_opt_P s
-diff --color -ur a/src/Development/IDE/GHC/Compat/Core.hs b/src/Development/IDE/GHC/Compat/Core.hs
 --- a/src/Development/IDE/GHC/Compat/Core.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Compat/Core.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -69,6 +69,11 @@
@@ -734,10 +727,8 @@ diff --color -ur a/src/Development/IDE/GHC/Compat/Core.hs b/src/Development/IDE/
  collectHsBindsBinders x = GHC.collectHsBindsBinders CollNoDictBinders x
  
  
-diff --git a/ghcide/src/Development/IDE/GHC/Compat/Driver.hs b/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
-index c88d0963d6..f71a25fe15 100644
---- a/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
-+++ b/ghcide/src/Development/IDE/GHC/Compat/Driver.hs
+--- a/src/Development/IDE/GHC/Compat/Driver.hs
++++ b/src/Development/IDE/GHC/Compat/Driver.hs
 @@ -12,6 +12,12 @@ module Development.IDE.GHC.Compat.Driver
      ( hscTypecheckRenameWithDiagnostics
      ) where
@@ -757,7 +748,6 @@ index c88d0963d6..f71a25fe15 100644
  #endif
 +
 +#endif
-diff --color -ur a/src/Development/IDE/GHC/Compat/Iface.hs b/src/Development/IDE/GHC/Compat/Iface.hs
 --- a/src/Development/IDE/GHC/Compat/Iface.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Compat/Iface.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -21,7 +21,11 @@
@@ -772,7 +762,6 @@ diff --color -ur a/src/Development/IDE/GHC/Compat/Iface.hs b/src/Development/IDE
  
  cannotFindModule :: HscEnv -> ModuleName -> FindResult -> SDoc
  cannotFindModule env modname fr =
-diff --color -ur a/src/Development/IDE/GHC/Compat/Parser.hs b/src/Development/IDE/GHC/Compat/Parser.hs
 --- a/src/Development/IDE/GHC/Compat/Parser.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Compat/Parser.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -16,7 +16,6 @@
@@ -783,7 +772,6 @@ diff --color -ur a/src/Development/IDE/GHC/Compat/Parser.hs b/src/Development/ID
      pattern EpaLineComment,
      pattern EpaBlockComment
      ) where
-diff --color -ur a/src/Development/IDE/GHC/Compat.hs b/src/Development/IDE/GHC/Compat.hs
 --- a/src/Development/IDE/GHC/Compat.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Compat.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -326,9 +326,10 @@
@@ -806,7 +794,6 @@ diff --color -ur a/src/Development/IDE/GHC/Compat.hs b/src/Development/IDE/GHC/C
        }
  
  addIncludePathsQuote :: FilePath -> DynFlags -> DynFlags
-diff --color -ur a/src/Development/IDE/GHC/CoreFile.hs b/src/Development/IDE/GHC/CoreFile.hs
 --- a/src/Development/IDE/GHC/CoreFile.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/CoreFile.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -26,6 +26,9 @@
@@ -856,7 +843,6 @@ diff --color -ur a/src/Development/IDE/GHC/CoreFile.hs b/src/Development/IDE/GHC
  
  toIfaceTopBndr1 :: Module -> Id -> IfaceId
  toIfaceTopBndr1 mod identifier
-diff --color -ur a/src/Development/IDE/GHC/Orphans.hs b/src/Development/IDE/GHC/Orphans.hs
 --- a/src/Development/IDE/GHC/Orphans.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/GHC/Orphans.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -48,6 +48,17 @@
@@ -902,7 +888,6 @@ diff --color -ur a/src/Development/IDE/GHC/Orphans.hs b/src/Development/IDE/GHC/
  #endif
  
  instance Show PackageFlag where show = unpack . printOutputable
-diff --color -ur a/src/Development/IDE/Import/DependencyInformation.hs b/src/Development/IDE/Import/DependencyInformation.hs
 --- a/src/Development/IDE/Import/DependencyInformation.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Import/DependencyInformation.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -20,6 +20,7 @@
@@ -913,7 +898,6 @@ diff --color -ur a/src/Development/IDE/Import/DependencyInformation.hs b/src/Dev
    , reachableModules
    , processDependencyInformation
    , transitiveDeps
-diff --color -ur a/src/Development/IDE/Import/FindImports.hs b/src/Development/IDE/Import/FindImports.hs
 --- a/src/Development/IDE/Import/FindImports.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Import/FindImports.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -29,6 +29,10 @@
@@ -951,7 +935,6 @@ diff --color -ur a/src/Development/IDE/Import/FindImports.hs b/src/Development/I
      ue = hsc_unit_env env
      units = homeUnitEnv_units $ ue_findHomeUnitEnv (homeUnitId_ dflags) ue
      hpt_deps :: [UnitId]
-diff --color -ur a/src/Development/IDE/Plugin/TypeLenses.hs b/src/Development/IDE/Plugin/TypeLenses.hs
 --- a/src/Development/IDE/Plugin/TypeLenses.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Plugin/TypeLenses.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -1,6 +1,7 @@
@@ -974,7 +957,6 @@ diff --color -ur a/src/Development/IDE/Plugin/TypeLenses.hs b/src/Development/ID
            pure $ GlobalBindingTypeSig name (printName name <> " :: " <> showDoc (pprSigmaType ty)) (name `elemNameSet` exports)
        patToSig p = do
          let name = patSynName p
-diff --color -ur a/src/Development/IDE/Spans/AtPoint.hs b/src/Development/IDE/Spans/AtPoint.hs
 --- a/src/Development/IDE/Spans/AtPoint.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Spans/AtPoint.hs	2025-02-03 13:57:15.860467968 +0100
 @@ -99,10 +99,10 @@
@@ -1026,7 +1008,6 @@ diff --color -ur a/src/Development/IDE/Spans/AtPoint.hs b/src/Development/IDE/Sp
    let ns = concat $ pointCommand ast pos (M.keys . getNodeIds)
        evTrees = mapMaybe (eitherToMaybe >=> getEvidenceTree _rm) ns
        evNs = concatMap (map (evidenceVar) . T.flatten) evTrees
-diff --color -ur a/src/Development/IDE/Types/HscEnvEq.hs b/src/Development/IDE/Types/HscEnvEq.hs
 --- a/src/Development/IDE/Types/HscEnvEq.hs	2024-12-04 13:24:36.000000000 +0100
 +++ b/src/Development/IDE/Types/HscEnvEq.hs	2025-02-03 13:57:15.856468010 +0100
 @@ -1,3 +1,4 @@
