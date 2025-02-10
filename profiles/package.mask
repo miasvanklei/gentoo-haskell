@@ -1,3 +1,18 @@
+# Jack Todaro <solpeth@posteo.org> (2025-02-09)
+# Unmaintained upstream, does not build on newer ghc.
+# Removal on 2025-03-11.
+app-text/pdfsplit
+
+# Jack Todaro <solpeth@posteo.org> (2025-02-09)
+# Unmaintained, does not build on newer ghc.
+# Removal on 2025-03-11.
+dev-haskell/pdfinfo
+
+# Jack Todaro <solpeth@posteo.org> (2025-02-09)
+# Unmaintained since 2016. Does not build with newer ghc.
+# Removal on 2025-03-11.
+dev-haskell/data-lens-template
+
 # Jack Todaro <solpeth@posteo.org> (2025-02-08)
 # No upstream development. Does not work on newer GHC. Mask for
 # removal.
@@ -242,20 +257,6 @@ dev-haskell/doctest-parallel
 # Jack Todaro <solpeth@posteo.org> (2020-07-20)
 # Depends on pipes-text, which is masked.
 dev-haskell/zxcvbn-hs
-
-# hololeap <hololeap@protonmail.com> (2022-03-03)
-# >=random-fu-0.3.0.0 is needed to compile on >=base-4.15, but the latest
-# version of lambdabot-core needs <random-fu-0.3
-# Mask lambdabot and related packages until they are updated
-dev-haskell/goa
-dev-haskell/lambdabot-core
-dev-haskell/lambdabot-haskell-plugins
-dev-haskell/lambdabot-irc-plugins
-dev-haskell/lambdabot-misc-plugins
-dev-haskell/lambdabot-novelty-plugins
-dev-haskell/lambdabot-reference-plugins
-dev-haskell/lambdabot-social-plugins
-net-irc/lambdabot
 
 # hololeap <hololeap@protonmail.com> (2022-02-26)
 # Needs patching in order to compile in current ecosystem.
