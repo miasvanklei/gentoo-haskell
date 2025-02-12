@@ -1,3 +1,20 @@
+# Jack Todaro <solpeth@posteo.org> (2025-02-11)
+# Depends on or is dev-haskell/hsp, unmaintained since 2013
+# and unbuildable with newer ghc.
+# Removal on 2025-03-13.
+dev-haskell/hsp
+dev-haskell/happstack-authenticate
+dev-haskell/happstack-hsp
+dev-haskell/hjscript
+dev-haskell/hsx-jmacro
+dev-haskell/reform-hsp
+dev-haskell/web-routes-hsp
+
+# Jack Todaro <solpeth@posteo.org> (2025-02-11)
+# No reverse dependencies, doesn't build with newer ghc.
+# Removal on 2025-03-13.
+dev-haskell/monadcryptorandom
+
 # Jack Todaro <solpeth@posteo.org> (2025-02-09)
 # Unmaintained upstream, does not build on newer ghc.
 # Removal on 2025-03-11.
@@ -156,6 +173,7 @@ dev-haskell/country-codes
 >=dev-haskell/cabal-install-3.10.2
 >=dev-haskell/cabal-tree-diff-3.10.2
 >=dev-haskell/parsec-3.1.17
+>=dev-haskell/sbv-11.0
 >=dev-haskell/stm-2.5.2
 >=dev-haskell/text-2.1
 >=dev-haskell/singletons-th-3.3
@@ -199,6 +217,7 @@ dev-haskell/country-codes
 >=dev-haskell/singletons-th-3.2
 >=dev-haskell/singletons-base-3.2
 >=dev-haskell/ghc-syntax-highlighter-0.0.12
+>=dev-haskell/filepath-bytestring-1.5
 
 # hololeap <hololeap@protonmail.com> (2023-10-15)
 # This package currently depends on an outdated version of
