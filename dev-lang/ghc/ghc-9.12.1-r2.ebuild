@@ -36,10 +36,15 @@ SRC_URI="
 			elibc_musl? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-alpine3_18-linux.tar.xz )
 		)
 	)
-	test? (
-		https://gitlab.haskell.org/ghc/ghc/-/archive/${GHC_BRANCH_COMMIT}.tar.gz
-			-> ${PN}-${GHC_BRANCH_COMMIT}.tar.gz
-	)
+"
+
+# The patch from MR #13821 will fail if tests are not present, so we have to
+# download them unconditionally
+SRC_URI+="
+	https://gitlab.haskell.org/ghc/ghc/-/archive/${GHC_BRANCH_COMMIT}.tar.gz
+		-> ${PN}-${GHC_BRANCH_COMMIT}.tar.gz
+	https://gitlab.haskell.org/ghc/ghc/-/merge_requests/13821.patch
+		-> ${PN}-9.12.1-revert-division-optimization.patch
 "
 
 GHC_BUGGY_TESTS=(
@@ -648,22 +653,21 @@ src_prepare() {
 	sed -i -e 's/\(fptools_cv_alex_version=`"$AlexCmd" \)-v/\1--version/' \
 		"${S}/m4/fptools_alex.m4" || die
 
-	# Release tarball does not contain needed test data
-	if use test; then
-		cp -a "${WORKDIR}/${PN}-${GHC_BRANCH_COMMIT}/testsuite" "${S}" || die
+	# The patch from MR #13821 will fail if tests are not present, so we have to
+	# unpack them unconditionally
+	cp -a "${WORKDIR}/${PN}-${GHC_BRANCH_COMMIT}/testsuite" "${S}" || die
 
-		[[ ${#GHC_BUGGY_TESTS[@]} -gt 0 ]] && einfo "Tests have been marked as buggy and will be deleted:"
+	[[ ${#GHC_BUGGY_TESTS[@]} -gt 0 ]] && einfo "Tests have been marked as buggy and will be deleted:"
 
-		local t
+	local t
 
-		for t in "${GHC_BUGGY_TESTS[@]}"; do
-			einfo "     * ${t}"
-		done
+	for t in "${GHC_BUGGY_TESTS[@]}"; do
+		einfo "     * ${t}"
+	done
 
-		for t in "${GHC_BUGGY_TESTS[@]}"; do
-			rm -r "${S}/${t}" || die
-		done
-	fi
+	for t in "${GHC_BUGGY_TESTS[@]}"; do
+		rm -r "${S}/${t}" || die
+	done
 
 	cd "${S}" # otherwise eapply will break
 
@@ -683,13 +687,8 @@ src_prepare() {
 	# Fix QA Notice: Found the following implicit function declarations in configure logs
 	eapply "${FILESDIR}/${PN}-9.10.1-fix-configure-implicit-function.patch"
 
-	# build ghc and libraries only the dynamic way
-	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
-	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
-	eapply "${FILESDIR}"/hadrian-9.12.1-build-dynamic-only.patch
-
-	# don't check versions + bump versions
-	eapply "${FILESDIR}"/hadrian-9.8.4-dont-check-builtin-versions.patch
+	# Support building on riscv/musl
+	eapply "${FILESDIR}/${PN}-9.10.1-llvm-targets-riscv64-unknown-linux-musl.patch"
 
 	pushd "${S}/hadrian" || die
 		# Fix QA Notice: Unrecognized configure options: --with-cc
@@ -707,6 +706,30 @@ src_prepare() {
 	if use test; then
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
+	fi
+
+	eapply "${DISTDIR}/${PN}-9.12.1-revert-division-optimization.patch"
+
+	bump_libs
+
+	# Loosen base depends
+	for f in "${S}/libraries/array/array.cabal" \
+			 "${S}/libraries/deepseq/deepseq.cabal" \
+			 "${S}/libraries/directory/directory.cabal" \
+			 "${S}/libraries/process/process.cabal"
+	do
+		sed -i ${f} -e 's@\(base.*\)4.21@\15@g' || die
+	done
+
+	if ! use ghcbootstrap; then
+		# Loosen base depends
+		for f in "${WORKDIR}/cryptohash-sha256.cabal" \
+					 "${WORKDIR}/hashable.cabal" \
+					 "${WORKDIR}/process.cabal" \
+					 "${WORKDIR}/splitmix.cabal"
+		do
+			sed -i ${f} -e 's@\(base.*\)4.21@\15@g' || die
+		done
 	fi
 
 	eapply_user
