@@ -13,7 +13,7 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 	fi
 fi
 
-PYTHON_COMPAT=( python3_{9..13} )
+PYTHON_COMPAT=( python3_{9..12} )
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
 inherit toolchain-funcs prefix check-reqs llvm unpacker haskell-cabal verify-sig
@@ -30,6 +30,7 @@ SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
 	verify-sig? ( https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz.sig )
 	!ghcbootstrap? (
+		https://downloads.haskell.org/~ghc/${PV}/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 		arm64? (
 			elibc_glibc? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-deb11-linux.tar.xz )
@@ -113,38 +114,11 @@ GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 
 S="${WORKDIR}"/${GHC_P}
 
-BUMP_DEP_LIBRARIES=(
-)
-
 BUMP_LIBRARIES=(
-	"Cabal" "3.14.1.1"
-)
+	# "hackage-name          hackage-version"
 
-BOOTSTRAP_LIBRARIES=(
-	"alex" "3.5.1.0" "0"
-	"base16-bytestring" "1.0.2.0" "1"
-	"clock" "0.8.4" "0"
-	"cryptohash-sha256" "0.11.102.1" "6"
-	"directory" "1.3.9.0" "1"
-	"extra" "1.8" "0"
-	"file-io" "0.1.4" "0"
-	"filepattern" "0.1.3" "0"
-	"hashable" "1.5.0.0" "1"
-	"heaps" "0.4" "0"
-	"js-dgtable" "0.5.2" "0"
-	"js-flot" "0.8.3" "0"
-	"js-jquery" "3.3.1" "0"
-	"process" "1.6.25.0" "1"
-	"primitive" "0.9.0.0" "2"
-	"splitmix" "0.1.1" "0"
-	"random" "1.2.1.2" "0"
-	"unix" "2.8.6.0" "1"
-	"unordered-containers" "0.2.20" "4"
-	"utf8-string" "1.0.2" "0"
-	"shake" "0.19.8" "0"
-	"Cabal" "3.14.1.1" "0"
-	"Cabal-syntax" "3.14.1.0" "0"
-	"QuickCheck" "2.14.3" "0"
+	# Fix for <https://github.com/haskell/cabal/issues/10670>
+	"Cabal                 3.14.1.1"
 )
 
 LICENSE="BSD"
@@ -185,6 +159,11 @@ BDEPEND="
 		dev-python/sphinx
 		>=dev-libs/libxslt-1.1.2
 	)
+	ghcbootstrap? (
+		ghcmakebinary? ( dev-haskell/hadrian[static] )
+		dev-haskell/alex
+		~dev-haskell/hadrian-${PV}
+	)
 	test? (
 		${PYTHON_DEPS}
 		${LLVM_DEPS}
@@ -207,39 +186,6 @@ REQUIRED_USE="
 
 # haskell libraries built with cabal in configure mode, #515354
 QA_CONFIGURE_OPTIONS+=" --with-compiler --with-gcc"
-
-add_bump_libraries_SRC_URI() {
-	local pn pv
-	while :; do
-		pn=$1 pv=$2
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${pv} ]] || die "'${pn}' has no version"
-
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-
-		shift 2
-	done
-}
-
-add_bootstrap_libraries_SRC_URI() {
-	local pn pv rv
-	while :; do
-		pn=$1 pv=$2 rv=$3
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${pv} ]] || die "'${pn}' has no version"
-		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
-
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
-		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/revision/${rv}.cabal -> ${pn}-${pv}-${rv}.cabal"
-
-		shift 3
-	done
-}
-
-add_bump_libraries_SRC_URI "${BUMP_LIBRARIES[@]}"
-add_bootstrap_libraries_SRC_URI "${BOOTSTRAP_LIBRARIES[@]}"
 
 is_crosscompile() {
 	[[ ${CHOST} != ${CTARGET} ]]
@@ -309,12 +255,23 @@ bump_lib() {
 	mv "${WORKDIR}"/"${p}" "${dir}"/"${pn}" || die
 }
 
-bump_libs() {
-	local pn pv dir
-	while :; do
+update_SRC_URI() {
+	local p pn pv
+	for p in "${BUMP_LIBRARIES[@]}"; do
+		set -- $p
 		pn=$1 pv=$2
 
-		[[ -n ${pn} ]] || break
+		SRC_URI+=" https://hackage.haskell.org/package/${pn}-${pv}/${pn}-${pv}.tar.gz"
+	done
+}
+
+update_SRC_URI
+
+bump_libs() {
+	local p pn pv dir
+	for p in "${BUMP_LIBRARIES[@]}"; do
+		set -- $p
+		pn=$1 pv=$2
 
 		if [[ "$pn" == "Cabal-syntax" ]] || [[ "$pn" == "Cabal" ]]; then
 			dir="libraries/Cabal"
@@ -323,52 +280,7 @@ bump_libs() {
 		fi
 
 		bump_lib "${dir}" "${pn}" "${pv}"
-
-		shift 2
 	done
-}
-
-bump_deps_libraries() {
-	while :; do
-		pn=$1 from=$2 to=$3
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${from} ]] || die "'${pn}' has no 'from' part"
-		[[ -n ${to} ]] || die "'${from}' has no 'to' part"
-
-		export CABAL_FILE="${bootstrap_src}/${pn}.cabal"
-		export mycabal_chdeps=(
-			"${from}" "${to}"
-		)
-
-		cabal_chdeps "${mycabal_chdeps[@]}"
-
-		shift 3
-	done
-}
-
-hadrian_setup_sources() {
-	local bootstrap_src="${WORKDIR}/hadrian-bootstrap-sources"
-	mkdir -p "${bootstrap_src}"
-
-	while :; do
-		pn=$1 pv=$2 rv=$3
-
-		[[ -n ${pn} ]] || break
-		[[ -n ${pv} ]] || die "'${pn}' has no version"
-		[[ -n ${rv} ]] || die "'${pn}' has no cabal revision"
-
-		cp "${DISTDIR}/${pn}-${pv}.tar.gz" "${bootstrap_src}"
-		cp "${DISTDIR}/${pn}-${pv}-${rv}.cabal" "${bootstrap_src}/${pn}.cabal"
-
-		shift 3
-	done
-
-	bump_deps_libraries "${BUMP_DEP_LIBRARIES[@]}"
-
-	cp "${FILESDIR}/plan-bootstrap-${PV}.json" "${bootstrap_src}/plan-bootstrap.json"
-
-	tar czf "${bootstrap_src}.tar.gz" -C "${bootstrap_src}" .
 }
 
 ghc_setup_toolchain() {
@@ -542,7 +454,11 @@ ghc-check-bootstrap-mismatch () {
 # TODO: Break out into hadrian.eclass
 # Uses $_hadrian_args, if set
 run_hadrian() {
-	local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
+	if use ghcbootstrap; then
+		local cmd=("${BROOT}/usr/bin/hadrian")
+	else
+		local cmd=("${S}/hadrian/bootstrap/_build/bin/hadrian")
+	fi
 
 	cmd+=( "${_hadrian_args[@]}" "$@" )
 
@@ -604,10 +520,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	bump_libs "${BUMP_LIBRARIES[@]}"
-
-	hadrian_setup_sources "${BOOTSTRAP_LIBRARIES[@]}"
-
 	# Force the use of C.utf8 locale
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1287>
 	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1289>
@@ -733,7 +645,6 @@ src_prepare() {
 	fi
 
 	eapply_user
-
 	# as we have changed the build system
 	eautoreconf
 }
@@ -809,10 +720,9 @@ src_configure() {
 	echo "*.*.ghc.hs.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
 	echo "*.*.ghc.c.opts += ${GHC_FLAGS}" >> _build/hadrian.settings
 
-	# Don't let it pre-strip the stage 1 bootstrapping libraries/executables
-	# (which will be installed to the system)
+	# Don't let it pre-strip the stage 1 bootstrapping libraries (which will be
+	# installed to the system)
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
-	echo "stage1.*.cabal.configure.opts += --disable-executable-stripping" >> _build/hadrian.settings
 
 	### Gather configuration variables for GHC
 
@@ -885,21 +795,16 @@ src_configure() {
 				--libdir="/$(get_libdir)" || die
 			emake DESTDIR="${WORKDIR}/ghc-bin" install
 		)
+
+		einfo "Bootstrapping hadrian"
+		( cd "${S}/hadrian/bootstrap" || die
+			./bootstrap.py \
+				-w "${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc" \
+				-s "${DISTDIR}/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz" || die "Hadrian bootstrap failed"
+		)
 	fi
 
-
-	local bootstrapargs=( "./bootstrap.py" )
-
-	if ! use ghcbootstrap; then
-		bootstrapargs+=( "-w \"${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin/ghc\"" )
-	fi
-
-	einfo "Bootstrapping hadrian"
-	( cd "${S}/hadrian/bootstrap" || die
-		${bootstrapargs} \
-			-s "${WORKDIR}/hadrian-bootstrap-sources.tar.gz" || die "Hadrian bootstrap failed"
-	)
-
+#		--enable-bootstrap-with-devel-snapshot \
 	econf ${econf_args[@]} \
 		$(use_enable elfutils dwarf-unwind) \
 		$(use_enable numa) \
@@ -912,6 +817,7 @@ src_configure() {
 }
 
 src_compile() {
+
 	run_hadrian binary-dist-dir
 
 	# FIXME: This is failing, but the docs mention it:
@@ -1002,9 +908,6 @@ src_install() {
 		dostrip -x "/usr/$(get_libdir)/$(cross)${GHC_P}"
 		dostrip    "/usr/$(get_libdir)/$(cross)${GHC_P}/bin"
 	fi
-
-        echo "LDPATH=\"/usr/lib/ghc-${PV}/lib/${CTARGET#-}-linux-ghc-${PV}\"" > "${T}"/50ghc || die
-        doenvd "${T}"/50ghc
 }
 
 pkg_preinst() {
