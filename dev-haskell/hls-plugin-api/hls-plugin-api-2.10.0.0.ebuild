@@ -57,10 +57,6 @@ DEPEND="${RDEPEND}
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}"/structured-diagnostics.patch
-)
-
 S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
 CABAL_FILE="${S}/${CABAL_PN}.cabal"
 
