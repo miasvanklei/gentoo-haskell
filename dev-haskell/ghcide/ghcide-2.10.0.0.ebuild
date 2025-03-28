@@ -22,11 +22,6 @@ IUSE="executable test-exe"
 # Should be fixed in Cabal-3.10 (https://github.com/haskell/cabal/issues/1919)
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
-PATCHES=(
-	"${FILESDIR}/structured-diagnostics.patch"
-	"${FILESDIR}/${P}-ghc-9_12_1.patch"
-)
-
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/async:=[profile?]
