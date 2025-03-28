@@ -1,15 +1,102 @@
---- a/haskell-language-server.cabal	2025-02-02 16:59:21.285875310 +0100
-+++ b/haskell-language-server.cabal	2025-02-02 16:59:06.806029170 +0100
-@@ -347,7 +347,7 @@
-     , deepseq
-     , extra
-     , ghc
--    , ghc-exactprint  >= 1.5 && < 1.10.0.0
-+    , ghc-exactprint  >= 1.5 && < 1.13.0.0
-     , ghcide          == 2.10.0.0
-     , hls-graph
-     , hls-plugin-api  == 2.10.0.0
-@@ -732,7 +732,7 @@
+diff --git a/haskell-language-server.cabal b/haskell-language-server.cabal
+index 95b3c07f..a1cfb25d 100644
+--- a/haskell-language-server.cabal
++++ b/haskell-language-server.cabal
+@@ -174,7 +174,7 @@ flag cabalgild
+   manual:      True
+ 
+ common cabalgild
+-  if flag(cabalgild) && impl(ghc < 9.11)
++  if flag(cabalgild) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-cabal-gild-plugin
+     cpp-options: -Dhls_cabalgild
+ 
+@@ -186,7 +186,7 @@ flag isolateCabalGildTests
+ 
+ library hls-cabal-gild-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(cabalgild) || impl(ghc > 9.11)
++  if !flag(cabalgild) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Ide.Plugin.CabalGild
+   hs-source-dirs:   plugins/hls-cabal-gild-plugin/src
+@@ -203,7 +203,7 @@ library hls-cabal-gild-plugin
+ -- The `hls-cabal-plugin` is needed for tests, as we need to install notification handlers
+ test-suite hls-cabal-gild-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(cabalgild) || !flag(cabal) || impl(ghc > 9.11)
++  if !flag(cabalgild) || !flag(cabal) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-cabal-gild-plugin/test
+@@ -580,13 +580,13 @@ flag rename
+   manual:      True
+ 
+ common rename
+-  if flag(rename) && impl(ghc < 9.11)
++  if flag(rename) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-rename-plugin
+     cpp-options: -Dhls_rename
+ 
+ library hls-rename-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(rename) || impl(ghc > 9.11)
++  if !flag(rename) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Ide.Plugin.Rename
+   hs-source-dirs:   plugins/hls-rename-plugin/src
+@@ -610,7 +610,7 @@ library hls-rename-plugin
+ 
+ test-suite hls-rename-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(rename) || impl(ghc > 9.11)
++  if !flag(rename) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-rename-plugin/test
+@@ -636,13 +636,13 @@ flag retrie
+   manual:      True
+ 
+ common retrie
+-  if flag(retrie) && impl(ghc < 9.10)
++  if flag(retrie) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-retrie-plugin
+     cpp-options: -Dhls_retrie
+ 
+ library hls-retrie-plugin
+   import:           defaults, pedantic, warnings
+-  if !(flag(retrie) && impl(ghc < 9.10))
++  if !(flag(retrie) && impl(ghc < 9.13))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Retrie
+   hs-source-dirs:   plugins/hls-retrie-plugin/src
+@@ -673,7 +673,7 @@ library hls-retrie-plugin
+ 
+ test-suite hls-retrie-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(retrie) && impl(ghc < 9.10))
++  if !(flag(retrie) && impl(ghc < 9.13))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-retrie-plugin/test
+@@ -703,14 +703,13 @@ flag hlint
+   manual:      True
+ 
+ common hlint
+-  if flag(hlint) && impl(ghc < 9.10)
++  if flag(hlint) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-hlint-plugin
+     cpp-options: -Dhls_hlint
+ 
+ library hls-hlint-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/ndmitchell/hlint/pull/1594
+-  if !(flag(hlint)) || impl(ghc > 9.10)
++  if !(flag(hlint) && impl(ghc < 9.13))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Hlint
+   hs-source-dirs:   plugins/hls-hlint-plugin/src
+@@ -722,7 +721,7 @@ library hls-hlint-plugin
      , filepath
      , ghcide                == 2.10.0.0
      , hashable
@@ -18,583 +105,344 @@
      , hls-plugin-api        == 2.10.0.0
      , lens
      , mtl
-@@ -1553,7 +1553,7 @@
+@@ -753,7 +752,7 @@ library hls-hlint-plugin
+ 
+ test-suite hls-hlint-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if (!flag(hlint)) || impl(ghc > 9.10)
++  if !(flag(hlint) && impl(ghc < 9.13))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-hlint-plugin/test
+@@ -782,13 +781,13 @@ flag stan
+   manual:      True
+ 
+ common stan
+-  if flag(stan) && impl(ghc < 9.11)
++  if flag(stan) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-stan-plugin
+     cpp-options: -Dhls_stan
+ 
+ library hls-stan-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(stan) || impl(ghc > 9.11)
++  if !flag(stan) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:    Ide.Plugin.Stan
+   hs-source-dirs:     plugins/hls-stan-plugin/src
+@@ -813,7 +812,7 @@ library hls-stan-plugin
+ 
+ test-suite hls-stan-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(stan) || impl(ghc > 9.11)
++  if !flag(stan) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-stan-plugin/test
+@@ -896,6 +895,7 @@ library hls-pragmas-plugin
+   build-depends:
+     , aeson
+     , extra
++    , aeson
+     , fuzzy
+     , ghcide                == 2.10.0.0
+     , hls-plugin-api        == 2.10.0.0
+@@ -932,13 +932,13 @@ flag splice
+   manual:      True
+ 
+ common splice
+-  if flag(splice) && impl(ghc < 9.10)
++  if flag(splice) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-splice-plugin
+     cpp-options: -Dhls_splice
+ 
+ library hls-splice-plugin
+   import:           defaults, pedantic, warnings
+-  if !(flag(splice) && impl(ghc < 9.10))
++  if !(flag(splice) && impl(ghc < 9.13))
+     buildable: False
+   exposed-modules:
+     Ide.Plugin.Splice
+@@ -966,7 +966,7 @@ library hls-splice-plugin
+ 
+ test-suite hls-splice-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(splice) && impl(ghc < 9.10))
++  if !(flag(splice) && impl(ghc < 9.13))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-splice-plugin/test
+@@ -1208,13 +1208,13 @@ flag gadt
+   manual:      True
+ 
+ common gadt
+-  if flag(gadt) && impl(ghc < 9.11)
++  if flag(gadt) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-gadt-plugin
+     cpp-options: -Dhls_gadt
+ 
+ library hls-gadt-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(gadt) || impl(ghc > 9.11)
++  if !flag(gadt) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Ide.Plugin.GADT
+   other-modules:    Ide.Plugin.GHC
+@@ -1238,7 +1238,7 @@ library hls-gadt-plugin
+ 
+ test-suite hls-gadt-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(gadt) || impl(ghc > 9.11)
++  if !flag(gadt) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-gadt-plugin/test
+@@ -1400,14 +1400,13 @@ flag floskell
+   manual:      True
+ 
+ common floskell
+-  if flag(floskell) && impl(ghc < 9.10)
++  if flag(floskell) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-floskell-plugin
+     cpp-options: -Dhls_floskell
+ 
+ library hls-floskell-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/ennocramer/floskell/pull/82
+-  if !(flag(floskell) && impl(ghc < 9.10))
++  if !(flag(floskell) && impl(ghc < 9.13))
+     buildable: False
+   exposed-modules:  Ide.Plugin.Floskell
+   hs-source-dirs:   plugins/hls-floskell-plugin/src
+@@ -1422,7 +1421,7 @@ library hls-floskell-plugin
+ 
+ test-suite hls-floskell-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(floskell) && impl(ghc < 9.10))
++  if !(flag(floskell) && impl(ghc < 9.13))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-floskell-plugin/test
+@@ -1442,13 +1441,13 @@ flag fourmolu
+   manual:      True
+ 
+ common fourmolu
+-  if flag(fourmolu) && impl(ghc < 9.11)
++  if flag(fourmolu) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-fourmolu-plugin
+     cpp-options: -Dhls_fourmolu
+ 
+ library hls-fourmolu-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(fourmolu) || impl(ghc > 9.11)
++  if !flag(fourmolu) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Ide.Plugin.Fourmolu
+   hs-source-dirs:   plugins/hls-fourmolu-plugin/src
+@@ -1468,7 +1467,7 @@ library hls-fourmolu-plugin
+ 
+ test-suite hls-fourmolu-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(fourmolu) || impl(ghc > 9.11)
++  if !flag(fourmolu) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-fourmolu-plugin/test
+@@ -1496,13 +1495,13 @@ flag ormolu
+   manual:      True
+ 
+ common ormolu
+-  if flag(ormolu) && impl(ghc < 9.11)
++  if flag(ormolu) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-ormolu-plugin
+     cpp-options: -Dhls_ormolu
+ 
+ library hls-ormolu-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(ormolu) || impl(ghc > 9.11)
++  if !flag(ormolu) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Ide.Plugin.Ormolu
+   hs-source-dirs:   plugins/hls-ormolu-plugin/src
+@@ -1515,14 +1514,14 @@ library hls-ormolu-plugin
      , lsp
      , mtl
      , process-extras  >= 0.7.1
 -    , ormolu          ^>=0.1.2 || ^>= 0.2 || ^>= 0.3 || ^>= 0.5 || ^>= 0.6 || ^>= 0.7
 +    , ormolu
      , text
-     , transformers 
+     , transformers
  
---- a/plugins/hls-call-hierarchy-plugin/src/Ide/Plugin/CallHierarchy/Internal.hs	2025-02-03 20:06:07.941710023 +0100
-+++ b/plugins/hls-call-hierarchy-plugin/src/Ide/Plugin/CallHierarchy/Internal.hs	2025-02-03 20:06:24.305542341 +0100
-@@ -47,7 +47,7 @@
- prepareCallHierarchyItem :: NormalizedFilePath -> Position -> Action [CallHierarchyItem]
- prepareCallHierarchyItem nfp pos = use GetHieAst nfp <&> \case
-     Nothing               -> mempty
--    Just (HAR _ hf _ _ _) -> prepareByAst hf pos nfp
-+    Just (HAR _ hf _ _ _ _) -> prepareByAst hf pos nfp
-
- prepareByAst :: HieASTs a -> Position -> NormalizedFilePath -> [CallHierarchyItem]
- prepareByAst hf pos nfp =
-@@ -269,7 +269,7 @@
-         getSymbolFromAst :: NormalizedFilePath -> Position -> Action (Maybe Symbol)
-         getSymbolFromAst nfp pos_ = use GetHieAst nfp <&> \case
-             Nothing -> Nothing
--            Just (HAR _ hf _ _ _) -> do
-+            Just (HAR _ hf _ _ _ _) -> do
-                 case listToMaybe $ pointCommand hf pos_ extract of
-                     Just infos -> mkSymbol . fst3 =<< listToMaybe infos
-                     Nothing    -> Nothing
---- a/plugins/hls-class-plugin/src/Ide/Plugin/Class/ExactPrint.hs	2025-02-02 21:43:03.963524132 +0100
-+++ b/plugins/hls-class-plugin/src/Ide/Plugin/Class/ExactPrint.hs	2025-02-02 21:51:14.178314659 +0100
-@@ -30,7 +30,7 @@
-                 pm_parsed_source pm
-
-         old = T.pack $ exactPrint ps
--        (ps', _, _) = runTransform (addMethodDecls ps mDecls range withSig)
-+        ps' = addMethodDecls ps mDecls range withSig
-         new = T.pack $ exactPrint ps'
-     pure (old, new)
-
-@@ -41,7 +41,7 @@
-     pure (name, sig')
-
+ 
+ test-suite hls-ormolu-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(ormolu) || impl(ghc > 9.11)
++  if !flag(ormolu) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-ormolu-plugin/test
+@@ -1551,14 +1550,13 @@ flag stylishHaskell
+   manual:      True
+ 
+ common stylishHaskell
+-  if flag(stylishHaskell) && impl(ghc < 9.10)
++  if flag(stylishHaskell) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-stylish-haskell-plugin
+     cpp-options: -Dhls_stylishHaskell
+ 
+ library hls-stylish-haskell-plugin
+   import:           defaults, pedantic, warnings
+-  -- https://github.com/haskell/stylish-haskell/issues/479
+-  if !(flag(stylishHaskell) && impl(ghc < 9.10))
++  if !(flag(stylishHaskell) && impl(ghc < 9.13))
+     buildable: False
+   exposed-modules:  Ide.Plugin.StylishHaskell
+   hs-source-dirs:   plugins/hls-stylish-haskell-plugin/src
+@@ -1576,7 +1574,7 @@ library hls-stylish-haskell-plugin
+ 
+ test-suite hls-stylish-haskell-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !(flag(stylishHaskell) && impl(ghc < 9.10))
++  if !(flag(stylishHaskell) && impl(ghc < 9.13))
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-stylish-haskell-plugin/test
+@@ -1596,13 +1594,13 @@ flag refactor
+   manual:      True
+ 
+ common refactor
+-  if flag(refactor) && impl(ghc < 9.11)
++  if flag(refactor) && impl(ghc < 9.13)
+     build-depends: haskell-language-server:hls-refactor-plugin
+     cpp-options: -Dhls_refactor
+ 
+ library hls-refactor-plugin
+   import:           defaults, pedantic, warnings
+-  if !flag(refactor) || impl(ghc > 9.11)
++  if !flag(refactor) || impl(ghc > 9.13)
+     buildable: False
+   exposed-modules:  Development.IDE.GHC.ExactPrint
+                     Development.IDE.GHC.Compat.ExactPrint
+@@ -1635,6 +1633,7 @@ library hls-refactor-plugin
+     , ghc
+     , bytestring
+     , ghc-boot
++    , hashable
+     , regex-tdfa
+     , ghcide                == 2.10.0.0
+     , hls-plugin-api        == 2.10.0.0
+@@ -1661,7 +1660,7 @@ library hls-refactor-plugin
+ 
+ test-suite hls-refactor-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  if !flag(refactor) || impl(ghc > 9.11)
++  if !flag(refactor) || impl(ghc > 9.13)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-refactor-plugin/test
+diff --git a/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs b/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
+index a85a4497..eeb13c74 100644
+--- a/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
++++ b/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
+@@ -13,8 +13,7 @@ import qualified Data.Text                               as T
+ import           Development.IDE
+ import           Development.IDE.GHC.Compat
+ import           Development.IDE.GHC.Compat.ExactPrint
+-import           GHC.Parser.Annotation                   (AddEpAnn (..),
+-                                                          DeltaPos (..),
++import           GHC.Parser.Annotation                   (DeltaPos (..),
+                                                           EpAnn (..),
+                                                           EpAnnComments (EpaComments))
+ import           Ide.PluginUtils                         (subRange)
+@@ -22,6 +21,12 @@ import           Language.Haskell.GHC.ExactPrint.Parsers (parseDecl)
+ 
+ -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
+ 
++#if MIN_VERSION_ghc(9,11,0)
++import           GHC.Parser.Annotation                   (EpToken (..))
++#else
++import           GHC.Parser.Annotation                   (AddEpAnn (..))
++#endif
++
  #if MIN_VERSION_ghc(9,5,0)
--addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> TransformT Identity (Located (HsModule GhcPs))
-+addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> Located (HsModule GhcPs)
+ import qualified Data.List.NonEmpty                      as NE
+ #endif
+@@ -97,7 +102,9 @@ h98ToGADTConDecl ::
+ h98ToGADTConDecl dataName tyVars ctxt = \case
+     ConDeclH98{..} ->
+         ConDeclGADT
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++            (AnnConDeclGADT [NoEpTok] [NoEpTok] NoEpUniTok)
++#elif MIN_VERSION_ghc(9,9,0)
+             (NoEpUniTok, con_ext)
  #else
- addMethodDecls :: ParsedSource -> [(LHsDecl GhcPs, LHsDecl GhcPs)] -> Range -> Bool -> TransformT Identity (Located HsModule)
- #endif
-@@ -50,8 +50,7 @@
-     | otherwise = go (map fst mDecls)
-     where
-     go inserting = do
--        allDecls <- hsDecls ps
--        case break (inRange range . getLoc) allDecls of
-+        case break (inRange range . getLoc) (hsDecls ps) of
-             (before, L l inst : after) ->
-                 let
-                     instSpan = realSrcSpan $ getLoc l
-@@ -93,11 +92,13 @@
-         case cid_ext of
- #if MIN_VERSION_ghc(9,9,0)
-             (warnings, anns, key)
--                | any (\(AddEpAnn kw _ )-> kw == AnnWhere) anns -> instd
-+                | acid_where anns /= noAnn -> instd
-                 | otherwise ->
-                     InstD xInstD (ClsInstD ext decl {
-                     cid_ext = ( warnings
--                              , AddEpAnn AnnWhere d1 : anns
-+                              , anns {
-+                                    acid_where = EpTok d1
-+                                }
-                               , key
-                               )
-                     }) 
---- a/plugins/hls-class-plugin/src/Ide/Plugin/Class/Types.hs	2025-02-02 22:13:08.420289732 +0100
-+++ b/plugins/hls-class-plugin/src/Ide/Plugin/Class/Types.hs	2025-02-02 22:13:35.284029987 +0100
-@@ -22,7 +22,6 @@
- import           Development.IDE.Core.PluginUtils (useMT)
- import qualified Development.IDE.Core.Shake       as Shake
- import           Development.IDE.GHC.Compat       hiding (newUnique, (<+>))
--import           Development.IDE.GHC.Compat.Util  (bagToList)
- import           Development.IDE.Graph.Classes
- import           GHC.Generics
- import           Ide.Plugin.Class.Utils
-@@ -176,7 +175,7 @@
-
-         getBindSpanWithoutSig :: ClsInstDecl GhcRn -> [BindInfo]
-         getBindSpanWithoutSig ClsInstDecl{..} =
--            let bindNames = mapMaybe go (bagToList cid_binds)
-+            let bindNames = mapMaybe go cid_binds
-                 go (L l bind) = case bind of
-                     FunBind{..}
-                         -- `Generated` tagged for Template Haskell,
-@@ -221,5 +220,5 @@
-             let name = idName id
-             whenMaybe (isBindingName name) $ do
-                 env <- tcInitTidyEnv
--                let (_, ty) = tidyOpenType env (idType id)
-+                let ty = tidyOpenType env (idType id)
-                 pure $ InstanceBindTypeSig name ty
---- a/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/CodeLens.hs	2024-12-04 13:24:36.000000000 +0100
-+++ b/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/CodeLens.hs	2025-02-02 16:59:06.746029808 +0100
-@@ -21,7 +21,7 @@
- import           Control.Arrow                                (second)
- import           Control.Exception                            (bracket_)
- import qualified Control.Exception                            as E
--import           Control.Lens                                 (ix, (%~), (^.))
-+import           Control.Lens                                 (ix, (%~), (^.), (&))
- import           Control.Monad                                (guard, void,
-                                                                when)
- import           Control.Monad.IO.Class                       (MonadIO (liftIO))
-@@ -73,7 +73,7 @@
-                                                                pprInstance,
-                                                                typeKind)
+             con_ext
+@@ -207,10 +214,17 @@ prettyGADTDecl df decl =
+                 Left err -> Left $ printWithoutUniques err
  
--
-+import           GHC.Unit.Module.ModIface                     (IfaceTopEnv(..))
- import           Development.IDE.Core.RuleTypes               (GetLinkable (GetLinkable),
-                                                                GetModSummary (GetModSummary),
-                                                                GetModuleGraph (GetModuleGraph),
-@@ -245,12 +245,9 @@
-         addRdrEnv hmi
-           | iface <- hm_iface hmi
-           , ms_mod ms == mi_module iface
--          = hmi { hm_iface = iface { mi_globals = Just $!
--#if MIN_VERSION_ghc(9,8,0)
--                    forceGlobalRdrEnv
--#endif
--                      rdr_env
--                }}
-+          = hmi { hm_iface = iface & set_mi_top_env (Just $!
-+                    IfaceTopEnv (forceGlobalRdrEnv rdr_env) []
-+                )}
-           | otherwise = hmi
- 
-     return (ms, linkable_hsc)
---- a/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/Rules.hs	2024-12-04 13:24:36.000000000 +0100
-+++ b/plugins/hls-eval-plugin/src/Ide/Plugin/Eval/Rules.hs	2025-02-02 16:59:06.746029808 +0100
-@@ -65,7 +65,7 @@
- apiAnnComments' :: ParsedModule -> [SrcLoc.RealLocated EpaCommentTok]
- apiAnnComments' pm = do
-   L span (EpaComment c _) <- getEpaComments $ pm_parsed_source pm
--  pure (L (anchor span) c)
-+  pure (L (epaLocationRealSrcSpan span) c)
-   where
- #if MIN_VERSION_ghc(9,5,0)
-     getEpaComments :: Development.IDE.GHC.Compat.Located (HsModule GhcPs) -> [LEpaComment]
---- a/plugins/hls-explicit-fixity-plugin/src/Ide/Plugin/ExplicitFixity.hs	2024-12-04 13:24:36.000000000 +0100
-+++ b/plugins/hls-explicit-fixity-plugin/src/Ide/Plugin/ExplicitFixity.hs	2025-02-02 16:59:06.750029766 +0100
-@@ -60,7 +60,7 @@
-             in  Just $ Hover (InL (mkPlainText contents')) Nothing
- 
-         fixityText :: (Name, Fixity) -> T.Text
--        fixityText (name, Fixity _ precedence direction) =
-+        fixityText (name, Fixity precedence direction) =
-             printOutputable direction <> " " <> printOutputable precedence <> " `" <> printOutputable name <> "`"
- 
- newtype FixityMap = FixityMap (M.Map Name Fixity)
---- a/plugins/hls-explicit-imports-plugin/src/Ide/Plugin/ExplicitImports.hs	2025-02-02 22:15:51.998690685 +0100
-+++ b/plugins/hls-explicit-imports-plugin/src/Ide/Plugin/ExplicitImports.hs	2025-02-02 22:21:52.735055736 +0100
-@@ -82,11 +82,14 @@
-     LogWAEResponseError rspErr -> "RequestWorkspaceApplyEdit Failed with " <+> pretty rspErr
-     LogResolve msg -> pretty msg
-
-+pRELUDE :: ModuleName
-+pRELUDE = ModuleName $ fromString "Prelude"
-+
- -- | The "main" function of a plugin
- descriptor :: Recorder (WithPriority Log) -> PluginId -> PluginDescriptor IdeState
- descriptor recorder =
-     -- (almost) no one wants to see an explicit import list for Prelude
--    descriptorForModules recorder (/= moduleName pRELUDE)
-+    descriptorForModules recorder (/= pRELUDE)
-
- descriptorForModules
-     :: Recorder (WithPriority Log)
-@@ -403,7 +406,7 @@
-         -- for every minimal imports
-         | (location, origImport, minImport@(ImportDecl{ideclName = L _ mn})) <- locationImportWithMinimal
-         -- (almost) no one wants to see an refine import list for Prelude
--        , mn /= moduleName pRELUDE
-+        , mn /= pRELUDE
-         -- we check for the inner imports
-         , Just innerImports <- [Map.lookup mn import2Map]
-         -- and only get those symbols used
---- a/plugins/hls-explicit-record-fields-plugin/src/Ide/Plugin/ExplicitFields.hs	2025-02-02 20:56:07.473621094 +0100
-+++ b/plugins/hls-explicit-record-fields-plugin/src/Ide/Plugin/ExplicitFields.hs	2025-02-02 20:56:51.425145716 +0100
-@@ -46,7 +46,7 @@
-                                                        TypeCheck (..))
- import qualified Development.IDE.Core.Shake           as Shake
- import           Development.IDE.GHC.Compat           (FieldOcc (FieldOcc),
--                                                       GhcPass, GhcTc,
-+                                                       GhcPass, GhcTc, RdrName(Exact),
-                                                        HasSrcSpan (getLoc),
-                                                        HsConDetails (RecCon),
-                                                        HsExpr (HsVar, XExpr),
-@@ -448,7 +448,7 @@
-   where
-     processRecCon (RecCon flds) = Just $ processRecordFlds flds
-     processRecCon _             = Nothing
--    getOccName (FieldOcc x _) = Just $ getName x
-+    getOccName (FieldOcc (Exact n) _) = Just $ getName n
-     getOccName _              = Nothing
-     getFieldName = getOccName . unLoc . hfbLHS . unLoc
- showRecordPatFlds _ = Nothing
---- a/plugins/hls-overloaded-record-dot-plugin/src/Ide/Plugin/OverloadedRecordDot.hs	2025-02-02 21:08:32.301649628 +0100
-+++ b/plugins/hls-overloaded-record-dot-plugin/src/Ide/Plugin/OverloadedRecordDot.hs	2025-02-02 21:22:18.208843713 +0100
-@@ -291,12 +291,12 @@
- #endif
- -- applied record selection: "selector record" or "selector (record)" or
- -- "selector selector2.record2"
--getRecSels e@(unLoc -> HsApp _ se@(unLoc -> HsRecSel _ _) re) =
-+getRecSels e@(unLoc -> HsApp _ se@(unLoc -> XExpr (HsRecSelRn _)) re) =
-     ( [ RecordSelectorExpr (realSrcSpanToRange realSpan') se re
-       | RealSrcSpan realSpan' _ <- [ getLoc e ] ], False )
- -- Record selection where the field is being applied with the "$" operator:
- -- "selector $ record"
--getRecSels e@(unLoc -> OpApp _ se@(unLoc -> HsRecSel _ _)
-+getRecSels e@(unLoc -> OpApp _ se@(unLoc -> XExpr (HsRecSelRn _))
-                         (unLoc -> HsVar _ (unLoc -> d)) re) | d == dollarName =
-     ( [ RecordSelectorExpr (realSrcSpanToRange realSpan')  se re
-       | RealSrcSpan realSpan' _ <- [ getLoc e ] ], False )
---- a/plugins/hls-rename-plugin/src/Ide/Plugin/Rename.hs
-+++ b/plugins/hls-rename-plugin/src/Ide/Plugin/Rename.hs
-@@ -207,9 +207,9 @@ refsAtName state nfp name = do
-     pure $ nameLocs name ast ++ dbRefs
-
- nameLocs :: Name -> HieAstResult -> [Location]
--nameLocs name (HAR _ _ rm _ _) =
-+nameLocs name (HAR {..}) =
-     concatMap (map (realSrcSpanToLocation . fst))
--              (M.lookup (Right name) rm)
-+              (M.lookup (Right name) refMap)
-
- ---------------------------------------------------------------------------------------------------
- -- Util
---- a/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2024-12-04 13:24:36.000000000 +0100
-+++ b/plugins/hls-semantic-tokens-plugin/src/Ide/Plugin/SemanticTokens/Tokenize.hs	2025-02-02 16:59:06.770029553 +0100
-@@ -20,7 +20,7 @@
- import qualified Data.Text.Utf16.Rope             as Utf16
- import           Data.Text.Utf16.Rope.Mixed       (Rope)
- import qualified Data.Text.Utf16.Rope.Mixed       as Rope
--import           Development.IDE.GHC.Compat
-+import           Development.IDE.GHC.Compat       hiding (foldMapM)
- import           Development.IDE.GHC.Error        (realSrcSpanToCodePointRange)
- import           Ide.Plugin.SemanticTokens.Types  (HsSemanticTokenType (TModule),
-                                                    RangeHsSemanticTokenTypes (..))
---- a/plugins/hls-refactor-plugin/src/Development/IDE/GHC/Dump.hs
-+++ b/plugins/hls-refactor-plugin/src/Development/IDE/GHC/Dump.hs
-@@ -8,6 +8,9 @@ import           Development.IDE.GHC.Compat.ExactPrint (ExactPrint, exactPrint)
- import           Development.IDE.GHC.Compat.Util
- import           Generics.SYB                          (ext1Q, ext2Q, extQ)
- import           GHC.Hs                                hiding (AnnLet)
+         adjustDataDecl DataDecl{..} = DataDecl
 +#if MIN_VERSION_ghc(9,11,0)
-+import           GHC.TypeLits                          (KnownSymbol)
-+#endif
- import           GHC.Hs.Dump
- import           GHC.Plugins                           hiding (AnnLet)
- import           Prelude                               hiding ((<>))
-@@ -41,31 +44,67 @@ showAstDataHtml a0 = html $
-     showAstDataHtml' =
-       generic
-               `ext1Q` list
-+#if MIN_VERSION_ghc(9,11,0)
-+              `extQ` list_epaLocation
-+              `extQ` list_epTokenOpenP
-+#endif
-+              `extQ` list_epTokenCloseP
-               `extQ` string `extQ` fastString `extQ` srcSpan `extQ` realSrcSpan
-+#if !MIN_VERSION_ghc(9,11,0)
-               `extQ` annotation
--              `extQ` annotationModule
-               `extQ` annotationAddEpAnn
--              `extQ` annotationGrhsAnn
-               `extQ` annotationEpAnnHsCase
-               `extQ` annotationEpAnnHsLet
-+#endif
-+              `extQ` annotationModule
-+              `extQ` annotationGrhsAnn
-               `extQ` annotationAnnList
-+#if MIN_VERSION_ghc(9,11,0)
-+              `extQ` annotationAnnListWhere
-+              `extQ` annotationAnnListCommas
-+              `extQ` annotationAnnListIE
-+#endif
-               `extQ` annotationEpAnnImportDecl
-+#if !MIN_VERSION_ghc(9,11,0)
-               `extQ` annotationAnnParen
-               `extQ` annotationTrailingAnn
-               `extQ` annotationEpaLocation
-               `extQ` addEpAnn
-+#endif
-+#if MIN_VERSION_ghc(9,11,0)
-+              `extQ` annotationNoEpAnns
-+              `extQ` annotationExprBracket
-+              `extQ` annotationTypedBracket
-+              `extQ` epTokenOC
-+              `extQ` epTokenCC
-+              `extQ` epTokenInstance
-+              `extQ` epTokenForall
-+              `extQ` annParen
-+              `extQ` annClassDecl
-+              `extQ` annSynDecl
-+              `extQ` annDataDefn
-+              `extQ` annFamilyDecl
-+              `extQ` annClsInstDecl
-+#endif
-               `extQ` lit `extQ` litr `extQ` litt
-               `extQ` sourceText
-               `extQ` deltaPos
-+#if MIN_VERSION_ghc(9,11,0)
-+              `extQ` epaLocation
-+              `extQ` maybe_epaLocation
++            { tcdDataDefn = tcdDataDefn
 +#else
-               `extQ` epaAnchor
+             { tcdDExt = adjustWhere tcdDExt
+             , tcdDataDefn = tcdDataDefn
++#endif
+                 { dd_cons =
+                       fmap adjustCon (dd_cons tcdDataDefn)
++#if MIN_VERSION_ghc(9,11,0)
++                , dd_ext = adjustWhere (dd_ext tcdDataDefn)
++#endif
+                 }
+             , ..
+             }
+@@ -218,7 +232,11 @@ prettyGADTDecl df decl =
+ 
+         -- Make every data constructor start with a new line and 2 spaces
+         adjustCon :: LConDecl GP -> LConDecl GP
+-#if MIN_VERSION_ghc(9,9,0)
++#if MIN_VERSION_ghc(9,11,0)
++        adjustCon (L (EpAnn (EpaSpan loc) _ _) r) =
++            let delta = EpaDelta loc (DifferentLine 1 3) []
++            in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
++#elif MIN_VERSION_ghc(9,9,0)
+         adjustCon (L _ r) =
+             let delta = EpaDelta (DifferentLine 1 3) []
+             in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
+@@ -228,6 +246,12 @@ prettyGADTDecl df decl =
+             in L (SrcSpanAnn (EpAnn (go (spanAsAnchor loc)) (AnnListItem []) (EpaComments [])) loc) r
+ #endif
+ 
++#if MIN_VERSION_ghc(9,11,0)
++        adjustWhere :: XCHsDataDefn GP -> XCHsDataDefn GP
++        adjustWhere AnnDataDefn{..}= AnnDataDefn{
++            andd_where = EpTok d1,
++            ..}
++#else
+         -- Adjust where annotation to the same line of the type constructor
+         adjustWhere tcdDExt = tcdDExt <&>
  #if !MIN_VERSION_ghc(9,9,0)
-               `extQ` anchorOp
+@@ -238,6 +262,7 @@ prettyGADTDecl df decl =
+                 then AddEpAnn AnnWhere d1
+                 else AddEpAnn ann l
+             )
 +#endif
- #endif
-               `extQ` bytestring
-               `extQ` name `extQ` occName `extQ` moduleName `extQ` var
-               `extQ` dataCon
-               `extQ` bagName `extQ` bagRdrName `extQ` bagVar `extQ` nameSet
-+#if !MIN_VERSION_ghc(9,11,0)
-               `extQ` fixity
-+#endif
-               `ext2Q` located
-               `extQ` srcSpanAnnA
-               `extQ` srcSpanAnnL
-@@ -88,6 +127,17 @@ showAstDataHtml a0 = html $
-             bytestring :: B.ByteString -> SDoc
-             bytestring = text . normalize_newlines . show
  
+         -- Remove the first extra line if exist
+         removeExtraEmptyLine s = case stripInfix "\n\n" s of
+@@ -257,6 +282,10 @@ noUsed = EpAnnNotUsed
+ #endif
+ 
+ pattern UserTyVar' :: LIdP pass -> HsTyVarBndr flag pass
 +#if MIN_VERSION_ghc(9,11,0)
-+            list_epaLocation :: [EpaLocation] -> SDoc
-+            list_epaLocation ls = list ls
-+
-+            list_epTokenOpenP :: [EpToken "("] -> SDoc
-+            list_epTokenOpenP ls = list ls
-+
-+            list_epTokenCloseP :: [EpToken ")"] -> SDoc
-+            list_epTokenCloseP ls = list ls
-+#endif
-+
-             list []  = brackets empty
-             list [x] = "[]" $$ showAstDataHtml' x
-             list xs  = nested "[]" (vcat $ map (li . showAstDataHtml') xs)
-@@ -127,15 +177,19 @@ showAstDataHtml a0 = html $
-             sourceText (SourceText src) = text "SourceText" <+> text src
- #endif
- 
--            epaAnchor :: EpaLocation -> SDoc
-+            epaLocation :: EpaLocation -> SDoc
- #if MIN_VERSION_ghc(9,9,0)
--            epaAnchor (EpaSpan s) = parens $ text "EpaSpan" <+> srcSpan s
-+            epaLocation (EpaSpan s) = parens $ text "EpaSpan" <+> srcSpan s
- #elif MIN_VERSION_ghc(9,5,0)
--            epaAnchor (EpaSpan r _)  = text "EpaSpan" <+> realSrcSpan r
-+            epaLocation (EpaSpan r _)  = text "EpaSpan" <+> realSrcSpan r
++pattern UserTyVar' s <- HsTvb _ _ (HsBndrVar _ s) _
 +#else
-+            epaLocation (EpaSpan r)  = text "EpaSpan" <+> realSrcSpan r
-+#endif
-+#if MIN_VERSION_ghc(9,11,0)
-+            epaLocation (EpaDelta s d cs) = text "EpaDelta" <+> srcSpan s <+> deltaPos d <+> showAstDataHtml' cs
- #else
--            epaAnchor (EpaSpan r)  = text "EpaSpan" <+> realSrcSpan r
-+            epaLocation (EpaDelta d cs) = text "EpaDelta" <+> deltaPos d <+> showAstDataHtml' cs
- #endif
--            epaAnchor (EpaDelta d cs) = text "EpaDelta" <+> deltaPos d <+> showAstDataHtml' cs
- 
- #if !MIN_VERSION_ghc(9,9,0)
-             anchorOp :: AnchorOperation -> SDoc
-@@ -143,6 +197,13 @@ showAstDataHtml a0 = html $
-             anchorOp (MovedAnchor dp) = "MovedAnchor " <> deltaPos dp
- #endif
- 
-+#if MIN_VERSION_ghc(9,11,0)
-+            maybe_epaLocation :: Maybe EpaLocation -> SDoc
-+            maybe_epaLocation ml = case ml of
-+              Nothing -> parens $ text "Nothing"
-+              Just l -> parens (text "Just" $$ showAstDataHtml' l)
-+#endif
-+
-             deltaPos :: DeltaPos -> SDoc
-             deltaPos (SameLine c) = text "SameLine" <+> ppr c
-             deltaPos (DifferentLine l c) = text "DifferentLine" <+> ppr l <+> ppr c
-@@ -169,8 +230,92 @@ showAstDataHtml a0 = html $
-                                    -- TODO: show annotations here
-                                    (text "")
- 
-+#if !MIN_VERSION_ghc(9,11,0)
-             addEpAnn :: AddEpAnn -> SDoc
-             addEpAnn (AddEpAnn a s) = text "AddEpAnn" <+> ppr a <+> epaAnchor s
-+#endif
-+
-+#if MIN_VERSION_ghc(9,11,0)
-+            annParen :: AnnParen -> SDoc
-+            annParen ap = parens rs
-+              where rs = case ap of
-+                           (AnnParens       o c) -> text "AnnParens"       $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
-+                           (AnnParensHash   o c) -> text "AnnParensHash"   $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
-+                           (AnnParensSquare o c) -> text "AnnParensSquare" $$ vcat [showAstDataHtml' o, showAstDataHtml' c]
-+
-+            annClassDecl :: AnnClassDecl -> SDoc
-+            annClassDecl (AnnClassDecl c ops cps v w oc cc s) =
-+              parens $ text "AnnClassDecl"
-+                        $$ vcat [showAstDataHtml' c, showAstDataHtml' ops, showAstDataHtml' cps,
-+                                 showAstDataHtml' v, showAstDataHtml' w, showAstDataHtml' oc,
-+                                 showAstDataHtml' cc, showAstDataHtml' s]
-+
-+            annSynDecl :: AnnSynDecl -> SDoc
-+            annSynDecl (AnnSynDecl ops cps t e) =
-+              parens $ text "AnnSynDecl"
-+                        $$ vcat [showAstDataHtml' ops, showAstDataHtml' cps,
-+                                 showAstDataHtml' t, showAstDataHtml' e]
-+
-+            annDataDefn :: AnnDataDefn -> SDoc
-+            annDataDefn (AnnDataDefn a b c d e f g h i j k) =
-+              parens $ text "AnnDataDefn"
-+                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
-+                                 showAstDataHtml' d, showAstDataHtml' e, showAstDataHtml' f,
-+                                 showAstDataHtml' g, showAstDataHtml' h, showAstDataHtml' i,
-+                                 showAstDataHtml' j, showAstDataHtml' k]
-+
-+            annFamilyDecl :: AnnFamilyDecl -> SDoc
-+            annFamilyDecl (AnnFamilyDecl a b c d e f g h i j k l) =
-+              parens $ text "AnnFamilyDecl"
-+                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
-+                                 showAstDataHtml' d, showAstDataHtml' e, showAstDataHtml' f,
-+                                 showAstDataHtml' g, showAstDataHtml' h, showAstDataHtml' i,
-+                                 showAstDataHtml' j, showAstDataHtml' k, showAstDataHtml' l]
-+
-+            annClsInstDecl :: AnnClsInstDecl -> SDoc
-+            annClsInstDecl (AnnClsInstDecl a b c d e) =
-+              parens $ text "AnnClsInstDecl"
-+                        $$ vcat [showAstDataHtml' a, showAstDataHtml' b, showAstDataHtml' c,
-+                                 showAstDataHtml' d, showAstDataHtml' e]
-+
-+
-+            annotationExprBracket :: BracketAnn (EpUniToken "[|" "⟦") (EpToken "[e|") -> SDoc
-+            annotationExprBracket = annotationBracket
-+
-+            annotationTypedBracket :: BracketAnn (EpToken "[||") (EpToken "[e||") -> SDoc
-+            annotationTypedBracket = annotationBracket
-+
-+            annotationBracket :: forall n h .(Data n, Data h, Typeable n, Typeable h)
-+              => BracketAnn n h -> SDoc
-+            annotationBracket a =
-+              parens $ case a of
-+                BracketNoE  t -> text "BracketNoE"  <+> showAstDataHtml' t
-+                BracketHasE t -> text "BracketHasE" <+> showAstDataHtml' t
-+
-+            epTokenOC :: EpToken "{" -> SDoc
-+            epTokenOC  = epToken'
-+
-+            epTokenCC :: EpToken "}" -> SDoc
-+            epTokenCC = epToken'
-+
-+            epTokenInstance :: EpToken "instance" -> SDoc
-+            epTokenInstance = epToken'
-+
-+            epTokenForall :: TokForall -> SDoc
-+            epTokenForall = epUniToken'
-+
-+            epToken' :: KnownSymbol sym => EpToken sym -> SDoc
-+            epToken' (EpTok s) =
-+              parens $ text "EpTok" <+> epaLocation s
-+            epToken' NoEpTok =
-+              parens $ text "NoEpTok"
-+
-+            epUniToken' :: EpUniToken sym1 sym2 -> SDoc
-+            epUniToken' (EpUniTok s f) =
-+              parens $ text "EpUniTok" <+> epaLocation s <+> ppr f
-+            epUniToken' NoEpUniTok =
-+              parens $ text "NoEpUniTok"
+ pattern UserTyVar' s <- UserTyVar _ _ s
 +#endif
  
-             var  :: Var -> SDoc
-             var v      = braces $ text "Var:" <+> ppr v
-@@ -197,10 +342,12 @@ showAstDataHtml a0 = html $
-                           text "NameSet:"
-                        $$ (list . nameSetElemsStable $ ns)
- 
-+#if !MIN_VERSION_ghc(9,11,0)
-             fixity :: Fixity -> SDoc
-             fixity fx =  braces $
-                          text "Fixity:"
-                      <+> ppr fx
-+#endif
- 
-             located :: (Data a, Data b) => GenLocated a b -> SDoc
-             located (L ss a)
-@@ -208,18 +355,13 @@ showAstDataHtml a0 = html $
- 
-             -- -------------------------
- 
-+#if !MIN_VERSION_ghc(9,11,0)
-             annotation :: EpAnn [AddEpAnn] -> SDoc
-             annotation = annotation' (text "EpAnn [AddEpAnn]")
- 
--            annotationModule :: EpAnn AnnsModule -> SDoc
--            annotationModule = annotation' (text "EpAnn AnnsModule")
--
-             annotationAddEpAnn :: EpAnn AddEpAnn -> SDoc
-             annotationAddEpAnn = annotation' (text "EpAnn AddEpAnn")
- 
--            annotationGrhsAnn :: EpAnn GrhsAnn -> SDoc
--            annotationGrhsAnn = annotation' (text "EpAnn GrhsAnn")
--
-             annotationEpAnnHsCase :: EpAnn EpAnnHsCase -> SDoc
-             annotationEpAnnHsCase = annotation' (text "EpAnn EpAnnHsCase")
- 
-@@ -230,21 +372,51 @@ showAstDataHtml a0 = html $
-             annotationEpAnnHsLet :: EpAnn AnnsLet -> SDoc
-             annotationEpAnnHsLet = annotation' (text "EpAnn AnnsLet")
- #endif
-+#endif
-+
-+            annotationModule :: EpAnn AnnsModule -> SDoc
-+            annotationModule = annotation' (text "EpAnn AnnsModule")
-+
-+            annotationGrhsAnn :: EpAnn GrhsAnn -> SDoc
-+            annotationGrhsAnn = annotation' (text "EpAnn GrhsAnn")
- 
-+#if MIN_VERSION_ghc(9,11,0)
-+            annotationAnnList :: EpAnn (AnnList ()) -> SDoc
-+            annotationAnnList = annotation' (text "EpAnn (AnnList ())")
-+#else
-             annotationAnnList :: EpAnn AnnList -> SDoc
-             annotationAnnList = annotation' (text "EpAnn AnnList")
-+#endif
- 
-             annotationEpAnnImportDecl :: EpAnn EpAnnImportDecl -> SDoc
-             annotationEpAnnImportDecl = annotation' (text "EpAnn EpAnnImportDecl")
- 
-+#if !MIN_VERSION_ghc(9,11,0)
-             annotationAnnParen :: EpAnn AnnParen -> SDoc
-             annotationAnnParen = annotation' (text "EpAnn AnnParen")
- 
-             annotationTrailingAnn :: EpAnn TrailingAnn -> SDoc
-             annotationTrailingAnn = annotation' (text "EpAnn TrailingAnn")
-+#endif
-+
-+#if MIN_VERSION_ghc(9,11,0)
-+            annotationAnnListWhere :: EpAnn (AnnList (EpToken "where")) -> SDoc
-+            annotationAnnListWhere = annotation' (text "EpAnn (AnnList (EpToken \"where\"))")
-+
-+            annotationAnnListCommas :: EpAnn (AnnList [EpToken ","]) -> SDoc
-+            annotationAnnListCommas = annotation' (text "EpAnn (AnnList [EpToken \",\"])")
- 
-+            annotationAnnListIE :: EpAnn (AnnList (EpToken "hiding", [EpToken ","])) -> SDoc
-+            annotationAnnListIE = annotation' (text "EpAnn (AnnList (EpToken \"hiding\", [EpToken \",\"]))")
-+
-+            annotationNoEpAnns :: EpAnn NoEpAnns -> SDoc
-+            annotationNoEpAnns = annotation' (text "EpAnn NoEpAnns")
-+#endif
-+
-+#if !MIN_VERSION_ghc(9,11,0)
-             annotationEpaLocation :: EpAnn EpaLocation -> SDoc
-             annotationEpaLocation = annotation' (text "EpAnn EpaLocation")
-+#endif
- 
-             annotation' :: forall a. Data a => SDoc -> EpAnn a -> SDoc
-             annotation' _tag anns = nested (text $ showConstr (toConstr anns))
-@@ -256,7 +428,11 @@ showAstDataHtml a0 = html $
-             srcSpanAnnA :: EpAnn AnnListItem -> SDoc
-             srcSpanAnnA = locatedAnn'' (text "SrcSpanAnnA")
- 
-+#if MIN_VERSION_ghc(9,11,0)
-+            srcSpanAnnL :: EpAnn (AnnList ()) -> SDoc
-+#else
-             srcSpanAnnL :: EpAnn AnnList -> SDoc
-+#endif
-             srcSpanAnnL = locatedAnn'' (text "SrcSpanAnnL")
- 
-             srcSpanAnnP :: EpAnn AnnPragma -> SDoc
+ implicitTyVars = wrapXRec @GP mkHsOuterImplicit
+diff --git a/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs b/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs
+index e3c9aae8..1f7ecb8e 100644
 --- a/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs
 +++ b/plugins/hls-refactor-plugin/src/Development/IDE/GHC/ExactPrint.hs
 @@ -1,6 +1,7 @@
@@ -623,20 +471,7 @@
  
  -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
  
-@@ -104,11 +109,10 @@ import           GHC                                     (Anchor (..),
- import           GHC.Parser.Annotation                   (AnnContext (..),
-                                                           EpaLocation (EpaDelta),
-                                                           deltaPos)
--import           GHC.Types.SrcLoc                        (generatedSrcSpan)
- #endif
- 
- #if MIN_VERSION_ghc(9,9,0)
--import           GHC                                     (Anchor,
-+import           GHC                                     (
-                                                           AnnContext (..),
-                                                           EpAnn (..),
-                                                           EpaLocation,
-@@ -122,6 +126,10 @@ import           GHC                                     (Anchor,
+@@ -125,6 +130,10 @@ import           GHC                                     (
                                                            spanAsAnchor)
  #endif
  
@@ -647,7 +482,7 @@
  setPrecedingLines ::
  #if !MIN_VERSION_ghc(9,9,0)
       Default t =>
-@@ -463,7 +471,10 @@ modifySmallestDeclWithM validSpan f a = do
+@@ -466,7 +475,10 @@ modifySmallestDeclWithM validSpan f a = do
              False -> first (DL.singleton ldecl <>) <$> modifyMatchingDecl rest
    modifyDeclsT' (fmap (first DL.toList) . modifyMatchingDecl) a
  
@@ -659,7 +494,7 @@
  generatedAnchor :: DeltaPos -> Anchor
  generatedAnchor dp = EpaDelta dp []
  #else
-@@ -471,7 +482,7 @@ generatedAnchor :: AnchorOperation -> Anchor
+@@ -474,7 +486,7 @@ generatedAnchor :: AnchorOperation -> Anchor
  generatedAnchor anchorOp = GHC.Anchor (GHC.realSrcSpan generatedSrcSpan) anchorOp
  #endif
  
@@ -668,7 +503,7 @@
  #if MIN_VERSION_ghc(9,9,0)
  setAnchor anc (EpAnn _ nameAnn comments) =
    EpAnn anc nameAnn comments
-@@ -560,10 +571,10 @@ modifySigWithM queryId f a = do
+@@ -563,10 +575,10 @@ modifySigWithM queryId f a = do
        modifyMatchingSigD (ldecl : rest) = (DL.singleton ldecl <>) <$> modifyMatchingSigD rest
    modifyDeclsT (fmap DL.toList . modifyMatchingSigD) $ makeDeltaAst a
  
@@ -681,23 +516,7 @@
  genAnchor1 = generatedAnchor m1
  
  #if MIN_VERSION_ghc(9,9,0)
-@@ -578,9 +589,15 @@ modifyDeclsT' :: (HasDecls t, HasTransform m)
-              => ([LHsDecl GhcPs] -> m ([LHsDecl GhcPs], r))
-              -> t -> m (t, r)
- modifyDeclsT' action t = do
-+#if MIN_VERSION_ghc(9,11,0)
-+  let decls = hsDecls t
-+  (decls', r) <- action decls
-+  let t' = replaceDecls t decls'
-+#else
-   decls <- liftT $ hsDecls t
-   (decls', r) <- action decls
-   t' <- liftT $ replaceDecls t decls'
-+#endif
-   pure (t', r)
- 
- -- | Modify each LMatch in a MatchGroup
-@@ -752,6 +769,17 @@ parenthesize = parenthesizeHsExpr appPrec
+@@ -763,6 +775,17 @@ parenthesize = parenthesizeHsExpr appPrec
  eqSrcSpan :: SrcSpan -> SrcSpan -> Bool
  eqSrcSpan l r = leftmost_smallest l r == EQ
  
@@ -715,7 +534,7 @@
  addParensToCtxt :: Maybe EpaLocation -> AnnContext -> AnnContext
  addParensToCtxt close_dp = addOpen . addClose
    where
-@@ -761,9 +789,18 @@ addParensToCtxt close_dp = addOpen . addClose
+@@ -772,9 +795,18 @@ addParensToCtxt close_dp = addOpen . addClose
          | Just c <- close_dp = it{ac_close = [c]}
          | AnnContext{ac_close = []} <- it = it{ac_close = [epl 0]}
          | otherwise = it
@@ -734,7 +553,7 @@
  
  epAnn :: SrcSpan -> ann -> EpAnn ann
  epAnn srcSpan anns = EpAnn (spanAsAnchor srcSpan) anns emptyComments
-@@ -791,6 +828,18 @@ removeComma (SrcSpanAnn (EpAnn anc (AnnListItem as) cs) l)
+@@ -802,6 +834,18 @@ removeComma (SrcSpanAnn (EpAnn anc (AnnListItem as) cs) l)
        isCommaAnn _             = False
  #endif
  
@@ -753,7 +572,7 @@
  addParens :: Bool -> GHC.NameAnn -> GHC.NameAnn
  addParens True it@NameAnn{} =
          it{nann_adornment = NameParens, nann_open = epl 0, nann_close = epl 0 }
-@@ -801,6 +850,7 @@ addParens True it@NameAnnOnly{} =
+@@ -812,6 +856,7 @@ addParens True it@NameAnnOnly{} =
  addParens True NameAnnTrailing{..} =
          NameAnn{nann_adornment = NameParens, nann_open = epl 0, nann_close = epl 0, nann_name = epl 0, ..}
  addParens _ it = it
@@ -761,9 +580,11 @@
  
  removeTrailingComma :: GenLocated SrcSpanAnnA ast -> GenLocated SrcSpanAnnA ast
  removeTrailingComma = flip modifyAnns $ \(AnnListItem l) -> AnnListItem $ filter (not . isCommaAnn) l
+diff --git a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs
+index 3252d6b3..8af4c259 100644
 --- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs
 +++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction.hs
-@@ -69,8 +69,7 @@
+@@ -69,8 +69,7 @@ import           Development.IDE.Types.Diagnostics
  import           Development.IDE.Types.Exports
  import           Development.IDE.Types.Location
  import           Development.IDE.Types.Options
@@ -773,7 +594,7 @@
                                                                      DeltaPos (..),
                                                                      EpAnn (..),
                                                                      LEpaComment)
-@@ -103,6 +104,12 @@ import           Text.Regex.TDFA                                   ((=~), (=~~))
+@@ -103,6 +102,12 @@ import           Text.Regex.TDFA                                   ((=~), (=~~))
  
  -- See Note [Guidelines For Using CPP In GHCIDE Import Statements]
  
@@ -786,7 +607,7 @@
  #if !MIN_VERSION_ghc(9,9,0)
  import           Development.IDE.GHC.Compat.ExactPrint             (makeDeltaAst)
  import           GHC                                               (Anchor (anchor_op),
-@@ -339,7 +346,11 @@ findSigOfBinds range = go
+@@ -339,7 +344,11 @@ findSigOfBinds range = go
          case unLoc <$> findDeclContainingLoc (_start range) lsigs of
            Just sig' -> Just sig'
            Nothing -> do
@@ -798,7 +619,7 @@
              findSigOfBind range (unLoc lHsBindLR)
      go _ = Nothing
  
-@@ -420,7 +431,11 @@ isUnusedImportedId
+@@ -420,7 +429,11 @@ isUnusedImportedId
    modName
    importSpan
      | occ <- mkVarOcc identifier,
@@ -810,7 +631,7 @@
        Just rdrEnv <-
          listToMaybe
            [ imv_all_exports
-@@ -658,12 +673,12 @@ suggestDeleteUnusedBinding
+@@ -658,12 +671,12 @@ suggestDeleteUnusedBinding
          indexedContent
          name
          (L _ Match{m_grhss=GRHSs{grhssLocalBinds}}) = do
@@ -827,7 +648,7 @@
            _                                     -> []
  
        findRelatedSpanForHsBind
-@@ -1699,15 +1714,23 @@ findPositionAfterModuleName ps _hsmodName' = do
+@@ -1699,15 +1712,23 @@ findPositionAfterModuleName ps _hsmodName' = do
      whereKeywordLineOffset = case hsmodAnn of
  #endif
          EpAnn _ annsModule _ -> do
@@ -852,7 +673,7 @@
      epaLocationToLine :: EpaLocation -> Maybe Int
  #if MIN_VERSION_ghc(9,9,0)
      epaLocationToLine (EpaSpan sp)
-@@ -1719,11 +1742,12 @@ findPositionAfterModuleName ps _hsmodName' = do
+@@ -1719,11 +1740,12 @@ findPositionAfterModuleName ps _hsmodName' = do
      epaLocationToLine (EpaSpan sp)
        = Just . srcLocLine . realSrcSpanEnd $ sp
  #endif
@@ -867,7 +688,7 @@
  
      sumCommentsOffset :: [LEpaComment] -> Int
  #if MIN_VERSION_ghc(9,9,0)
-@@ -1735,8 +1759,8 @@ findPositionAfterModuleName ps _hsmodName' = do
+@@ -1735,8 +1757,8 @@ findPositionAfterModuleName ps _hsmodName' = do
  #if MIN_VERSION_ghc(9,9,0)
      anchorOpLine :: EpaLocation' a -> Int
      anchorOpLine EpaSpan{}                           = 0
@@ -878,7 +699,7 @@
  #else
      anchorOpLine :: AnchorOperation -> Int
      anchorOpLine UnchangedAnchor                      = 0
-@@ -1744,6 +1768,14 @@ findPositionAfterModuleName ps _hsmodName' = do
+@@ -1744,6 +1766,14 @@ findPositionAfterModuleName ps _hsmodName' = do
      anchorOpLine (MovedAnchor (DifferentLine line _)) = line
  #endif
  
@@ -893,6 +714,8 @@
  findPositionFromImports :: HasSrcSpan a => t -> (t -> a) -> Maybe ((Int, Int), Int)
  findPositionFromImports hsField f = case getLoc (f hsField) of
    RealSrcSpan s _ ->
+diff --git a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs
+index 7326e2d7..5062a2eb 100644
 --- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs
 +++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/CodeAction/ExactPrint.hs
 @@ -1,5 +1,7 @@
@@ -1041,6 +864,8 @@
                  }
          return $ L ann' []
      Just pr -> pure pr
+diff --git a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs
+index a7407b67..6b9df0eb 100644
 --- a/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs
 +++ b/plugins/hls-refactor-plugin/src/Development/IDE/Plugin/Plugins/AddArgument.hs
 @@ -47,6 +47,7 @@ import           GHC.Types.SrcLoc                          (generatedSrcSpan)
@@ -1088,102 +913,4 @@
 +#endif
            )
  #elif MIN_VERSION_ghc(9,4,0)
-         wildCardAnn = SrcSpanAnn (EpAnn genAnchor1 (AnnListItem []) emptyComments) generatedSrcSpan 
---- a/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
-+++ b/plugins/hls-gadt-plugin/src/Ide/Plugin/GHC.hs
-@@ -13,7 +13,7 @@ import qualified Data.Text                               as T
- import           Development.IDE
- import           Development.IDE.GHC.Compat
- import           Development.IDE.GHC.Compat.ExactPrint
--import           GHC.Parser.Annotation                   (AddEpAnn (..),
-+import           GHC.Parser.Annotation                   (
-                                                           DeltaPos (..),
-                                                           EpAnn (..),
-                                                           EpAnnComments (EpaComments))
-@@ -30,6 +30,12 @@ import qualified Data.List.NonEmpty                      as NE
- import           GHC.Parser.Annotation                   (TokenLocation (..))
- #endif
- 
-+#if MIN_VERSION_ghc(9,11,0)
-+import           GHC.Parser.Annotation                   (EpToken (..))
-+#else
-+import           GHC.Parser.Annotation                   (AddEpAnn (..))
-+#endif
-+
- #if !MIN_VERSION_ghc(9,9,0)
- import           GHC.Parser.Annotation                   (Anchor (Anchor),
-                                                           AnchorOperation (MovedAnchor),
-@@ -97,7 +103,9 @@ h98ToGADTConDecl ::
- h98ToGADTConDecl dataName tyVars ctxt = \case
-     ConDeclH98{..} ->
-         ConDeclGADT
--#if MIN_VERSION_ghc(9,9,0)
-+#if MIN_VERSION_ghc(9,11,0)
-+            (AnnConDeclGADT [NoEpTok] [NoEpTok] NoEpUniTok)
-+#elif MIN_VERSION_ghc(9,9,0)
-             (NoEpUniTok, con_ext)
- #else
-             con_ext
-@@ -207,10 +215,17 @@ prettyGADTDecl df decl =
-                 Left err -> Left $ printWithoutUniques err
- 
-         adjustDataDecl DataDecl{..} = DataDecl
-+#if MIN_VERSION_ghc(9,11,0)
-+            { tcdDataDefn = tcdDataDefn
-+#else
-             { tcdDExt = adjustWhere tcdDExt
-             , tcdDataDefn = tcdDataDefn
-+#endif
-                 { dd_cons =
-                       fmap adjustCon (dd_cons tcdDataDefn)
-+#if MIN_VERSION_ghc(9,11,0)
-+                , dd_ext = adjustWhere (dd_ext tcdDataDefn)
-+#endif
-                 }
-             , ..
-             }
-@@ -218,7 +233,11 @@ prettyGADTDecl df decl =
- 
-         -- Make every data constructor start with a new line and 2 spaces
-         adjustCon :: LConDecl GP -> LConDecl GP
--#if MIN_VERSION_ghc(9,9,0)
-+#if MIN_VERSION_ghc(9,11,0)
-+        adjustCon (L (EpAnn (EpaSpan loc) _ _) r) =
-+            let delta = EpaDelta loc (DifferentLine 1 3) []
-+            in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
-+#elif MIN_VERSION_ghc(9,9,0)
-         adjustCon (L _ r) =
-             let delta = EpaDelta (DifferentLine 1 3) []
-             in L (EpAnn delta (AnnListItem []) (EpaComments [])) r
-@@ -228,6 +247,12 @@ prettyGADTDecl df decl =
-             in L (SrcSpanAnn (EpAnn (go (spanAsAnchor loc)) (AnnListItem []) (EpaComments [])) loc) r
- #endif
- 
-+#if MIN_VERSION_ghc(9,11,0)
-+        adjustWhere :: XCHsDataDefn GP -> XCHsDataDefn GP
-+        adjustWhere AnnDataDefn{..}= AnnDataDefn{
-+            andd_where = EpTok d1,
-+            ..}
-+#else
-         -- Adjust where annotation to the same line of the type constructor
-         adjustWhere tcdDExt = tcdDExt <&>
- #if !MIN_VERSION_ghc(9,9,0)
-@@ -238,6 +263,7 @@ prettyGADTDecl df decl =
-                 then AddEpAnn AnnWhere d1
-                 else AddEpAnn ann l
-             )
-+#endif
- 
-         -- Remove the first extra line if exist
-         removeExtraEmptyLine s = case stripInfix "\n\n" s of
-@@ -257,6 +283,10 @@ noUsed = EpAnnNotUsed
- #endif
- 
- pattern UserTyVar' :: LIdP pass -> HsTyVarBndr flag pass
-+#if MIN_VERSION_ghc(9,11,0)
-+pattern UserTyVar' s <- HsTvb _ _ (HsBndrVar _ s) _
-+#else
- pattern UserTyVar' s <- UserTyVar _ _ s
-+#endif
- 
- implicitTyVars = wrapXRec @GP mkHsOuterImplicit
+         wildCardAnn = SrcSpanAnn (EpAnn genAnchor1 (AnnListItem []) emptyComments) generatedSrcSpan

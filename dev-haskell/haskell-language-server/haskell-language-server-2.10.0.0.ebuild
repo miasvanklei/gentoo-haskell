@@ -57,9 +57,7 @@ REQUIRED_USE="ghcide-bench? ( ghcide-bench-lib )"
 RESTRICT="test" # Depends on masked ghcide-test-utils
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.9.0.0-add-bench-flags.patch"
-	"${FILESDIR}/build-extra-plugins-ghc-9.10.patch"
-	"${FILESDIR}/structured-diagnostics.patch"
+	"${FILESDIR}/${PN}-2.10.0.0-add-bench-flags.patch"
 	"${FILESDIR}/ghc-9.12.patch"
 )
 
