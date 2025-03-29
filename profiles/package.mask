@@ -1,3 +1,52 @@
+# GdeVolpiano <xavier@wheredoibegin.fr> (2025-03-28)
+#
+# The current upstream version of dev-haskell/cuda is not compatible with the
+# gentoo's current version of nvidia-cuda-toolkit. Also, nvidia-cuda-toolkit is
+# not available on musl. dev-haskell/cufft depends on dev-haskell/cuda.
+
+dev-haskell/cuda
+dev-haskell/cufft
+
+# GdeVolpiano <xavier@wheredoibegin.fr> (2025-03-28)
+#
+# Various outdated packages which either fail to build, have been deprecated
+# upstream or depend on other outdated packages. Mask for removal in 30 days.
+#
+# Removal: 2025-04-27
+
+dev-haskell/sbvplugin
+dev-haskell/binary-strict
+dev-haskell/random-source
+dev-haskell/monadcatchio-mtl
+dev-haskell/jupyter
+dev-haskell/bitsatomic
+dev-haskell/superdoc
+dev-haskell/uuagc-bootstrap
+dev-haskell/hasmin
+dev-haskell/json-bytes-builder
+dev-haskell/monadcatchio-transformers
+dev-util/spago
+dev-lang/hugs98
+dev-haskell/qrimager
+
+# hololeap <hololeap@protonmail.com> (2025-03-25)
+#
+# stylish-haskell still requires <ghc-lib-parser-9.9. Mask 9.10 until it
+# catches up.
+>=dev-haskell/ghc-lib-parser-9.10
+>=dev-haskell/ghc-lib-parser-ex-9.10
+>=dev-haskell/ghc-syntax-highlighter-0.0.12
+
+# GdeVolpiano <xavier@wheredoibegin.fr> (2025-03-24)
+#
+# Outdated vim plugins. With the rise of vim plugin managers there are no
+# such things as releases anymore. Interested users should just clone upstream
+# git repositories in vim/pack. Mask for removal in 30 days
+#
+# Removal: 2025-04-23
+app-vim/haskellindent
+app-vim/haskellmode
+
 # hololeap <hololeap@protonmail.com> (2025-03-17)
 #
 # Various outdated packages which either fail to build, have been deprecated
@@ -81,32 +130,6 @@ app-text/haskell-awk
 
 >=dev-haskell/doctest-0.23
 
-# hololeap <hololeap@protonmail.com> (2025-02-21)
-#
-# These packages are not building with recent GHC versions and have not been
-# updated in years. Mask for removal in 30 days.
-#
-# Removal: 2025-03-23
-dev-haskell/monadloc
-dev-haskell/control-monad-exception
-dev-haskell/bitsyntax
-dev-haskell/base32-bytestring
-dev-haskell/hssyck
-dev-haskell/yaml-light
-dev-haskell/persistent-relational-record
-
-# hololeap <hololeap@protonmail.com> (2025-02-21)
-#
-# Upstream package has not had an update since 2013. If you try to use it,
-# you get various "undefined reference" linker errors, likely because it was
-# built with a much older version of sys-libs/readline in mind. Mask for
-# removal in 30 days.
-#
-# Removal: 2025-03-23
-dev-haskell/readline
-dev-haskell/shellac-readline
-dev-haskell/shellac-compatline
-
 # hololeap <hololeap@protonmail.com> (2025-02-14)
 #
 # Mask hls-*-plugin packages. These are needed because of a bug in musl setups
@@ -157,28 +180,6 @@ dev-haskell/web-routes-hsp
 # Removal on 2025-03-13.
 dev-haskell/monadcryptorandom
 
-# Jack Todaro <solpeth@posteo.org> (2025-02-09)
-# Unmaintained upstream, does not build on newer ghc.
-# Removal on 2025-03-11.
-app-text/pdfsplit
-
-# Jack Todaro <solpeth@posteo.org> (2025-02-09)
-# Unmaintained, does not build on newer ghc.
-# Removal on 2025-03-11.
-dev-haskell/pdfinfo
-
-# Jack Todaro <solpeth@posteo.org> (2025-02-09)
-# Unmaintained since 2016. Does not build with newer ghc.
-# Removal on 2025-03-11.
-dev-haskell/data-lens-template
-
-# Jack Todaro <solpeth@posteo.org> (2025-02-08)
-# No upstream development. Does not work on newer GHC. Mask for
-# removal.
-# Removal on 2025-03-10.
-dev-haskell/gpipe
-dev-haskell/gpipe-glfw
-
 # Jack Todaro <solpeth@posteo.org> (2025-02-08)
 # Packages depend on HSOpenSSL, which does not currently build against
 # openssl-3. Upstream is yet to rectify this matter, and other packages
@@ -199,14 +200,6 @@ dev-haskell/http-streams
 dev-haskell/openssl-streams
 dev-haskell/tcp-streams-openssl
 net-irc/glirc
-
-# Jack Todaro <solpeth@posteo.org> (2025-02-07)
-# Dead upstream. Mask for removal.
-# Removal on 2025-03-09.
-www-apps/clckwrks
-www-apps/clckwrks-cli
-www-apps/clckwrks-plugin-media
-www-apps/clckwrks-plugin-page
 
 # Jack Todaro <solpeth@posteo.org> (2025-02-03)
 # Too many packages require <tasty-1.5. Mask until ready.
@@ -289,14 +282,12 @@ dev-haskell/country-codes
 >=dev-haskell/cabal-install-3.12
 >=dev-haskell/cabal-tree-diff-3.12
 >=dev-haskell/binary-0.8.9.2
->=dev-haskell/stm-2.5.3.1
 >=dev-haskell/transformers-0.6.1.1
 >=dev-haskell/hlint-3.10
 >=dev-haskell/ghc-lib-parser-9.12
 >=dev-haskell/ghc-lib-parser-ex-9.12
 >=dev-haskell/cabal-fmt-0.1.12
 >=dev-haskell/cabal-install-parsers-0.6.2
->=dev-haskell/ghc-syntax-highlighter-0.0.12
 
 # hololeap <hololeap@protonmail.com> (2023-10-15)
 # This package currently depends on an outdated version of
@@ -353,7 +344,6 @@ dev-haskell/zxcvbn-hs
 dev-haskell/pipes-cereal
 dev-haskell/pipes-network
 dev-haskell/pipes-text
-dev-haskell/pipes-zlib
 dev-haskell/ihaskell-diagrams
 
 # hololeap <hololeap@protonmail.com> (2022-02-22)
@@ -374,5 +364,3 @@ dev-util/hdocs
 # P.B. Lecavalier <pbl.ltx@gmail.com> (2020-01-01)
 # Various unrelated packages and what causes the conflict with newer version.
 >=dev-haskell/hsemail-2
->=dev-haskell/ilist-0.4.0.0
->=dev-haskell/socket-0.8
