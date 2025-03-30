@@ -11,7 +11,6 @@ inherit haskell-cabal
 
 DESCRIPTION="Haskell Language Server API for plugin communication"
 HOMEPAGE="https://github.com/haskell/haskell-language-server#readme"
-SRC_URI="https://github.com/haskell/haskell-language-server/archive/refs/tags/${PV}.tar.gz -> haskell-language-server-${PV}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
@@ -56,9 +55,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-rerun
 	)
 "
-
-S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
-CABAL_FILE="${S}/${CABAL_PN}.cabal"
 
 src_configure() {
 	haskell-cabal_src_configure \
