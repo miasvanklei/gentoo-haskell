@@ -11,7 +11,6 @@ inherit haskell-cabal
 
 DESCRIPTION="The core of an IDE"
 HOMEPAGE="https://github.com/haskell/haskell-language-server/tree/master/ghcide#readme"
-SRC_URI="https://github.com/haskell/haskell-language-server/archive/refs/tags/${PV}.tar.gz -> haskell-language-server-${PV}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
@@ -78,9 +77,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
-
-S="${WORKDIR}/haskell-language-server-${PV}/${PN}"
-CABAL_FILE="${S}/${CABAL_PN}.cabal"
 
 src_configure() {
 	local flags=(
