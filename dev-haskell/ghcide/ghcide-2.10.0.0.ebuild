@@ -31,7 +31,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dependent-map:=[profile?]
 	dev-haskell/dependent-sum:=[profile?]
-	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6:=[profile?]
+	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-2.0:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/enummapset:=[profile?]
 	>=dev-haskell/extra-1.7.14:=[profile?]
@@ -77,6 +77,10 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
+
+CABAL_CHDEPS=(
+        'Diff                         ^>=0.5' 'Diff >=0.5'
+)
 
 src_configure() {
 	local flags=(
