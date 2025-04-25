@@ -23,7 +23,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dependent-map:=[profile?]
 	>=dev-haskell/dependent-sum-0.7:=[profile?]
-	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6:=[profile?]
+	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-2.0:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/hashable:=[profile?]
@@ -55,6 +55,10 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-rerun
 	)
 "
+
+CABAL_CHDEPS=(
+	'Diff                  ^>=0.5' 'Diff >=0.5'
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
