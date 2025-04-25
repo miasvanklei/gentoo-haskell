@@ -153,7 +153,7 @@ RDEPEND="
 	)
 	hls_plugins_eval? (
 		dev-haskell/aeson:=[profile?]
-		>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-0.6
+		>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-2.0
 		dev-haskell/dlist:=[profile?]
 		~dev-haskell/hls-graph-2.10.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
@@ -279,7 +279,7 @@ RDEPEND="
 		dev-haskell/stan:=[profile?]
 	)
 	hls_plugins_stylish-haskell? (
-		>=dev-haskell/stylish-haskell-0.12:=[profile?] <dev-haskell/stylish-haskell-0.15
+		>=dev-haskell/stylish-haskell-0.12:=[profile?] <dev-haskell/stylish-haskell-0.16
 	)
 "
 DEPEND="${RDEPEND}
@@ -288,6 +288,10 @@ DEPEND="${RDEPEND}
 #	test? (
 #		# Test deps must be rewritten
 #	)
+
+CABAL_CHDEPS=(
+	'Diff                  ^>=0.5' 'Diff                  >=0.5'
+)
 
 src_configure() {
 	config_flags=(
