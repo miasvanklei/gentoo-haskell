@@ -16,7 +16,6 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
-	"base    >=4.6.0.1 && <4.21" "base    >=4.6.0.1 && <4.22"
 	'tasty                 ^>=1.5' 'tasty >=1.4'
 	'tasty-quickcheck      ^>=0.10.3 || ^>=0.11' 'tasty-quickcheck      >=0.10.2'
 	)
