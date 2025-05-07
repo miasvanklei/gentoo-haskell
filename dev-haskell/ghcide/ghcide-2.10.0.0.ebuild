@@ -21,6 +21,10 @@ IUSE="executable test-exe"
 # Should be fixed in Cabal-3.10 (https://github.com/haskell/cabal/issues/1919)
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
+CABAL_CHDEPS=(
+	'Diff                         ^>=0.5' 'Diff >=0.5'
+)
+
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/async:=[profile?]
@@ -31,7 +35,7 @@ RDEPEND="
 	dev-haskell/data-default:=[profile?]
 	dev-haskell/dependent-map:=[profile?]
 	dev-haskell/dependent-sum:=[profile?]
-	>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-2.0:=[profile?]
+	>=dev-haskell/diff-0.5:=[profile?]
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/enummapset:=[profile?]
 	>=dev-haskell/extra-1.7.14:=[profile?]
@@ -48,11 +52,13 @@ RDEPEND="
 	~dev-haskell/hls-plugin-api-2.10.0.0:=[profile?]
 	>=dev-haskell/implicit-hie-0.1.4.0:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
+	dev-haskell/lens-aeson:=[profile?]
 	dev-haskell/list-t:=[profile?]
 	>=dev-haskell/lsp-2.7:=[profile?] <dev-haskell/lsp-2.8:=[profile?]
 	>=dev-haskell/lsp-types-2.3:=[profile?] <dev-haskell/lsp-types-2.4:=[profile?]
 	>=dev-haskell/opentelemetry-0.6.1:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
+	dev-haskell/os-string:=[profile?]
 	dev-haskell/parallel:=[profile?]
 	>=dev-haskell/prettyprinter-1.7:=[profile?]
 	dev-haskell/prettyprinter-ansi-terminal:=[profile?]
@@ -69,18 +75,13 @@ RDEPEND="
 	dev-haskell/unliftio-core:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.10.0:=[profile?]
 	dev-haskell/vector:=[profile?]
+	>=dev-lang/ghc-9.2:=[profile?]
 	>=dev-lang/ghc-9.2.4:=
-	executable? (
-		dev-haskell/gitrev:=[profile?]
-	)
+	executable? ( dev-haskell/gitrev:=[profile?] )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
-
-CABAL_CHDEPS=(
-        'Diff                         ^>=0.5' 'Diff >=0.5'
-)
 
 src_configure() {
 	local flags=(

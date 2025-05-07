@@ -37,12 +37,7 @@
 		<flag name="hls_plugins_splice">Enable splice plugin</flag>
  		<flag name="hls_plugins_stan">Enable stan plugin</flag>
 		<flag name="hls_plugins_stylish-haskell">Enable stylishHaskell plugin</flag>
-		<flag name="hls_formatters_cabal-fmt">Enable cabalfmt formatter</flag>
-		<flag name="hls_formatters_floskell">Enable floskell formatter</flag>
- 		<flag name="hls_formatters_fourmolu">Enable fourmolu formatter</flag>
- 		<flag name="hls_formatters_ormolu">Enable ormolu formatter</flag>
-		<flag name="hls_formatters_refactor">Enable refactor formatter</flag>
-		<flag name="hls_formatters_stylish-haskell">Enable stylishHaskell formatter</flag>
+		<flag name="ghcide-test-exe">Build the ghcide-test-preprocessor executable</flag>
 	</use>
 	<upstream>
 		<remote-id type="hackage">haskell-language-server</remote-id>

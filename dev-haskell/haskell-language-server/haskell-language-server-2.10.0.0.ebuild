@@ -21,6 +21,7 @@ IUSE="
 	ghcide-bench
 	ghcide-bench-lib
 	ghc-lib
+	+ghcide-test-exe
 	+hls_plugins_alternate-number-format
 	+hls_plugins_cabal
 	+hls_plugins_cabal-fmt
@@ -38,8 +39,8 @@ IUSE="
 	+hls_plugins_import-lens
 	+hls_plugins_module-name
 	+hls_plugins_notes
-	+hls_plugins_ormolu
 	+hls_plugins_overloaded-record-dot
+	+hls_plugins_ormolu
 	+hls_plugins_pragmas
 	+hls_plugins_qualify-imported-names
 	+hls_plugins_refactor
@@ -51,13 +52,28 @@ IUSE="
 	+hls_plugins_stylish-haskell
 "
 
-REQUIRED_USE="ghcide-bench? ( ghcide-bench-lib )"
+REQUIRED_USE="
+	ghcide-bench? ( ghcide-bench-lib )
+	hls_plugins_rename? ( hls_plugins_refactor )
+	hls_plugins_splice? ( hls_plugins_refactor )
+	hls_plugins_gadt? ( hls_plugins_refactor )
+"
 
 RESTRICT="test" # Depends on masked ghcide-test-utils
 
 PATCHES=(
+	"${FILESDIR}/${PN}-2.10.0.0-ignore-plugins-ghc-bounds.patch"
+	"${FILESDIR}/${PN}-2.10.0.0-refactor.patch"
+	"${FILESDIR}/${PN}-2.10.0.0-stylish-haskell-0.15.0.0.patch"
 	"${FILESDIR}/${PN}-2.10.0.0-add-bench-flags.patch"
-	"${FILESDIR}/ghc-9.12.patch"
+	"${FILESDIR}/${PN}-2.10.0.0-gadt.patch"
+)
+
+CABAL_CHDEPS=(
+	'Diff                  ^>=0.5' 'Diff >=0.5'
+	'hlint                 >= 3.5 && < 3.9' 'hlint >= 3.5'
+	'stylish-haskell  ^>=0.12 || ^>=0.13 || ^>=0.14' 'stylish-haskell >= 0.12 && < 0.16'
+	'ormolu          ^>=0.1.2 || ^>= 0.2 || ^>= 0.3 || ^>= 0.5 || ^>= 0.6 || ^>= 0.7' 'ormolu          >=0.1.2 && < 0.9'
 )
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -67,7 +83,9 @@ CABAL_TEST_REQUIRED_BINS=(
 # Disabled:
 # hls_plugins_fourmolu? ( )
 RDEPEND="
+	dev-haskell/aeson:=[profile?]
 	dev-haskell/aeson-pretty:=[profile?]
+	dev-haskell/cabal-add:=[profile?]
 	dev-haskell/data-default:=[profile?]
 	>=dev-haskell/extra-1.7.4:=[profile?]
 	~dev-haskell/ghcide-2.10.0.0:=[profile?]
@@ -79,7 +97,9 @@ RDEPEND="
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/optparse-simple:=[profile?]
 	>=dev-haskell/prettyprinter-1.7:=[profile?]
+	dev-haskell/process:=[profile?]
 	dev-haskell/text:=[profile?]
+	dev-haskell/text-rope:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
 	>=dev-lang/ghc-9.2:=
 	ghcide-bench? (
@@ -113,7 +133,6 @@ RDEPEND="
 	)
 	hls_plugins_cabal? (
 		>=dev-haskell/cabal-syntax-3.7:=[profile?]
-		dev-haskell/cabal-add:=[profile?]
 		dev-haskell/hashable:=[profile?]
 		~dev-haskell/hls-graph-2.10.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
@@ -122,11 +141,11 @@ RDEPEND="
 		>=dev-haskell/unordered-containers-0.2.10:=[profile?]
 	)
 	hls_plugins_cabal-fmt? (
-		dev-haskell/cabal-fmt:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/process-extras:=[profile?]
 	)
 	hls_plugins_cabal-gild? (
+		>=dev-haskell/cabal-gild-1.3
 		dev-haskell/process-extras:=[profile?]
 	)
 	hls_plugins_call-hierarchy? (
@@ -142,7 +161,7 @@ RDEPEND="
 	hls_plugins_class? (
 		dev-haskell/aeson:=[profile?]
 		~dev-haskell/hls-graph-2.10.0.0:=[profile?]
-		>=dev-haskell/ghc-exactprint-1.5:=[profile?] <dev-haskell/ghc-exactprint-1.13
+		>=dev-haskell/ghc-exactprint-1.5:=[profile?] <dev-haskell/ghc-exactprint-1.13.0.0
 		dev-haskell/lens:=[profile?]
 	)
 	hls_plugins_code-range? (
@@ -153,7 +172,7 @@ RDEPEND="
 	)
 	hls_plugins_eval? (
 		dev-haskell/aeson:=[profile?]
-		>=dev-haskell/diff-0.5:=[profile?] <dev-haskell/diff-2.0
+		>=dev-haskell/diff-0.5:=[profile?]
 		dev-haskell/dlist:=[profile?]
 		~dev-haskell/hls-graph-2.10.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
@@ -184,14 +203,14 @@ RDEPEND="
 		dev-haskell/apply-refact:=[profile?]
 		dev-haskell/hashable:=[profile?]
 		dev-haskell/ghc-lib-parser-ex:=[profile?]
-		dev-haskell/hlint:=[profile?]
+		>=dev-haskell/hlint-3.5:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/refact:=[profile?]
 		dev-haskell/regex-tdfa:=[profile?]
 		dev-haskell/temporary:=[profile?]
+		dev-haskell/unordered-containers:=[profile?]
 		ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.13:=[profile?] )
 		!ghc-lib? ( >=dev-lang/ghc-9.8:= <dev-lang/ghc-9.13:= )
-		dev-haskell/unordered-containers:=[profile?]
 	)
 	hls_plugins_import-lens? (
 		dev-haskell/aeson:=[profile?]
@@ -227,6 +246,7 @@ RDEPEND="
 		dev-haskell/lens:=[profile?]
 	)
 	hls_plugins_refactor? (
+		dev-haskell/c2hs
 		dev-haskell/data-default:=[profile?]
 		dev-haskell/dlist:=[profile?]
 		~dev-haskell/hls-graph-2.10.0.0:=[profile?]
@@ -289,13 +309,10 @@ DEPEND="${RDEPEND}
 #		# Test deps must be rewritten
 #	)
 
-CABAL_CHDEPS=(
-	'Diff                  ^>=0.5' 'Diff                  >=0.5'
-)
-
 src_configure() {
+	local ghcide-test-exe="-test-exe"
+	use ghcide-test-exe && ghcide_executable="test-exe"
 	config_flags=(
-		$(cabal_flag ghc-lib ghc-lib)
 		$(cabal_flag hls_plugins_alternate-number-format alternateNumberFormat)
 		$(cabal_flag hls_plugins_cabal cabal)
 		$(cabal_flag hls_plugins_cabal-fmt cabalfmt)
@@ -324,7 +341,10 @@ src_configure() {
 		$(cabal_flag hls_plugins_splice splice)
 		$(cabal_flag hls_plugins_stan stan)
 		$(cabal_flag hls_plugins_stylish-haskell stylishhaskell)
+		--flag=$ghcide_executable
 		--flag=-fourmolu
+		--flag=-dynamic
+		--flag=-ghc-lib
 		--flag=ignore-plugins-ghc-bounds
 		--flag=-pedantic
 		--flag=-isoloateCabalfmtTests
