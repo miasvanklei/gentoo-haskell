@@ -16,7 +16,6 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="executable"
 
-CABAL_CHDEPS=('base >= 4.12 && < 4.21' 'base >= 4.12 && < 4.22' 'ghc >= 8.6 && < 9.11' 'ghc >= 8.6 && < 9.13')
 PATCHES=(
 	"${FILESDIR}/${PN}-0.5.0.1-disable-flaky-tests.patch"
 	"${FILESDIR}/${PN}-0.6.0.0-add-executable-flag.patch"
