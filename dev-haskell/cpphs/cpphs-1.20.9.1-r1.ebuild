@@ -25,7 +25,3 @@ RDEPEND=">=dev-haskell/polyparse-1.13:=[profile?] <dev-haskell/polyparse-1.14:=[
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
-
-CABAL_CHDEPS=(
-	"time >=1.5 && <1.13" "time >=1.5 && <1.15"
-)
