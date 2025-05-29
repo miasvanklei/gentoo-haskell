@@ -14,6 +14,7 @@ HOMEPAGE="https://github.com/kowainik/stan"
 LICENSE="MPL-2.0"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
+
 RDEPEND=">=dev-haskell/base64-0.4.1:=[profile?] <dev-haskell/base64-1.1:=[profile?]
 	>=dev-haskell/blaze-html-0.9.1:=[profile?] <dev-haskell/blaze-html-0.10:=[profile?]
 	>=dev-haskell/clay-0.14:=[profile?] <dev-haskell/clay-0.16:=[profile?]
