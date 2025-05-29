@@ -26,7 +26,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 "
 #	test? (
-
 #		>=dev-haskell/tasty-1.4 <dev-haskell/tasty-1.6
 #		>=dev-haskell/tasty-hunit-0.10 <dev-haskell/tasty-hunit-0.11
 #	)
