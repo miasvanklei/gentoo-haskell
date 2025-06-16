@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -23,14 +23,14 @@ HOMEPAGE="https://www.haskell.org/ghc/"
 
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
-GHC_BRANCH_COMMIT="72e041753f8d2c5b1fae0465277b187c61f17634" # ghc-9.8.3-release
+GHC_BRANCH_COMMIT="f3225ed4b3f3c4309f9342c5e40643eeb0cc45da" # ghc-9.10.1-release
 
-GHC_BINARY_PV="9.6.2"
+GHC_BINARY_PV="9.8.1"
 SRC_URI="
 	https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz
 	verify-sig? ( https://downloads.haskell.org/~ghc/${PV}/${P}-src.tar.xz.sig )
 	!ghcbootstrap? (
-		https://downloads.haskell.org/~ghc/9.8.2/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
+		https://downloads.haskell.org/~ghc/${PV}/hadrian-bootstrap-sources/hadrian-bootstrap-sources-${GHC_BINARY_PV}.tar.gz
 		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 	)
 	test? (
@@ -94,14 +94,15 @@ S="${WORKDIR}"/${GHC_P}
 
 BUMP_LIBRARIES=(
 	# "hackage-name          hackage-version"
+	# Match 9.6.7
+	"directory 1.3.9.0"
+	"file-io   0.1.5"
 
-	# These libs are a higher version in ghc-9.6.7 than they are in ghc-9.8.3
-	# This could cause problems for hackport when determining minimum ghc
-	# version, so we upgrade them.
-	"directory    1.3.9.0"
-	"file-io      0.1.5" # added via hadrian patch/BUMP_LIBRARIES in ghc-9.6.7
-	"filepath     1.4.301.0"
-	"unix         2.8.6.0"
+	# Updated upstream
+	"deepseq   1.5.1.0"
+
+	# Bundled with 2.0.4, but newer versions are in tree
+	"os-string 2.0.7"
 )
 
 LICENSE="BSD"
@@ -145,6 +146,7 @@ BDEPEND="
 	)
 	ghcbootstrap? (
 		ghcmakebinary? ( dev-haskell/hadrian[static] )
+		dev-haskell/alex
 		~dev-haskell/hadrian-${PV}
 	)
 	test? (
@@ -574,7 +576,7 @@ src_prepare() {
 
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/21936
-	eapply "${FILESDIR}"/${PN}-9.6.4-llvm-19.patch
+	eapply "${FILESDIR}"/${PN}-9.10.1-llvm-19.patch
 
 	# Fix issue caused by non-standard "musleabi" target in
 	# https://gitlab.haskell.org/ghc/ghc/-/blob/ghc-9.4.5-release/m4/ghc_llvm_target.m4#L39
@@ -583,13 +585,16 @@ src_prepare() {
 	# Fix QA Notice: Found the following implicit function declarations in configure logs
 	eapply "${FILESDIR}/${PN}-9.10.1-fix-configure-implicit-function.patch"
 
+	# Support building on riscv/musl
+	eapply "${FILESDIR}/${PN}-9.10.1-llvm-targets-riscv64-unknown-linux-musl.patch"
+
 	pushd "${S}/hadrian" || die
 		# Fix QA Notice: Unrecognized configure options: --with-cc
-		eapply "${FILESDIR}/hadrian-9.4.8-remove-with-cc-configure-flag.patch"
+		eapply "${FILESDIR}/hadrian-9.10.1-remove-with-cc-configure-flag.patch"
 		# Fix QA Notice: One or more compressed files were found in docompress-ed directories
 		eapply "${FILESDIR}/hadrian-9.4.8-disable-doc-archives.patch"
 		# Add support for file-io
-		eapply "${FILESDIR}/hadrian-9.8.2-add-packages.patch"
+		eapply "${FILESDIR}/hadrian-9.10.1-add-packages.patch"
 	popd
 
 	# mingw32 target
@@ -602,10 +607,6 @@ src_prepare() {
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
 	fi
-
-	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1775>
-	# <https://gitlab.haskell.org/ghc/ghc/-/issues/25662>
-	eapply "${FILESDIR}/${PN}-9.12.2-hp2ps-c23-compat.patch"
 
 	bump_libs
 
@@ -676,8 +677,6 @@ src_configure() {
 		esac
 	done
 
-
-
 	### Prepare hadrian build settings files
 
 	mkdir _build
@@ -691,12 +690,12 @@ src_configure() {
 	# installed to the system)
 	echo "stage1.*.cabal.configure.opts += --disable-library-stripping" >> _build/hadrian.settings
 
-    ### Gather configuration variables for GHC
+	### Gather configuration variables for GHC
 
-	# Get ghc from the binary
+	# Get ghc/hadrian/alex from the binary
 	# except when bootstrapping we just pick ghc up off the path
 	if ! use ghcbootstrap; then
-		export PATH="${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
+		export PATH="${S}/hadrian/bootstrap/_build/bin:${WORKDIR}/ghc-bin/$(get_libdir)/ghc-${GHC_BINARY_PV}/bin:${PATH}"
 	fi
 
 	local econf_args=()
@@ -745,9 +744,6 @@ src_configure() {
 
 	einfo "Final _build/hadrian.settings:"
 	cat _build/hadrian.settings || die
-
-
-
 
 	### Bootstrap Hadrian, then final configure (should this be here or in src_compile?)
 

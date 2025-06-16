@@ -137,6 +137,7 @@ LLVM_DEPS="
 		llvm-core/llvm:18
 		llvm-core/llvm:19
 	)
+	llvm-core/clang
 "
 
 RDEPEND="
@@ -624,6 +625,10 @@ src_prepare() {
 	fi
 
 	eapply "${DISTDIR}/${PN}-9.12.1-revert-division-optimization.patch"
+
+	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1775>
+	# <https://gitlab.haskell.org/ghc/ghc/-/issues/25662>
+	eapply "${FILESDIR}/${PN}-9.12.2-hp2ps-c23-compat.patch"
 
 	bump_libs
 
