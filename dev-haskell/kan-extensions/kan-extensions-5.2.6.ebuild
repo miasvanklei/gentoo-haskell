@@ -29,3 +29,7 @@ RDEPEND=">=dev-haskell/adjunctions-4.2:=[profile?] <dev-haskell/adjunctions-5:=[
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	'containers          >= 0.4     && < 0.8' 'containers          >= 0.4     && < 0.9'
+)
