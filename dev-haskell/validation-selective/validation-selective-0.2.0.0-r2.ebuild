@@ -21,10 +21,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-0.2.0.0-cabal-doctest.patch"
 )
 
-CABAL_CHDEPS=(
-	'hedgehog         >= 1.0      && < 1.5' 'hedgehog >= 1.0'
-	)
-
 RDEPEND=">=dev-haskell/selective-0.3:=[profile?] <dev-haskell/selective-0.8:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
@@ -38,6 +34,11 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-hedgehog-0.0.1.1 <dev-haskell/hspec-hedgehog-0.2
 		>=dev-haskell/text-1.2.3 <dev-haskell/text-2.2 )
 "
+
+CABAL_CHDEPS=(
+	'hedgehog         >= 1.0      && < 1.5' 'hedgehog >= 1.0'
+	'base >= 4.12 && < 4.22' 'base >= 4.12 && < 4.23'
+)
 
 src_configure() {
 	if use test; then
