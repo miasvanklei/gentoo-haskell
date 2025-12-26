@@ -31,3 +31,8 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/hspec-1.8
 		>=dev-haskell/quickcheck-2.11 <dev-haskell/quickcheck-3 )
 "
+
+CABAL_CHDEPS=(
+	'containers           >= 0.1    && < 0.8' 'containers           >= 0.1    && < 0.9'
+	'template-haskell     >= 2.11   && < 2.24' 'template-haskell     >= 2.11   && < 2.25'
+)
