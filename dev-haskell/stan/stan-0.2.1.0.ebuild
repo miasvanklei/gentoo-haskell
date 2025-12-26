@@ -43,3 +43,14 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-2.7 <dev-haskell/hspec-2.12
 		>=dev-haskell/hspec-hedgehog-0.0.1.2 )
 "
+
+CABAL_CHDEPS=(
+	'base >= 4.13 && < 4.22 && (< 4.16.3.0 || >= 4.17)' 'base >= 4.13 && < 4.23 && (< 4.16.3.0 || >= 4.17)'
+	'containers >= 0.5 && < 0.8' 'containers >= 0.5 && < 0.9'
+	'ghc >= 8.8 && < 9.13' 'ghc >= 8.8 && < 9.15'
+	'ghc-boot-th >= 8.8 && < 9.13' 'ghc-boot-th >= 8.8 && < 9.15'
+)
+
+PATCHES=(
+	"${FILESDIR}"/ghc-9.14.patch
+)
