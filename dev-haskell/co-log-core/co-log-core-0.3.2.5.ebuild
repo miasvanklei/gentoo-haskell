@@ -27,6 +27,10 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/glob-0.10.0 <dev-haskell/glob-0.11 )
 "
 
+CABAL_CHDEPS=(
+	"base >= 4.10.1.0 && < 4.22" "base >= 4.10.1.0 && < 4.23"
+)
+
 src_configure() {
 	use test && export GHC_BOOTSTRAP_PACKAGES=(cabal-doctest)
 
