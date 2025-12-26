@@ -31,3 +31,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-1.2.3 <dev-haskell/tasty-1.6
 		>=dev-haskell/tasty-quickcheck-0.10.1.1 <dev-haskell/tasty-quickcheck-0.12 )
 "
+
+CABAL_CHDEPS=(
+	'base                  >=4.12     && <4.22' 'base                  >=4.12     && <4.23'
+)
