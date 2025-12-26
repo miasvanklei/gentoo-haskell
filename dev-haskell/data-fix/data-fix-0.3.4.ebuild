@@ -23,3 +23,7 @@ RDEPEND=">=dev-haskell/hashable-1.4.4.0:=[profile?] <dev-haskell/hashable-1.6:=[
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"base      >=4.12.0.0 && <4.22" "base      >=4.12.0.0 && <4.23"
+)
