@@ -24,6 +24,10 @@ DEPEND="${RDEPEND}
 	dev-haskell/happy
 "
 
+CABAL_CHDEPS=(
+	"containers >=0.3 && <0.8" "containers >=0.3 && <0.9"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-allwarnings \
