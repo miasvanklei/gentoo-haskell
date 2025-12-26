@@ -18,6 +18,7 @@ IUSE="executable"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.15.0.0-add-executable-flag.patch"
+	"${FILESDIR}/ghc-9.14.patch"
 )
 
 RDEPEND="dev-haskell/data-default:=[profile?]
@@ -26,7 +27,7 @@ RDEPEND="dev-haskell/data-default:=[profile?]
 	>=dev-haskell/filemanip-0.3.6.3:=[profile?] <dev-haskell/filemanip-0.4:=[profile?]
 	|| (
 		( >=dev-haskell/ghc-exactprint-1.5.0 <dev-haskell/ghc-exactprint-1.10 )
-		( >=dev-haskell/ghc-exactprint-1.12 <dev-haskell/ghc-exactprint-1.13 )
+		( >=dev-haskell/ghc-exactprint-1.12 <dev-haskell/ghc-exactprint-1.15 )
 	)
 	dev-haskell/ghc-exactprint:=[profile?]
 	>=dev-haskell/refact-0.2:=[profile?]

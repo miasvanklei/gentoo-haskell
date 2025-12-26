@@ -1,0 +1,79 @@
+--- a/apply-refact.cabal	2025-12-24 12:34:54.556783020 +0100
++++ b/apply-refact.cabal	2025-12-24 12:35:13.424593748 +0100
+@@ -40,14 +40,14 @@
+   ghc-options:        -Wall
+   build-depends:
+     , base            >=4.16    && <5
+-    , containers      >=0.6.0.1 && <0.8
++    , containers      >=0.6.0.1 && <0.9
+     , data-default
+     , directory       >=1.3
+     , extra           >=1.7.3
+     , filemanip       >=0.3.6.3 && <0.4
+     , ghc
+     , ghc-boot-th
+-    , ghc-exactprint  ^>=1.5.0  || ^>=1.6.0 || ^>=1.7.0 || ^>=1.8.0 || ^>=1.12.0
++    , ghc-exactprint  ^>=1.5.0  || ^>=1.6.0 || ^>=1.7.0 || ^>=1.8.0 || ^>=1.12.0 || ^>=1.14.0
+     , process         >=1.6
+     , refact          >=0.2
+     , syb             >=0.7.1
+--- a/src/Refact/Internal.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Refact/Internal.hs	2025-12-24 12:34:06.893260746 +0100
+@@ -4,6 +4,7 @@
+ {-# LANGUAGE PatternSynonyms #-}
+ {-# LANGUAGE RecordWildCards #-}
+ {-# LANGUAGE ViewPatterns #-}
++{-# LANGUAGE OverloadedLists #-}
+ 
+ module Refact.Internal
+   ( apply,
+@@ -45,6 +46,11 @@
+ #if MIN_VERSION_ghc(9,12,0)
+ import qualified GHC.Data.Strict as Strict
+ #endif
++#if MIN_VERSION_ghc(9,14,0)
++import GHC.Driver.Config.Parser (supportedLanguagePragmas)
++import GHC.Driver.Flags (OnOff(..))
++import GHC.Utils.Logger (initLogger)
++#endif
+ import GHC.IO.Exception (IOErrorType (..))
+ import GHC.LanguageExtensions.Type (Extension (..))
+ import Language.Haskell.GHC.ExactPrint
+@@ -824,7 +830,9 @@
+   IO (Either String GHC.DynFlags)
+ addExtensionsToFlags es ds fp flags = catchErrors $ do
+   (stringToStringBuffer -> buf) <- readFileUTF8' fp
+-#if MIN_VERSION_ghc(9,4,0)
++#if MIN_VERSION_ghc(9,14,0)
++  let (_, opts) = getOptions (initParserOpts flags) (supportedLanguagePragmas flags) buf fp
++#elif MIN_VERSION_ghc(9,4,0)
+   let (_, opts) = getOptions (initParserOpts flags) buf fp
+ #else
+   let opts = getOptions flags buf fp
+@@ -833,7 +841,12 @@
+         flip (foldl' xopt_unset) ds
+           . flip (foldl' xopt_set) es
+           $ flags
++#if MIN_VERSION_ghc(9,14,0)
++  logger <- initLogger
++  (withPragmas, _, _) <- parseDynamicFilePragma logger withExts opts
++#else
+   (withPragmas, _, _) <- parseDynamicFilePragma withExts opts
++#endif
+   pure . Right $ withPragmas `gopt_set` GHC.Opt_KeepRawTokenStream
+   where
+     catchErrors =
+@@ -888,8 +901,13 @@
+     addImplied :: ([Extension], [Extension], [String]) -> ([Extension], [Extension], [String])
+     addImplied (ys, ns, is) = (ys ++ impliedOn, ns ++ impliedOff, is)
+       where
++#if MIN_VERSION_ghc(9,14,0)
++        impliedOn = [b | ext <- ys, (a, On b) <- impliedXFlags, a == ext]
++        impliedOff = [b | ext <- ys, (a, Off b) <- impliedXFlags, a == ext]
++#else
+         impliedOn = [b | ext <- ys, (a, True, b) <- impliedXFlags, a == ext]
+         impliedOff = [b | ext <- ys, (a, False, b) <- impliedXFlags, a == ext]
++#endif
+ 
+ readExtension :: String -> Maybe Extension
+ readExtension s = flagSpecFlag <$> find ((== s) . flagSpecName) xFlags
