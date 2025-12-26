@@ -34,6 +34,10 @@ DEPEND="${RDEPEND}
 #		>=dev-haskell/tf-random-0.5 <dev-haskell/tf-random-0.6
 #		>=dev-haskell/vector-0.13.0.0 <dev-haskell/vector-0.14 )
 
+CABAL_CHDEPS=(
+	"base     >=4.12.0.0 && <4.22" "base     >=4.12.0.0 && <4.23"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag optimised-mixer optimised-mixer)
