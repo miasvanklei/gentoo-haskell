@@ -26,6 +26,11 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.10 <dev-haskell/tasty-quickcheck-0.11 )
 "
 
+CABAL_CHDEPS=(
+	"base >=4.9 && <4.22" "base >=4.9 && <4.23"
+	"template-haskell >=2.11 && <2.24" "template-haskell >=2.11 && <2.25"
+)
+
 pkg_pretend() {
 	if use test; then
 		ewarn "The \"test\" USE flag for this package creates cycles within the"
