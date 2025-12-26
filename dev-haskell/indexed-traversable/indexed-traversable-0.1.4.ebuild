@@ -23,3 +23,8 @@ RDEPEND=">=dev-haskell/foldable1-classes-compat-0.1:=[profile?] <dev-haskell/fol
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"base          >=4.12    && <4.22" "base          >=4.12    && <4.23"
+	"containers    >=0.6.0.1 && <0.8" "containers    >=0.6.0.1 && <0.9"
+)
