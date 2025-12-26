@@ -17,7 +17,7 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-CABAL_CHDEPS=('base                   >=4.8      && <4.21' 'base                   >=4.8      && <4.22')
+CABAL_CHDEPS=('base                   >=4.8      && <4.21' 'base                   >=4.8      && <4.23')
 
 RDEPEND=">=dev-haskell/blaze-builder-0.4.0.0:=[profile?]
 	>=dev-haskell/hashable-1.2.3.2:=[profile?]
