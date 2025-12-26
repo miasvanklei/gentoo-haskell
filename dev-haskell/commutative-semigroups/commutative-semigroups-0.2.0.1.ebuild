@@ -20,3 +20,7 @@ RDEPEND=">=dev-lang/ghc-9.0.2:=
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"containers >= 0.4 && < 0.8" "containers >= 0.4 && < 0.9"
+)
