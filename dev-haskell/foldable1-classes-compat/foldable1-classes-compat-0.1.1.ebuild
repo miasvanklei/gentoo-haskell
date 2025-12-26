@@ -29,6 +29,10 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/test-framework-quickcheck2-0.3.0.5 <dev-haskell/test-framework-quickcheck2-0.4 )
 "
 
+CABAL_CHDEPS=(
+	"base >=4.9 && <4.22" "base >=4.9 && <4.23"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag tagged tagged)
