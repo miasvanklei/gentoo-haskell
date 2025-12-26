@@ -15,9 +15,13 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-RDEPEND=">=dev-haskell/cabal-1.24:=[profile?] <dev-haskell/cabal-3.16:=[profile?]
+RDEPEND=">=dev-haskell/cabal-1.24:=[profile?] <dev-haskell/cabal-3.17:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"Cabal      >=1.24 && <3.16" "Cabal      >=1.24 && <3.17"
+)
