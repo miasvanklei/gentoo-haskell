@@ -33,6 +33,10 @@ DEPEND="${RDEPEND}
 # 		>=dev-haskell/temporary-1.3 <dev-haskell/temporary-1.4 )
 # "
 
+CABAL_CHDEPS=(
+	"base >=4.12.0.0 && <4.22" "base >=4.12.0.0 && <4.23"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=ofd-locking
