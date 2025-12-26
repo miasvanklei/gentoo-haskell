@@ -16,9 +16,10 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
+	'base    >=4.6.0.1 && <4.22' 'base    >=4.6.0.1 && <4.23'
 	'tasty                 ^>=1.5' 'tasty >=1.4'
 	'tasty-quickcheck      ^>=0.10.3 || ^>=0.11' 'tasty-quickcheck      >=0.10.2'
-	)
+)
 
 RDEPEND=">=dev-haskell/aeson-2.2.2.0:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/binary-orphans-1.0.5:=[profile?] <dev-haskell/binary-orphans-1.1:=[profile?]
