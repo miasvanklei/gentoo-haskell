@@ -35,3 +35,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.10.2 <dev-haskell/tasty-quickcheck-0.12
 		dev-haskell/text )
 "
+
+CABAL_CHDEPS=(
+	'time                >=1.8.0.2  && <1.15' 'time                >=1.8.0.2  && <1.16'
+)
