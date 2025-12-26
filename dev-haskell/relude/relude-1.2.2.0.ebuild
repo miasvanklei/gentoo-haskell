@@ -32,3 +32,8 @@ DEPEND="${RDEPEND}
 		dev-haskell/glob
 		>=dev-haskell/hedgehog-1.0 <dev-haskell/hedgehog-1.6 )
 "
+
+CABAL_CHDEPS=(
+	'base >= 4.11 && < 4.22' 'base >= 4.11 && < 4.23'
+	'containers >= 0.5.10 && < 0.8' 'containers >= 0.5.10 && < 0.9'
+)
