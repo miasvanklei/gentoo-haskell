@@ -10,8 +10,6 @@ CABAL_HACKAGE_REVISION=1
 CABAL_FEATURES="lib profile haddock hoogle hscolour"
 inherit haskell-cabal
 
-CABAL_CHDEPS=('time >=1.5 && <1.13' 'time >=1.5 && <1.15')
-
 DESCRIPTION="A liberalised re-implementation of cpp, the C pre-processor"
 HOMEPAGE="https://projects.haskell.org/cpphs/"
 
@@ -25,3 +23,7 @@ RDEPEND=">=dev-haskell/polyparse-1.13:=[profile?] <dev-haskell/polyparse-1.14:=[
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"time >=1.5 && <1.13" "time >=1.5 && <1.16"
+)
