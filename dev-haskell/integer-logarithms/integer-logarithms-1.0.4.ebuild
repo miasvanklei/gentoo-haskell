@@ -28,6 +28,11 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-smallcheck-0.8 <dev-haskell/tasty-smallcheck-0.9 )
 "
 
+CABAL_CHDEPS=(
+	"base      >=4.12.0.0 && <4.22" "base      >=4.12.0.0 && <4.23"
+	"ghc-bignum  >=1.0  && <1.4" "ghc-bignum  >=1.0  && <1.5"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-check-bounds \
