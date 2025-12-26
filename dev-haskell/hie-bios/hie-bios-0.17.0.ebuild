@@ -35,7 +35,7 @@ RDEPEND="
 	>=dev-haskell/unix-compat-0.5.1:=[profile?] <dev-haskell/unix-compat-0.8:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.9:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
 	>=dev-haskell/yaml-0.10.0:=[profile?] <dev-haskell/yaml-0.12:=[profile?]
-	>=dev-lang/ghc-9.2.4:=[profile?] <dev-lang/ghc-9.13:=[profile?]
+	>=dev-lang/ghc-9.2.4:=[profile?] <dev-lang/ghc-9.15:=[profile?]
 	>=dev-haskell/prettyprinter-1.6:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 "
 DEPEND="${RDEPEND}
@@ -44,3 +44,9 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-expected-failure
 		dev-haskell/tasty-hunit )
 "
+
+CABAL_CHDEPS=(
+	'ghc                  >= 9.2.1 && < 9.13' 'ghc                  >= 9.2.1 && < 9.15'
+	'time                 >= 1.8.0 && < 1.15' 'time                 >= 1.8.0 && < 1.16'
+	'template-haskell     >= 2.18 && <2.24' 'template-haskell     >= 2.18 && <2.25'
+)
