@@ -23,3 +23,7 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? ( >=dev-haskell/quickcheck-2.8 <dev-haskell/quickcheck-2.15 )
 "
+
+CABAL_CHDEPS=(
+	"containers   >= 0.5.5.1 && < 0.8" "containers   >= 0.5.5.1 && < 0.9"
+)
