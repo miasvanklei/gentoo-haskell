@@ -29,3 +29,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.7 <dev-haskell/tasty-quickcheck-1.0
 		dev-haskell/text )
 "
+
+CABAL_CHDEPS=(
+	'containers >= 0.5.7.0 && < 0.8' 'containers >= 0.5.7.0 && < 0.9'
+)
