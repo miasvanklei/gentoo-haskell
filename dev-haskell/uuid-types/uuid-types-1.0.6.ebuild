@@ -29,3 +29,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-hunit-0.10 <dev-haskell/tasty-hunit-0.11
 		>=dev-haskell/tasty-quickcheck-0.10 <dev-haskell/tasty-quickcheck-0.12 )
 "
+
+CABAL_CHDEPS=(
+	'template-haskell  >=2.14.0.0 && <2.24' 'template-haskell  >=2.14.0.0 && <2.25'
+)
