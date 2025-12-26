@@ -24,6 +24,10 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/aeson-2.0.0.0
 "
 
+CABAL_CHDEPS=(
+	'template-haskell >=2.11 && <2.24' 'template-haskell >=2.11 && <2.25'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-build-readme
