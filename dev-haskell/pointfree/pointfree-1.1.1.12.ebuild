@@ -27,4 +27,5 @@ DEPEND="${RDEPEND}
 CABAL_CHDEPS=(
 	'base >= 4.5 && < 4.20' 'base >= 4.5 && < 5'
 	'transformers < 0.7' 'transformers'
+	'containers >= 0.4 && < 0.8' 'containers'
 )
