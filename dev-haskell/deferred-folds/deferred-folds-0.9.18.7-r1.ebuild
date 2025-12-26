@@ -17,7 +17,8 @@ KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'primitive >=0.6.4 && <0.10' 'primitive >=0.6.4'
-	)
+	'containers >=0.5 && <0.8' 'containers >=0.5 && <0.9'
+)
 
 RDEPEND=">=dev-haskell/foldl-1:=[profile?] <dev-haskell/foldl-2:=[profile?]
 	>=dev-haskell/hashable-1:=[profile?] <dev-haskell/hashable-2:=[profile?]
