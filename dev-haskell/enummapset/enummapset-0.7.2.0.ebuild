@@ -30,6 +30,10 @@ DEPEND="${RDEPEND}
 		dev-haskell/test-framework-quickcheck2 )
 "
 
+CABAL_CHDEPS=(
+	'containers >= 0.5.11 && < 0.8' 'containers >= 0.5.11 && < 0.9'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag debug debug)
