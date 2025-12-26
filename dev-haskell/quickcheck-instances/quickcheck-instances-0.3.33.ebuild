@@ -42,3 +42,8 @@ RDEPEND=">=dev-haskell/case-insensitive-1.2.0.11:=[profile?] <dev-haskell/case-i
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	'base        >=4.12.0.0 && <4.22' 'base        >=4.12.0.0 && <4.23'
+	'containers            >=0.6.0.1  && <0.8' 'containers            >=0.6.0.1  && <0.9'
+)
