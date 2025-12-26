@@ -28,6 +28,10 @@ DEPEND="${RDEPEND}
 		dev-haskell/test-framework-hunit )
 "
 
+CABAL_CHDEPS=(
+	"base     >= 4.3     && < 4.22" "base     >= 4.3     && < 4.23"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-bench
