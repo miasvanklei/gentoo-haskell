@@ -29,6 +29,11 @@ DEPEND="
 	>=dev-lang/ghc-9.0.2:=
 "
 
+CABAL_CHDEPS=(
+	"Cabal       >=3.4.1.0 && <3.15" "Cabal       >=3.4.1.0 && <3.17"
+	"containers  >=0.6.4.1 && <0.8" "containers  >=0.6.4.1 && <0.9"
+)
+
 src_prepare() {
 	haskell-cabal_src_prepare
 
