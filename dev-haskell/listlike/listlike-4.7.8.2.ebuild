@@ -35,3 +35,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/random-1 <dev-haskell/random-2
 		dev-haskell/text )
 "
+
+CABAL_CHDEPS=(
+	'containers >= 0.3   && < 0.8' 'containers >= 0.3   && < 0.9'
+)
