@@ -25,3 +25,7 @@ RDEPEND=">=dev-haskell/text-1.2.3:=[profile?] <dev-haskell/text-2.2:=[profile?]
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	'base >= 4.12.0.0 && < 4.22' 'base >= 4.12.0.0 && < 4.23'
+)
