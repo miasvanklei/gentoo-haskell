@@ -23,10 +23,6 @@ RESTRICT="test"
 # The random inital seed causes the "64 bit Text" test to fail
 RESTRICT_USE="random-initial-seed? ( !test )"
 
-CABAL_CHDEPS=(
-	'base        >=4.12.0.0 && <4.21' 'base        >=4.12.0.0'
-)
-
 RDEPEND="
 	>=dev-haskell/data-array-byte-0.1.0.1:=[profile?] <dev-haskell/data-array-byte-0.2:=[profile?]
 	>=dev-haskell/os-string-2.0.2:=[profile?]
@@ -50,6 +46,13 @@ DEPEND="${RDEPEND}
 #		>=dev-haskell/tasty-quickcheck-0.10.3 <dev-haskell/tasty-quickcheck-0.11
 #		>=dev-haskell/text-0.11.0.5
 #	)
+
+
+CABAL_CHDEPS=(
+	'base        >=4.12.0.0 && <4.21' 'base        >=4.12.0.0'
+	"containers  >=0.6.0.1  && <0.8" "containers  >=0.6.0.1  && <0.9"
+	"ghc-bignum >=1.0 && <1.4" "ghc-bignum >=1.0 && <1.5"
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
