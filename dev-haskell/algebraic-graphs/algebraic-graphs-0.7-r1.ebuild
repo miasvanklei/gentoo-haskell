@@ -19,7 +19,7 @@ KEYWORDS="~amd64"
 
 CABAL_CHDEPS=(
 	'inspection-testing >= 0.4.2.2 && < 0.6' 'inspection-testing >= 0.4.2.2'
-	)
+)
 
 RDEPEND=">=dev-lang/ghc-9.0.2:=
 "
@@ -29,3 +29,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/inspection-testing-0.4.2.2
 		>=dev-haskell/quickcheck-2.14 <dev-haskell/quickcheck-2.16 )
 "
+
+PATCHES=(
+	"${FILESDIR}/support-containers-0.8.patch"
+)
