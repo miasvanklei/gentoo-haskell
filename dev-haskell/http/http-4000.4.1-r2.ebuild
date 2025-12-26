@@ -34,6 +34,11 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/test-framework-hunit-0.3.0 <dev-haskell/test-framework-hunit-0.4 )
 "
 
+CABAL_CHDEPS=(
+	'base          >= 4.6.0.0   && < 4.22' 'base          >= 4.6.0.0   && < 4.23'
+	'time          >= 1.1.2.3   && < 1.15' 'time          >= 1.1.2.3   && < 1.16'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-conduit10 \
