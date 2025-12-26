@@ -20,8 +20,11 @@ KEYWORDS="~amd64"
 IUSE="+ordered-keymap"
 
 CABAL_CHDEPS=(
+	'containers        >=0.6.0.1  && <0.8' 'containers        >=0.6.0.1  && <0.9'
 	'nothunks >=0.1.4 && <0.3' 'nothunks >=0.1.4'
 	'primitive             ^>=0.8.0.0  || ^>=0.9.0.0' 'primitive >=0.8.0.0'
+	'template-haskell  >=2.14.0.0 && <2.24' 'template-haskell  >=2.14.0.0 && <2.25'
+	'time              >=1.8.0.2  && <1.15' 'time              >=1.8.0.2  && <1.16'
 )
 
 RDEPEND=">=dev-haskell/character-ps-0.1:=[profile?] <dev-haskell/character-ps-0.2:=[profile?]
