@@ -17,7 +17,6 @@ KEYWORDS="~amd64"
 IUSE="executable"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.5.0.1-disable-flaky-tests.patch"
 	"${FILESDIR}/${PN}-0.6.0.0-add-executable-flag.patch"
 )
 
@@ -48,6 +47,11 @@ DEPEND="${RDEPEND}
 		dev-haskell/temporary
 	)
 "
+
+CABAL_CHDEPS=(
+	'base >= 4.12 && < 4.22' 'base >= 4.12 && < 4.23'
+	'ghc >= 8.6 && < 9.13' 'ghc >= 8.6 && < 9.15'
+)
 
 src_configure() {
 	local flags=()
