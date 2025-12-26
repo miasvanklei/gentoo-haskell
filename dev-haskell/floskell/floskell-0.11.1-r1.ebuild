@@ -17,7 +17,8 @@ KEYWORDS="~amd64"
 IUSE="executable"
 
 CABAL_CHDEPS=(
-	'base >=4.9 && <4.20' 'base >=4.9 && <4.22'
+	'base >=4.9 && <4.20' 'base >=4.9 && <4.23'
+	'containers >=0.5.7.1 && <0.8' 'containers >=0.5.7.1 && <0.9'
 	'data-default >=0.7.1.1 && <0.8' 'data-default >=0.7.1.1 && <0.9'
 )
 
