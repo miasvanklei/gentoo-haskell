@@ -38,6 +38,10 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-quickcheck )
 "
 
+CABAL_CHDEPS=(
+	'base >= 4.9 && < 4.22' 'base >= 4.9 && < 4.23'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag boundschecks boundschecks) \
