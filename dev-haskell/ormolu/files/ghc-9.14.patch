@@ -1,0 +1,1174 @@
+diff --git a/ormolu.cabal b/ormolu.cabal
+index 48c39b91b..55ad29982 100644
+--- a/ormolu.cabal
++++ b/ormolu.cabal
+@@ -95,7 +94,7 @@ library
+   other-modules: GHC.DynFlags
+   default-language: GHC2021
+   build-depends:
+-    Cabal-syntax >=3.14 && <3.15,
++    Cabal-syntax >=3.16 && <3.17,
+     Diff >=0.4 && <2,
+     MemoTrie >=0.6 && <0.7,
+     ansi-terminal >=0.10 && <1.2,
+@@ -104,11 +103,11 @@ library
+     binary >=0.8 && <0.9,
+     bytestring >=0.2 && <0.13,
+     choice >=0.2.4.1 && <0.3,
+-    containers >=0.5 && <0.8,
++    containers >=0.5 && <0.9,
+     directory ^>=1.3,
+     file-embed >=0.0.15 && <0.1,
+     filepath >=1.2 && <1.6,
+-    ghc-lib-parser >=9.12 && <9.13,
++    ghc-lib-parser >=9.14 && <9.15,
+     megaparsec >=9,
+     mtl >=2 && <3,
+     syb >=0.7 && <0.8,
+@@ -133,13 +132,13 @@ executable ormolu
+   autogen-modules: Paths_ormolu
+   default-language: GHC2021
+   build-depends:
+-    Cabal-syntax >=3.14 && <3.15,
++    Cabal-syntax >=3.16 && <3.17,
+     base >=4.12 && <5,
+-    containers >=0.5 && <0.8,
++    containers >=0.5 && <0.9,
+     directory ^>=1.3,
+     filepath >=1.2 && <1.6,
+-    ghc-lib-parser >=9.12 && <9.13,
+-    optparse-applicative >=0.14 && <0.19,
++    ghc-lib-parser >=9.14 && <9.15,
++    optparse-applicative >=0.14 && <0.20,
+     ormolu,
+     text >=2.1 && <3,
+     th-env >=0.1.1 && <0.2,
+@@ -184,14 +183,14 @@ test-suite tests
+ 
+   default-language: GHC2021
+   build-depends:
+-    Cabal-syntax >=3.14 && <3.15,
++    Cabal-syntax >=3.16 && <3.17,
+     QuickCheck >=2.14,
+     base >=4.14 && <5,
+     choice >=0.2.4.1 && <0.3,
+-    containers >=0.5 && <0.8,
++    containers >=0.5 && <0.9,
+     directory ^>=1.3,
+     filepath >=1.2 && <1.6,
+-    ghc-lib-parser >=9.12 && <9.13,
++    ghc-lib-parser >=9.14 && <9.15,
+     hspec >=2 && <3,
+     hspec-megaparsec >=2.2,
+     megaparsec >=9,
+diff --git a/src/GHC/DynFlags.hs b/src/GHC/DynFlags.hs
+index 2b46bb7bb..04feacef0 100644
+--- a/src/GHC/DynFlags.hs
++++ b/src/GHC/DynFlags.hs
+@@ -7,10 +7,12 @@ module GHC.DynFlags
+   )
+ where
+ 
++import GHC.Data.FastString
+ import GHC.Driver.Session
+ import GHC.Platform
+ import GHC.Settings
+ import GHC.Settings.Config
++import GHC.Unit.Types
+ import GHC.Utils.Fingerprint
+ 
+ fakeSettings :: Settings
+@@ -43,6 +45,10 @@ fakeSettings =
+             platform_constants = Nothing
+           },
+       sPlatformMisc = PlatformMisc {},
++      sUnitSettings =
++        UnitSettings
++          { unitSettings_baseUnitId = UnitId $ fsLit "ormolu"
++          },
+       sToolSettings =
+         ToolSettings
+           { toolSettings_opt_P_fingerprint = fingerprint0,
+diff --git a/src/Ormolu/Diff/ParseResult.hs b/src/Ormolu/Diff/ParseResult.hs
+index 7ad72ebc3..7ac6d50ea 100644
+--- a/src/Ormolu/Diff/ParseResult.hs
++++ b/src/Ormolu/Diff/ParseResult.hs
+@@ -98,10 +98,12 @@ diffHsModule = genericQuery
+                   `extQ` considerEqual @EpLayout
+                   `extQ` considerEqual @AnnSig
+                   `extQ` considerEqual @HsRuleAnn
+-                  `extQ` considerEqual @EpLinearArrow
++                  `extQ` considerEqual @EpLinear
+                   `extQ` considerEqual @AnnSynDecl
+                   -- FastString (for example for string literals)
+                   `extQ` considerEqualVia' ((==) @FastString)
++                  -- ModuleName is a newtype of FastString
++                  `extQ` considerEqualVia' ((==) @ModuleName)
+                   -- Haddock strings
+                   `extQ` hsDocStringEq
+                   -- Whether imports are pre- or post-qualified
+@@ -153,6 +153,7 @@
+     epAnnEq :: EpAnn a -> b -> ParseResultDiff
+     epAnnEq _ _ = Same
+ 
++    importDeclQualifiedStyleEq :: (Data a) => ImportDeclQualifiedStyle -> a -> ParseResultDiff
+     importDeclQualifiedStyleEq = considerEqualVia' f
+       where
+         f QualifiedPre QualifiedPost = True
+diff --git a/src/Ormolu/Diff/Text.hs b/src/Ormolu/Diff/Text.hs
+index bd708f981..4db2d8a34 100644
+--- a/src/Ormolu/Diff/Text.hs
++++ b/src/Ormolu/Diff/Text.hs
+@@ -1,4 +1,3 @@
+-{-# LANGUAGE CPP #-}
+ {-# LANGUAGE LambdaCase #-}
+ {-# LANGUAGE OverloadedStrings #-}
+ {-# LANGUAGE QualifiedDo #-}
+@@ -24,9 +23,6 @@ import Data.Text qualified as T
+ import GHC.Types.SrcLoc
+ import Ormolu.Terminal
+ import Ormolu.Terminal.QualifiedDo qualified as Term
+-#if !MIN_VERSION_base(4,20,0)
+-import Data.List (foldl')
+-#endif
+ 
+ ----------------------------------------------------------------------------
+ -- Types
+diff --git a/src/Ormolu/Imports.hs b/src/Ormolu/Imports.hs
+index ef1165368..d129e458f 100644
+--- a/src/Ormolu/Imports.hs
++++ b/src/Ormolu/Imports.hs
+@@ -1,4 +1,3 @@
+-{-# LANGUAGE CPP #-}
+ {-# LANGUAGE DerivingStrategies #-}
+ {-# LANGUAGE LambdaCase #-}
+ {-# LANGUAGE RecordWildCards #-}
+@@ -26,9 +25,6 @@ import GHC.Types.PkgQual
+ import GHC.Types.SourceText
+ import GHC.Types.SrcLoc
+ import Ormolu.Utils (notImplemented, showOutputable)
+-#if !MIN_VERSION_base(4,20,0)
+-import Data.List (foldl')
+-#endif
+ 
+ -- | Sort and normalize imports.
+ normalizeImports :: [LImportDecl GhcPs] -> [LImportDecl GhcPs]
+@@ -216,6 +212,7 @@ compareIewn = (comparing fst <> (compareRdrName `on` unLoc . snd)) `on` classify
+       IEDefault _ x -> (1, x)
+       IEPattern _ x -> (2, x)
+       IEType _ x -> (3, x)
++      IEData _ x -> (4, x)
+ 
+ compareRdrName :: RdrName -> RdrName -> Ordering
+ compareRdrName x y =
+diff --git a/src/Ormolu/Parser.hs b/src/Ormolu/Parser.hs
+index 87c7b2a29..acc1a2e0f 100644
+--- a/src/Ormolu/Parser.hs
++++ b/src/Ormolu/Parser.hs
+@@ -28,7 +28,7 @@ import GHC.Data.EnumSet qualified as EnumSet
+ import GHC.Data.FastString qualified as GHC
+ import GHC.Data.Maybe (orElse)
+ import GHC.Data.StringBuffer (StringBuffer)
+-import GHC.Driver.Config.Parser (initParserOpts)
++import GHC.Driver.Config.Parser (initParserOpts, supportedLanguagePragmas)
+ import GHC.Driver.Errors.Types qualified as GHC
+ import GHC.Driver.Session as GHC
+ import GHC.DynFlags (baseDynFlags)
+@@ -43,6 +43,7 @@ import GHC.Types.SourceError qualified as GHC
+ import GHC.Types.SrcLoc
+ import GHC.Utils.Error
+ import GHC.Utils.Exception (ExceptionMonad)
++import GHC.Utils.Logger (initLogger)
+ import GHC.Utils.Panic qualified as GHC
+ import Ormolu.Config
+ import Ormolu.Exception
+@@ -306,10 +307,14 @@ parsePragmasIntoDynFlags flags extraOpts filepath input =
+     let (_warnings, fileOpts) =
+           GHC.getOptions
+             (initParserOpts flags)
++            (supportedLanguagePragmas flags)
+             input
+             filepath
++    -- 'initLogger' does not have any hooks installed, so we don't get any
++    -- (unwanted) output.
++    logger <- initLogger
+     (flags', leftovers, warnings) <-
+-      parseDynamicFilePragma flags (extraOpts <> fileOpts)
++      parseDynamicFilePragma logger flags (extraOpts <> fileOpts)
+     case NE.nonEmpty leftovers of
+       Nothing -> return ()
+       Just unrecognizedOpts ->
+diff --git a/src/Ormolu/Printer/Meat/Common.hs b/src/Ormolu/Printer/Meat/Common.hs
+index 73664570a..0389eca40 100644
+--- a/src/Ormolu/Printer/Meat/Common.hs
++++ b/src/Ormolu/Printer/Meat/Common.hs
+@@ -15,7 +15,7 @@ module Ormolu.Printer.Meat.Common
+     p_hsDocName,
+     p_sourceText,
+     p_namespaceSpec,
+-    p_arrow,
++    p_hsMultAnn,
+   )
+ where
+ 
+@@ -28,13 +28,13 @@ import GHC.Hs.Binds
+ import GHC.Hs.Doc
+ import GHC.Hs.Extension (GhcPs)
+ import GHC.Hs.ImpExp
++import GHC.Hs.Type
+ import GHC.LanguageExtensions.Type (Extension (..))
+ import GHC.Parser.Annotation
+ import GHC.Types.Name.Occurrence (OccName (..), occNameString)
+ import GHC.Types.Name.Reader
+ import GHC.Types.SourceText
+ import GHC.Types.SrcLoc
+-import Language.Haskell.Syntax (HsArrowOf (..))
+ import Language.Haskell.Syntax.Module.Name
+ import Ormolu.Config (SourceType (..))
+ import Ormolu.Printer.Combinators
+@@ -72,6 +72,10 @@ p_ieWrappedName = \case
+     txt "type"
+     space
+     p_rdrName x
++  IEData _ x -> do
++    txt "data"
++    space
++    p_rdrName x
+ 
+ -- | Render a @'LocatedN' 'RdrName'@.
+ p_rdrName :: LocatedN RdrName -> R ()
+@@ -208,12 +212,8 @@ p_namespaceSpec = \case
+   TypeNamespaceSpecifier _ -> txt "type" *> space
+   DataNamespaceSpecifier _ -> txt "data" *> space
+ 
+-p_arrow :: (mult -> R ()) -> HsArrowOf mult GhcPs -> R ()
+-p_arrow p_mult = \case
+-  HsUnrestrictedArrow _ -> txt "->"
+-  HsLinearArrow _ -> txt "%1 ->"
+-  HsExplicitMult _ mult -> do
+-    txt "%"
+-    p_mult mult
+-    space
+-    txt "->"
++p_hsMultAnn :: (mult -> R ()) -> HsMultAnnOf mult GhcPs -> R ()
++p_hsMultAnn p_mult = \case
++  HsUnannotated _ -> pure ()
++  HsLinearAnn _ -> txt "%1"
++  HsExplicitMult _ mult -> txt "%" *> p_mult mult
+diff --git a/src/Ormolu/Printer/Meat/Declaration.hs b/src/Ormolu/Printer/Meat/Declaration.hs
+index 28fbf2424..7221eab4f 100644
+--- a/src/Ormolu/Printer/Meat/Declaration.hs
++++ b/src/Ormolu/Printer/Meat/Declaration.hs
+@@ -256,7 +256,7 @@ pattern
+   TypeSynonym ::
+     RdrName -> HsDecl GhcPs
+ pattern InlinePragma n <- SigD _ (InlineSig _ (L _ n) _)
+-pattern SpecializePragma n <- SigD _ (SpecSig _ (L _ n) _ _)
++pattern SpecializePragma n <- SigD _ (isSpecSig -> Just n)
+ pattern SCCPragma n <- SigD _ (SCCFunSig _ (L _ n) _)
+ pattern AnnTypePragma n <- AnnD _ (HsAnnotation _ (TypeAnnProvenance (L _ n)) _)
+ pattern AnnValuePragma n <- AnnD _ (HsAnnotation _ (ValueAnnProvenance (L _ n)) _)
+@@ -267,6 +267,12 @@ pattern KindSignature n <- KindSigD _ (StandaloneKindSig _ (L _ n) _)
+ pattern FamilyDeclaration n <- TyClD _ (FamDecl _ (FamilyDecl _ _ _ (L _ n) _ _ _ _))
+ pattern TypeSynonym n <- TyClD _ (SynDecl _ (L _ n) _ _ _)
+ 
++isSpecSig :: Sig GhcPs -> Maybe RdrName
++isSpecSig = \case
++  SpecSig _ (L _ n) _ _ -> Just n
++  SpecSigE _ _ (deconstructExprFromSpecSigE -> (L _ n, _, _)) _ -> Just n
++  _ -> Nothing
++
+ -- Declarations which can refer to multiple names
+ 
+ pattern
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Data.hs b/src/Ormolu/Printer/Meat/Declaration/Data.hs
+index 916ee2190..02ade926c 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/Data.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/Data.hs
+@@ -19,7 +19,6 @@ import Data.Choice qualified as Choice
+ import Data.List.NonEmpty (NonEmpty (..))
+ import Data.List.NonEmpty qualified as NE
+ import Data.Maybe (isJust, isNothing, maybeToList)
+-import Data.Void
+ import GHC.Hs
+ import GHC.Types.Fixity
+ import GHC.Types.ForeignCall
+@@ -141,66 +140,78 @@ p_conDecl _ ConDeclGADT {..} = do
+     unless (null cs) . inci $ do
+       commaDel
+       sep commaDel p_rdrName cs
+-    inci $ do
+-      let conTy = case con_g_args of
+-            PrefixConGADT NoExtField xs ->
+-              let go (HsScaled a b) t = addCLocA t b (HsFunTy NoExtField a b t)
+-               in foldr go con_res_ty xs
+-            RecConGADT _ r ->
+-              addCLocA r con_res_ty $
+-                HsFunTy
+-                  NoExtField
+-                  (HsUnrestrictedArrow noAnn)
+-                  (la2la $ HsRecTy noAnn <$> r)
+-                  con_res_ty
+-          qualTy = case con_mb_cxt of
+-            Nothing -> conTy
+-            Just qs ->
+-              addCLocA qs conTy $
+-                HsQualTy NoExtField qs conTy
+-          quantifiedTy :: LHsType GhcPs
+-          quantifiedTy =
+-            addCLocA con_bndrs qualTy $
+-              hsOuterTyVarBndrsToHsType (unLoc con_bndrs) qualTy
+-      space
+-      txt "::"
+-      if hasDocStrings (unLoc con_res_ty)
+-        then newline
+-        else breakpoint
+-      located quantifiedTy p_hsType
++    space
++    txt "::"
++    delimiter
++    inci . switchLayout conSigSpans $ do
++      located con_outer_bndrs p_hsOuterTyVarBndrs
++      case unLoc con_outer_bndrs of
++        HsOuterImplicit {} -> pure ()
++        HsOuterExplicit {} -> delimiter
++      forM_ con_inner_bndrs $ \tele -> do
++        p_hsForAllTelescope tele
++        delimiter
++      forM_ con_mb_cxt $ \qs -> do
++        located qs p_hsContext
++        space
++        txt "=>"
++        delimiter
++      switchLayout conArgResSpans $ do
++        case con_g_args of
++          PrefixConGADT NoExtField xs ->
++            forM_ xs $ \x -> do
++              p_hsConDeclFieldWithDoc x
++              space
++              p_hsMultAnn (located' p_hsType) (cdf_multiplicity x)
++              space
++              txt "->"
++              delimiter
++          RecConGADT _ x -> do
++            located x p_hsConDeclRecFields
++            space
++            txt "->"
++            delimiter
++        located con_res_ty p_hsType
+   where
++    delimiter = if anyDocStrings then newline else breakpoint
++    anyDocStrings =
++      hasDocStrings (unLoc con_res_ty) || case con_g_args of
++        PrefixConGADT _ xs -> conArgsHaveHaddocks xs
++        RecConGADT _ (L _ xs) -> conArgsHaveHaddocks $ cdrf_spec . unLoc <$> xs
++
+     conDeclSpn =
+-      fmap getLocA (NE.toList con_names)
+-        <> [getLocA con_bndrs]
++      fmap getLocA (NE.toList con_names) <> conSigSpans
++    conSigSpans =
++      [getLocA con_outer_bndrs]
+         <> maybeToList (fmap getLocA con_mb_cxt)
+-        <> conArgsSpans
+-    conArgsSpans = case con_g_args of
+-      PrefixConGADT NoExtField xs -> getLocA . hsScaledThing <$> xs
+-      RecConGADT _ x -> [getLocA x]
++        <> conArgResSpans
++    conArgResSpans =
++      getLocA con_res_ty : case con_g_args of
++        PrefixConGADT NoExtField xs -> getLocA . cdf_type <$> xs
++        RecConGADT _ x -> [getLocA x]
+ p_conDecl singleRecCon ConDeclH98 {..} =
+   case con_args of
+-    PrefixCon (_ :: [Void]) xs -> do
++    PrefixCon xs -> do
+       renderConDoc
+       renderContext
+       switchLayout conDeclSpn $ do
+         p_rdrName con_name
+-        let args = hsScaledThing <$> xs
+-            argsHaveDocs = conArgsHaveHaddocks args
++        let argsHaveDocs = conArgsHaveHaddocks xs
+             delimiter = if argsHaveDocs then newline else breakpoint
+         unless (null xs) delimiter
+         inci . sitcc $
+-          sep delimiter (sitcc . located' p_hsType) args
++          sep delimiter (sitcc . p_hsConDeclFieldWithDoc) xs
+     RecCon l -> do
+       renderConDoc
+       renderContext
+       switchLayout conDeclSpn $ do
+         p_rdrName con_name
+         breakpoint
+-        inciIf (Choice.isFalse singleRecCon) (located l p_conDeclFields)
+-    InfixCon (HsScaled _ l) (HsScaled _ r) -> do
++        inciIf (Choice.isFalse singleRecCon) (located l p_hsConDeclRecFields)
++    InfixCon l r -> do
+       -- manually render these
+-      let (lType, larg_doc) = splitDocTy l
+-      let (rType, rarg_doc) = splitDocTy r
++      let larg_doc = cdf_doc l
++          rarg_doc = cdf_doc r
+ 
+       -- the constructor haddock can go on top of the entire constructor
+       -- only if neither argument has haddocks
+@@ -213,10 +224,10 @@ p_conDecl singleRecCon ConDeclH98 {..} =
+         if isJust con_doc
+           then do
+             mapM_ (p_hsDoc Pipe (With #endNewline)) larg_doc
+-            located lType p_hsType
++            p_hsConDeclField l
+             breakpoint
+           else do
+-            located lType p_hsType
++            p_hsConDeclField l
+             case larg_doc of
+               Just doc -> space >> p_hsDoc Caret (With #endNewline) doc
+               Nothing -> breakpoint
+@@ -226,7 +237,7 @@ p_conDecl singleRecCon ConDeclH98 {..} =
+           case rarg_doc of
+             Just doc -> newline >> p_hsDoc Pipe (With #endNewline) doc
+             Nothing -> breakpoint
+-          located rType p_hsType
++          p_hsConDeclField r
+   where
+     renderConDoc = mapM_ (p_hsDoc Pipe (With #endNewline)) con_doc
+     renderContext =
+@@ -244,13 +255,9 @@ p_conDecl singleRecCon ConDeclH98 {..} =
+     conDeclSpn = conNameSpn : conArgsSpans
+     conNameSpn = getLocA con_name
+     conArgsSpans = case con_args of
+-      PrefixCon (_ :: [Void]) xs -> getLocA . hsScaledThing <$> xs
++      PrefixCon xs -> getLocA . cdf_type <$> xs
+       RecCon l -> [getLocA l]
+-      InfixCon x y -> getLocA . hsScaledThing <$> [x, y]
+-
+-    splitDocTy = \case
+-      L _ (HsDocTy _ ty doc) -> (ty, Just doc)
+-      ty -> (ty, Nothing)
++      InfixCon x y -> getLocA . cdf_type <$> [x, y]
+ 
+ p_lhsContext ::
+   LHsContext GhcPs ->
+@@ -321,14 +328,9 @@ hasHaddocks = any (f . unLoc)
+   where
+     f ConDeclH98 {..} =
+       isJust con_doc || case con_args of
+-        PrefixCon [] xs ->
+-          conArgsHaveHaddocks (hsScaledThing <$> xs)
++        PrefixCon xs -> conArgsHaveHaddocks xs
+         _ -> False
+     f _ = False
+ 
+-conArgsHaveHaddocks :: [LBangType GhcPs] -> Bool
+-conArgsHaveHaddocks xs =
+-  let hasDocs = \case
+-        HsDocTy {} -> True
+-        _ -> False
+-   in any (hasDocs . unLoc) xs
++conArgsHaveHaddocks :: [HsConDeclField GhcPs] -> Bool
++conArgsHaveHaddocks = any (isJust . cdf_doc)
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Foreign.hs b/src/Ormolu/Printer/Meat/Declaration/Foreign.hs
+index 60d869540..ca6f877f7 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/Foreign.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/Foreign.hs
+@@ -9,10 +9,12 @@ where
+ import Control.Monad
+ import GHC.Hs
+ import GHC.Types.ForeignCall
++import GHC.Types.SourceText
+ import GHC.Types.SrcLoc
+ import Ormolu.Printer.Combinators
+ import Ormolu.Printer.Meat.Common
+ import Ormolu.Printer.Meat.Declaration.Signature
++import Ormolu.Printer.Meat.Declaration.StringLiteral
+ 
+ p_foreignDecl :: ForeignDecl GhcPs -> R ()
+ p_foreignDecl = \case
+@@ -56,8 +58,11 @@ p_foreignImport (CImport sourceText cCallConv safety _ _) = do
+   located cCallConv atom
+   -- Need to check for 'noLoc' for the 'safe' annotation
+   when (isGoodSrcSpan $ getLocA safety) (space >> atom safety)
+-  space
+-  located sourceText p_sourceText
++  inci $ located sourceText $ \case
++    NoSourceText -> pure ()
++    SourceText lit -> do
++      breakpoint
++      p_stringLit lit
+ 
+ p_foreignExport :: ForeignExport GhcPs -> R ()
+ p_foreignExport (CExport sourceText (L loc (CExportStatic _ _ cCallConv))) = do
+diff --git a/src/Ormolu/Printer/Meat/Declaration/OpTree.hs b/src/Ormolu/Printer/Meat/Declaration/OpTree.hs
+index 04a9e15f5..3b165d03d 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/OpTree.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/OpTree.hs
+@@ -132,12 +132,7 @@ p_exprOpTree s t@(OpBranches exprs@(firstExpr :| otherExprs) ops) = do
+       putOpsExprs prevExpr (opi : ops') (expr : exprs') = do
+         let isLast = null exprs'
+             ub' = if not isLast then ub else id
+-            -- Distinguish holes used in infix notation.
+-            -- eg. '1 _foo 2' and '1 `_foo` 2'
+-            opWrapper = case unLoc (opiOp opi) of
+-              HsUnboundVar _ _ -> backticks
+-              _ -> id
+-            p_op = located (opiOp opi) (opWrapper . p_hsExpr)
++            p_op = located (opiOp opi) p_hsExpr
+             p_y = ub' $ p_exprOpTree N expr
+         if isTrailing
+           then do
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Rule.hs b/src/Ormolu/Printer/Meat/Declaration/Rule.hs
+index 1ff8d0714..e9fe25147 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/Rule.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/Rule.hs
+@@ -4,16 +4,16 @@
+ 
+ module Ormolu.Printer.Meat.Declaration.Rule
+   ( p_ruleDecls,
++    p_ruleBndrs,
+   )
+ where
+ 
+-import Control.Monad (unless)
+ import GHC.Hs
+ import GHC.Types.Basic
+ import GHC.Types.SourceText
+ import Ormolu.Printer.Combinators
+ import Ormolu.Printer.Meat.Common
+-import Ormolu.Printer.Meat.Declaration.Signature
++import {-# SOURCE #-} Ormolu.Printer.Meat.Declaration.Signature
+ import Ormolu.Printer.Meat.Declaration.Value
+ import Ormolu.Printer.Meat.Type
+ 
+@@ -22,21 +22,12 @@ p_ruleDecls (HsRules _ xs) =
+   pragma "RULES" $ sep breakpoint (sitcc . located' p_ruleDecl) xs
+ 
+ p_ruleDecl :: RuleDecl GhcPs -> R ()
+-p_ruleDecl (HsRule _ ruleName activation tyvars ruleBndrs lhs rhs) = do
++p_ruleDecl (HsRule _ ruleName activation ruleBndrs lhs rhs) = do
+   located ruleName p_ruleName
+   space
+   p_activation activation
+   space
+-  case tyvars of
+-    Nothing -> return ()
+-    Just xs -> do
+-      p_forallBndrs ForAllInvis p_hsTyVarBndr xs
+-      space
+-  -- It appears that there is no way to tell if there was an empty forall
+-  -- in the input or no forall at all. We do not want to add redundant
+-  -- foralls, so let's just skip the empty ones.
+-  unless (null ruleBndrs) $
+-    p_forallBndrs ForAllInvis p_ruleBndr ruleBndrs
++  p_ruleBndrs ruleBndrs
+   breakpoint
+   inci $ do
+     located lhs p_hsExpr
+@@ -49,6 +40,17 @@ p_ruleDecl (HsRule _ ruleName activation tyvars ruleBndrs lhs rhs) = do
+ p_ruleName :: RuleName -> R ()
+ p_ruleName name = atom (HsString NoSourceText name :: HsLit GhcPs)
+ 
++p_ruleBndrs :: RuleBndrs GhcPs -> R ()
++p_ruleBndrs (RuleBndrs HsRuleBndrsAnn {..} tyvars ruleBndrs) = do
++  case tyvars of
++    Nothing -> return ()
++    Just xs -> do
++      p_forallBndrs ForAllInvis p_hsTyVarBndr xs
++      space
++  case rb_tmanns of
++    Nothing -> pure ()
++    Just _ -> p_forallBndrs ForAllInvis p_ruleBndr ruleBndrs
++
+ p_ruleBndr :: RuleBndr GhcPs -> R ()
+ p_ruleBndr = \case
+   RuleBndr _ x -> p_rdrName x
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Signature.hs b/src/Ormolu/Printer/Meat/Declaration/Signature.hs
+index bdf95716d..714957af5 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/Signature.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/Signature.hs
+@@ -1,6 +1,7 @@
+ {-# LANGUAGE LambdaCase #-}
+ {-# LANGUAGE OverloadedStrings #-}
+ {-# LANGUAGE RecordWildCards #-}
++{-# LANGUAGE ViewPatterns #-}
+ 
+ -- | Type signature declarations.
+ module Ormolu.Printer.Meat.Declaration.Signature
+@@ -8,12 +9,15 @@ module Ormolu.Printer.Meat.Declaration.Signature
+     p_typeAscription,
+     p_activation,
+     p_standaloneKindSig,
++    deconstructExprFromSpecSigE,
+   )
+ where
+ 
+ import Control.Monad
++import Data.Maybe (maybeToList)
+ import GHC.Data.BooleanFormula
+ import GHC.Hs
++import GHC.Stack (HasCallStack)
+ import GHC.Types.Basic
+ import GHC.Types.Fixity
+ import GHC.Types.Name.Reader
+@@ -21,6 +25,8 @@ import GHC.Types.SourceText
+ import GHC.Types.SrcLoc
+ import Ormolu.Printer.Combinators
+ import Ormolu.Printer.Meat.Common
++import Ormolu.Printer.Meat.Declaration.Rule
++import Ormolu.Printer.Meat.Declaration.Value (p_hsExpr)
+ import Ormolu.Printer.Meat.Type
+ import Ormolu.Utils
+ 
+@@ -31,7 +37,9 @@ p_sigDecl = \case
+   ClassOpSig _ def names sigType -> p_classOpSig def names sigType
+   FixSig _ sig -> p_fixSig sig
+   InlineSig _ name inlinePragma -> p_inlineSig name inlinePragma
+-  SpecSig _ name ts inlinePragma -> p_specSig name ts inlinePragma
++  SpecSig _ name ts inlinePragma ->
++    p_specSig Nothing (noLocA $ HsVar NoExtField name) ts inlinePragma
++  SpecSigE _ ruleBndrs expr inlinePragma -> p_specSigE ruleBndrs expr inlinePragma
+   SpecInstSig _ sigType -> p_specInstSig sigType
+   MinimalSig _ booleanFormula -> p_minimalSig booleanFormula
+   CompleteMatchSig _ cs ty -> p_completeSig cs ty
+@@ -122,25 +130,68 @@ p_inlineSig name InlinePragma {..} = pragmaBraces $ do
+   p_rdrName name
+ 
+ p_specSig ::
+-  -- | Name
+-  LocatedN RdrName ->
++  -- | Rule binders
++  Maybe (RuleBndrs GhcPs) ->
++  -- | Expression to specialize
++  LHsExpr GhcPs ->
+   -- | The types to specialize to
+   [LHsSigType GhcPs] ->
+   -- | For specialize inline
+   InlinePragma ->
+   R ()
+-p_specSig name ts InlinePragma {..} = pragmaBraces $ do
++p_specSig mRuleBndrs specExpr ts InlinePragma {..} = pragmaBraces $ do
+   txt "SPECIALIZE"
+   space
+   p_inlineSpec inl_inline
+   space
+   p_activation inl_act
+-  space
+-  p_rdrName name
+-  space
+-  txt "::"
+-  breakpoint
+-  inci $ sep commaDel (located' p_hsSigType) ts
++  inci $ do
++    space
++    forM_ mRuleBndrs $ \ruleBndrs -> do
++      p_ruleBndrs ruleBndrs
++      space
++    located specExpr p_hsExpr
++    case ts of
++      [] -> pure ()
++      _ -> do
++        space
++        txt "::"
++        breakpoint
++        sep commaDel (located' p_hsSigType) ts
++
++p_specSigE ::
++  -- | Rule binders
++  RuleBndrs GhcPs ->
++  -- | Expression to specialize
++  LHsExpr GhcPs ->
++  -- | For specialize inline
++  InlinePragma ->
++  R ()
++p_specSigE ruleBndrs expr =
++  p_specSig (Just ruleBndrs) specExpr (maybeToList sigTy)
++  where
++    (_, specExpr, sigTy) = deconstructExprFromSpecSigE expr
++
++-- | The 'LHsExpr' in a 'SpecSigE' can only be of a very specific form, namely a
++-- variable applied to value/type-level arguments, optionally with a type
++-- signature.
++--
++-- https://github.com/ghc-proposals/ghc-proposals/blob/e2c683698323cec3e33625369ae2b5f585387c70/proposals/0493-specialise-expressions.rst#2proposed-change-specification
++deconstructExprFromSpecSigE ::
++  (HasCallStack) =>
++  LHsExpr GhcPs ->
++  (LocatedN RdrName, LHsExpr GhcPs, Maybe (LHsSigType GhcPs))
++deconstructExprFromSpecSigE = \case
++  L _ (ExprWithTySig _ e HsWC {hswc_body}) ->
++    (findVar e, e, Just hswc_body)
++  e -> (findVar e, e, Nothing)
++  where
++    findVar :: LHsExpr GhcPs -> LocatedN RdrName
++    findVar = \case
++      L _ (HsVar _ name) -> name
++      L _ (HsApp _ e _) -> findVar e
++      L _ (HsAppType _ e _) -> findVar e
++      _ -> error "unreachble"
+ 
+ p_inlineSpec :: InlineSpec -> R ()
+ p_inlineSpec = \case
+@@ -171,7 +222,7 @@ p_specInstSig sigType =
+ 
+ p_minimalSig ::
+   -- | Boolean formula
+-  LBooleanFormula (LocatedN RdrName) ->
++  LBooleanFormula GhcPs ->
+   R ()
+ p_minimalSig =
+   located' $ \booleanFormula ->
+@@ -179,7 +230,7 @@ p_minimalSig =
+ 
+ p_booleanFormula ::
+   -- | Boolean formula
+-  BooleanFormula (LocatedN RdrName) ->
++  BooleanFormula GhcPs ->
+   R ()
+ p_booleanFormula = \case
+   Var name -> p_rdrName name
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Signature.hs-boot b/src/Ormolu/Printer/Meat/Declaration/Signature.hs-boot
+new file mode 100644
+index 000000000..a658f4bdb
+--- /dev/null
++++ b/src/Ormolu/Printer/Meat/Declaration/Signature.hs-boot
+@@ -0,0 +1,14 @@
++module Ormolu.Printer.Meat.Declaration.Signature
++  ( p_sigDecl,
++    p_typeAscription,
++    p_activation,
++  )
++where
++
++import GHC.Hs
++import GHC.Types.Basic
++import Ormolu.Printer.Combinators
++
++p_sigDecl :: Sig GhcPs -> R ()
++p_typeAscription :: LHsSigType GhcPs -> R ()
++p_activation :: Activation -> R ()
+diff --git a/src/Ormolu/Printer/Meat/Declaration/StringLiteral.hs b/src/Ormolu/Printer/Meat/Declaration/StringLiteral.hs
+index e6047f70f..d335f87d7 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/StringLiteral.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/StringLiteral.hs
+@@ -91,13 +91,26 @@ parseStringLiteral = \s -> do
+       where
+         go [] = [s]
+         go ((pre, suf) : bs) = case T.uncons suf of
+-          Just ('\\', T.uncons -> Just (c, s'))
+-            | is_space c,
+-              let rest = T.drop 1 $ T.dropWhile (/= '\\') s' ->
++          Just ('\\', suf')
++            | (gap, T.uncons -> Just ('\\', rest)) <- T.span is_space suf',
++              -- If there is a space after the backslash, this definitely is a
++              -- string gap. Continue parsing gaps after the next backslash.
++              not $ T.null gap ->
+                 pre : splitGaps rest
+-            | otherwise -> go $ (if c == '\\' then drop 1 else id) bs
++            | otherwise ->
++                -- Check whether @suf@ starts with an escape sequence involving
++                -- another backslash. If so, it can not be the start of a string
++                -- gap, so we skip it.
++                let skipNextBackslash =
++                      any (`T.isPrefixOf` suf') escapesWithAnotherBackslash
++                 in go $ (if skipNextBackslash then drop 1 else id) bs
+           _ -> go bs
+ 
++        -- All escape sequences (without the initial backslash) with another
++        -- backslash. See
++        -- https://www.haskell.org/onlinereport/haskell2010/haskellch2.html#x7-200002.6
++        escapesWithAnotherBackslash = ["\\", "^\\"]
++
+     -- See the the MultilineStrings GHC proposal and 'lexMultilineString' from
+     -- "GHC.Parser.String" for reference.
+     --
+diff --git a/src/Ormolu/Printer/Meat/Declaration/Value.hs b/src/Ormolu/Printer/Meat/Declaration/Value.hs
+index 2f6f0cc22..8c5212309 100644
+--- a/src/Ormolu/Printer/Meat/Declaration/Value.hs
++++ b/src/Ormolu/Printer/Meat/Declaration/Value.hs
+@@ -28,7 +28,6 @@ import Data.List.NonEmpty (NonEmpty (..), (<|))
+ import Data.List.NonEmpty qualified as NE
+ import Data.Maybe
+ import Data.Text (Text)
+-import Data.Void
+ import GHC.Data.Strict qualified as Strict
+ import GHC.Hs
+ import GHC.LanguageExtensions.Type (Extension (NegativeLiterals))
+@@ -42,7 +41,7 @@ import Ormolu.Printer.Combinators
+ import Ormolu.Printer.Meat.Common
+ import {-# SOURCE #-} Ormolu.Printer.Meat.Declaration
+ import {-# SOURCE #-} Ormolu.Printer.Meat.Declaration.OpTree
+-import Ormolu.Printer.Meat.Declaration.Signature
++import {-# SOURCE #-} Ormolu.Printer.Meat.Declaration.Signature
+ import Ormolu.Printer.Meat.Declaration.StringLiteral
+ import Ormolu.Printer.Meat.Type
+ import Ormolu.Printer.Operators
+@@ -112,7 +111,7 @@ p_matchGroup' placer render style mg@MG {..} = do
+         render
+         (adjustMatchGroupStyle m style)
+         (isInfixMatch m)
+-        (HsNoMultAnn NoExtField)
++        (HsUnannotated EpPatBind)
+         (matchStrictness m)
+         -- We use the spans of the individual patterns.
+         (unLoc m_pats)
+@@ -181,13 +180,11 @@ p_match' placer render style isInfix multAnn strictness m_pats GRHSs {..} = do
+   -- would start with two indentation steps applied, which is ugly, so we
+   -- need to be a bit more clever here and bump indentation level only when
+   -- pattern group is multiline.
++  p_hsMultAnn (located' p_hsType) multAnn
+   case multAnn of
+-    HsNoMultAnn NoExtField -> pure ()
+-    HsPct1Ann _ -> txt "%1" *> space
+-    HsMultAnn _ ty -> do
+-      txt "%"
+-      located ty p_hsType
+-      space
++    HsUnannotated {} -> pure ()
++    HsLinearAnn {} -> space
++    HsExplicitMult {} -> space
+   case strictness of
+     NoSrcStrict -> return ()
+     SrcStrict -> txt "!"
+@@ -246,7 +243,7 @@ p_match' placer render style isInfix multAnn strictness m_pats GRHSs {..} = do
+       hasGuards = withGuards grhssGRHSs
+       grhssSpan =
+         combineSrcSpans' $
+-          getGRHSSpan . unLoc <$> NE.fromList grhssGRHSs
++          getGRHSSpan . unLoc <$> grhssGRHSs
+       patGrhssSpan =
+         maybe
+           grhssSpan
+@@ -272,7 +269,7 @@ p_match' placer render style isInfix multAnn strictness m_pats GRHSs {..} = do
+         sep
+           breakpoint
+           (located' (p_grhs' placement placer render groupStyle))
+-          grhssGRHSs
++          (NE.toList grhssGRHSs)
+       p_where = do
+         unless (eqEmptyLocalBinds grhssLocalBinds) $ do
+           breakpoint
+@@ -562,8 +559,8 @@ p_dotFieldOcc :: DotFieldOcc GhcPs -> R ()
+ p_dotFieldOcc =
+   p_rdrName . fmap (mkVarUnqual . field_label) . dfoLabel
+ 
+-p_dotFieldOccs :: [DotFieldOcc GhcPs] -> R ()
+-p_dotFieldOccs = sep (txt ".") p_dotFieldOcc
++p_dotFieldOccs :: NonEmpty (DotFieldOcc GhcPs) -> R ()
++p_dotFieldOccs = sep (txt ".") p_dotFieldOcc . NE.toList
+ 
+ p_fieldOcc :: FieldOcc GhcPs -> R ()
+ p_fieldOcc FieldOcc {..} = p_rdrName foLabel
+@@ -604,7 +601,6 @@ inciApplicand = \case
+ p_hsExpr' :: IsApplicand -> BracketStyle -> HsExpr GhcPs -> R ()
+ p_hsExpr' isApp s = \case
+   HsVar _ name -> p_rdrName name
+-  HsUnboundVar _ occ -> atom occ
+   HsOverLabel sourceText _ -> do
+     txt "#"
+     p_sourceText sourceText
+@@ -734,7 +730,8 @@ p_hsExpr' isApp s = \case
+   HsMultiIf _ guards -> do
+     txt "if"
+     breakpoint
+-    inciApplicand isApp $ sep breakpoint (located' (p_grhs RightArrow)) guards
++    inciApplicand isApp $
++      sep breakpoint (located' (p_grhs RightArrow)) (NE.toList guards)
+   HsLet _ localBinds e ->
+     p_let p_hsExpr localBinds e
+   HsDo _ doFlavor es -> do
+@@ -780,7 +777,7 @@ p_hsExpr' isApp s = \case
+     located gf_field p_dotFieldOcc
+   HsProjection {..} -> parens N $ do
+     txt "."
+-    p_dotFieldOccs (NE.toList proj_flds)
++    p_dotFieldOccs proj_flds
+   ExprWithTySig _ x HsWC {hswc_body} -> sitcc $ do
+     located x p_hsExpr
+     space
+@@ -816,7 +813,7 @@ p_hsExpr' isApp s = \case
+     breakpoint'
+     txt "||]"
+   HsUntypedBracket _ x -> p_hsQuote x
+-  HsTypedSplice _ expr -> p_hsSpliceTH True expr DollarSplice
++  HsTypedSplice _ (HsTypedSpliceExpr _ expr) -> p_hsSpliceTH True expr DollarSplice
+   HsUntypedSplice _ untySplice -> p_hsUntypedSplice DollarSplice untySplice
+   HsProc _ p e -> do
+     txt "proc"
+@@ -843,6 +840,9 @@ p_hsExpr' isApp s = \case
+     txt "type"
+     space
+     located hswc_body p_hsType
++  HsHole holeKind -> case holeKind of
++    HoleVar name -> p_rdrName name
++    HoleError -> error "parse error"
+   -- similar to HsForAllTy
+   HsForAll _ tele e -> do
+     p_hsForAllTelescope tele
+@@ -856,10 +856,12 @@ p_hsExpr' isApp s = \case
+     breakpoint
+     located e p_hsExpr
+   -- similar to HsFunTy
+-  HsFunArr _ arrow x y -> do
++  HsFunArr _ multAnn x y -> do
+     located x p_hsExpr
+     space
+-    p_arrow (located' p_hsExpr) arrow
++    p_hsMultAnn (located' p_hsExpr) multAnn
++    space
++    txt "->"
+     breakpoint
+     case unLoc y of
+       HsFunArr {} -> p_hsExpr (unLoc y)
+@@ -962,7 +964,7 @@ gatherStmts = \case
+   -- will be ParStmt.
+   [L _ (ParStmt _ blocks _ _)] ->
+     [ concatMap collectNonParStmts stmts
+-    | ParStmtBlock _ stmts _ _ <- blocks
++    | ParStmtBlock _ stmts _ _ <- NE.toList blocks
+     ]
+   -- Otherwise, list will not contain any ParStmt
+   stmts ->
+@@ -1003,7 +1005,7 @@ p_patSynBind PSB {..} = do
+             inci (p_matchGroup (Function psb_id) mgroup)
+   txt "pattern"
+   case psb_args of
+-    PrefixCon [] xs -> do
++    PrefixCon xs -> do
+       space
+       p_rdrName psb_id
+       inci $ do
+@@ -1012,7 +1014,6 @@ p_patSynBind PSB {..} = do
+           unless (null xs) breakpoint
+           sitcc (sep breakpoint p_rdrName xs)
+         rhs conSpans
+-    PrefixCon (v : _) _ -> absurd v
+     RecCon xs -> do
+       space
+       p_rdrName psb_id
+@@ -1178,12 +1179,10 @@ p_pat = \case
+     p_unboxedSum S tag arity (located pat p_pat)
+   ConPat _ pat details ->
+     case details of
+-      PrefixCon tys xs -> sitcc $ do
++      PrefixCon xs -> sitcc $ do
+         p_rdrName pat
+-        unless (null tys && null xs) breakpoint
+-        inci . sitcc $
+-          sep breakpoint (sitcc . either p_hsConPatTyArg (located' p_pat)) $
+-            (Left <$> tys) <> (Right <$> xs)
++        unless (null xs) breakpoint
++        inci . sitcc $ sep breakpoint (sitcc . located' p_pat) xs
+       RecCon (HsRecFields _ fields dotdot) -> do
+         p_rdrName pat
+         breakpoint
+@@ -1235,9 +1234,6 @@ p_pat = \case
+ p_tyPat :: HsTyPat GhcPs -> R ()
+ p_tyPat (HsTP _ ty) = txt "@" *> located ty p_hsType
+ 
+-p_hsConPatTyArg :: HsConPatTyArg GhcPs -> R ()
+-p_hsConPatTyArg (HsConPatTyArg _ patSigTy) = p_tyPat patSigTy
+-
+ p_pat_hsFieldBind :: HsRecField GhcPs (LPat GhcPs) -> R ()
+ p_pat_hsFieldBind HsFieldBind {..} = do
+   located hfbLHS p_fieldOcc
+@@ -1267,7 +1263,7 @@ p_hsUntypedSplice deco = \case
+   HsUntypedSpliceExpr _ expr -> p_hsSpliceTH False expr deco
+   HsQuasiQuote _ quoterName str -> do
+     txt "["
+-    p_rdrName (noLocA quoterName)
++    p_rdrName quoterName
+     txt "|"
+     -- QuasiQuoters often rely on precise custom strings. We cannot do any
+     -- formatting here without potentially breaking someone's code.
+@@ -1347,9 +1343,9 @@ getGRHSSpan (GRHS _ guards body) =
+ -- | Determine placement of a given block.
+ blockPlacement ::
+   (body -> Placement) ->
+-  [LGRHS GhcPs (LocatedA body)] ->
++  NonEmpty (LGRHS GhcPs (LocatedA body)) ->
+   Placement
+-blockPlacement placer [L _ (GRHS _ _ (L _ x))] = placer x
++blockPlacement placer (L _ (GRHS _ _ (L _ x)) :| []) = placer x
+ blockPlacement _ _ = Normal
+ 
+ -- | Determine placement of a given command.
+@@ -1393,7 +1389,7 @@ exprPlacement = \case
+   _ -> Normal
+ 
+ -- | Return 'True' if any of the RHS expressions has guards.
+-withGuards :: [LGRHS GhcPs body] -> Bool
++withGuards :: NonEmpty (LGRHS GhcPs body) -> Bool
+ withGuards = any (checkOne . unLoc)
+   where
+     checkOne (GRHS _ [] _) = False
+diff --git a/src/Ormolu/Printer/Meat/Type.hs b/src/Ormolu/Printer/Meat/Type.hs
+index d6d900612..9f9905376 100644
+--- a/src/Ormolu/Printer/Meat/Type.hs
++++ b/src/Ormolu/Printer/Meat/Type.hs
+@@ -14,11 +14,13 @@ module Ormolu.Printer.Meat.Type
+     p_hsTyVarBndr,
+     ForAllVisibility (..),
+     p_forallBndrs,
+-    p_conDeclFields,
++    p_hsConDeclRecFields,
++    p_hsConDeclField,
++    p_hsConDeclFieldWithDoc,
+     p_lhsTypeArg,
+     p_hsSigType,
+     p_hsForAllTelescope,
+-    hsOuterTyVarBndrsToHsType,
++    p_hsOuterTyVarBndrs,
+     lhsTypeToSigType,
+   )
+ where
+@@ -87,10 +89,12 @@ p_hsType' multilineArgs = \case
+     inci $ do
+       txt "@"
+       located kd p_hsType
+-  HsFunTy _ arrow x y -> do
++  HsFunTy _ multAnn x y -> do
+     located x p_hsType
+     space
+-    p_arrow (located' p_hsTypeR) arrow
++    p_hsMultAnn (located' p_hsTypeR) multAnn
++    space
++    txt "->"
+     interArgBreak
+     case unLoc y of
+       HsFunTy {} -> p_hsTypeR (unLoc y)
+@@ -134,18 +138,6 @@ p_hsType' multilineArgs = \case
+   HsDocTy _ t str -> do
+     p_hsDoc Pipe (With #endNewline) str
+     located t p_hsType
+-  HsBangTy _ (HsBang u s) t -> do
+-    case u of
+-      SrcUnpack -> txt "{-# UNPACK #-}" >> space
+-      SrcNoUnpack -> txt "{-# NOUNPACK #-}" >> space
+-      NoSrcUnpack -> return ()
+-    case s of
+-      SrcLazy -> txt "~"
+-      SrcStrict -> txt "!"
+-      NoSrcStrict -> return ()
+-    located t p_hsType
+-  HsRecTy _ fields ->
+-    p_conDeclFields fields
+   HsExplicitListTy _ p xs -> do
+     case p of
+       IsPromoted -> txt "'"
+@@ -173,7 +165,20 @@ p_hsType' multilineArgs = \case
+       HsStrTy (SourceText s) _ -> p_stringLit s
+       a -> atom a
+   HsWildCardTy _ -> txt "_"
+-  XHsType t -> atom t
++  XHsType ext -> case ext of
++    HsCoreTy t -> atom @HsCoreTy t
++    HsBangTy _ (HsSrcBang _ u s) t -> do
++      case u of
++        SrcUnpack -> txt "{-# UNPACK #-}" >> space
++        SrcNoUnpack -> txt "{-# NOUNPACK #-}" >> space
++        NoSrcUnpack -> return ()
++      case s of
++        SrcLazy -> txt "~"
++        SrcStrict -> txt "!"
++        NoSrcStrict -> return ()
++      located t p_hsType
++    HsRecTy _ fields ->
++      p_hsConDeclRecFields fields
+   where
+     startsWithSingleQuote = \case
+       HsAppTy _ (L _ f) _ -> startsWithSingleQuote f
+@@ -267,22 +272,44 @@ p_forallBndrs vis p tyvars =
+         ForAllInvis -> txt "."
+         ForAllVis -> space >> txt "->"
+ 
+-p_conDeclFields :: [LConDeclField GhcPs] -> R ()
+-p_conDeclFields xs =
+-  braces N $ sep commaDel (sitcc . located' p_conDeclField) xs
++p_hsConDeclRecFields :: [LHsConDeclRecField GhcPs] -> R ()
++p_hsConDeclRecFields xs =
++  braces N $ sep commaDel (sitcc . located' p_hsConDeclRecField) xs
+ 
+-p_conDeclField :: ConDeclField GhcPs -> R ()
+-p_conDeclField ConDeclField {..} = do
+-  mapM_ (p_hsDoc Pipe (With #endNewline)) cd_fld_doc
++p_hsConDeclRecField :: HsConDeclRecField GhcPs -> R ()
++p_hsConDeclRecField HsConDeclRecField {..} = do
++  mapM_ (p_hsDoc Pipe (With #endNewline)) (cdf_doc cdrf_spec)
+   sitcc $
+     sep
+       commaDel
+       (located' (p_rdrName . foLabel))
+-      cd_fld_names
++      cdrf_names
++  space
++  p_hsMultAnn (located' p_hsType) (cdf_multiplicity cdrf_spec)
+   space
+   txt "::"
+   breakpoint
+-  sitcc . inci $ p_hsType (unLoc cd_fld_type)
++  sitcc . inci $ p_hsConDeclField cdrf_spec
++
++-- | This does not print 'cdf_doc' and 'cdf_multiplicity' as there is no single
++-- strategy for where to print them (see call sites).
++p_hsConDeclField :: HsConDeclField GhcPs -> R ()
++p_hsConDeclField CDF {..} = do
++  case cdf_unpack of
++    SrcUnpack -> txt "{-# UNPACK #-}" *> space
++    SrcNoUnpack -> txt "{-# NOUNPACK #-}" *> space
++    NoSrcUnpack -> pure ()
++  located cdf_type $ \ty -> do
++    case cdf_bang of
++      SrcLazy -> txt "~"
++      SrcStrict -> txt "!"
++      NoSrcStrict -> pure ()
++    p_hsType ty
++
++p_hsConDeclFieldWithDoc :: HsConDeclField GhcPs -> R ()
++p_hsConDeclFieldWithDoc cdf = do
++  mapM_ (p_hsDoc Pipe (With #endNewline)) (cdf_doc cdf)
++  p_hsConDeclField cdf
+ 
+ p_lhsTypeArg :: LHsTypeArg GhcPs -> R ()
+ p_lhsTypeArg = \case
+@@ -294,27 +321,28 @@ p_lhsTypeArg = \case
+   HsArgPar _ -> notImplemented "HsArgPar"
+ 
+ p_hsSigType :: HsSigType GhcPs -> R ()
+-p_hsSigType HsSig {..} =
+-  p_hsType $ hsOuterTyVarBndrsToHsType sig_bndrs sig_body
++p_hsSigType HsSig {..} = do
++  p_hsOuterTyVarBndrs sig_bndrs
++  case sig_bndrs of
++    HsOuterImplicit {} -> pure ()
++    HsOuterExplicit {} -> breakpoint
++  located sig_body p_hsType
+ 
+ p_hsForAllTelescope :: HsForAllTelescope GhcPs -> R ()
+ p_hsForAllTelescope = \case
+   HsForAllInvis _ bndrs -> p_forallBndrs ForAllInvis p_hsTyVarBndr bndrs
+   HsForAllVis _ bndrs -> p_forallBndrs ForAllVis p_hsTyVarBndr bndrs
+ 
++p_hsOuterTyVarBndrs ::
++  HsOuterTyVarBndrs Specificity GhcPs ->
++  R ()
++p_hsOuterTyVarBndrs = \case
++  HsOuterImplicit _ -> pure ()
++  HsOuterExplicit _ bndrs -> p_hsForAllTelescope $ mkHsForAllInvisTele noAnn bndrs
++
+ ----------------------------------------------------------------------------
+ -- Conversion functions
+ 
+--- could be generalized to also handle () instead of Specificity
+-hsOuterTyVarBndrsToHsType ::
+-  HsOuterTyVarBndrs Specificity GhcPs ->
+-  LHsType GhcPs ->
+-  HsType GhcPs
+-hsOuterTyVarBndrsToHsType obndrs ty = case obndrs of
+-  HsOuterImplicit NoExtField -> unLoc ty
+-  HsOuterExplicit _ bndrs ->
+-    HsForAllTy NoExtField (mkHsForAllInvisTele noAnn bndrs) ty
+-
+ lhsTypeToSigType :: LHsType GhcPs -> LHsSigType GhcPs
+ lhsTypeToSigType ty =
+   L (getLoc ty) . HsSig NoExtField (HsOuterImplicit NoExtField) $ ty
