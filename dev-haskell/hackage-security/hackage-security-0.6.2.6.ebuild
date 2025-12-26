@@ -29,6 +29,8 @@ CABAL_CHDEPS=(
 	'base              >= 4.11     && < 4.21' 'base              >= 4.11'
 	'template-haskell  >= 2.13     && < 2.23' 'template-haskell  >= 2.13'
 	'ghc-prim          >= 0.5.2    && < 0.12' 'ghc-prim          >= 0.5.2'
+	'containers        >= 0.5.11   && < 0.8' 'containers        >= 0.5.11   && < 0.9'
+	'time              >= 1.8.0.2  && < 1.15' 'time              >= 1.8.0.2  && < 1.16'
 )
 
 RDEPEND=">=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-bytestring-1.1:=[profile?]
