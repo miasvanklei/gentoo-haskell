@@ -19,9 +19,9 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND="
-	>=dev-lang/ghc-9.6:= <dev-lang/ghc-9.13
+	>=dev-lang/ghc-9.6:= <dev-lang/ghc-9.15
 "
 DEPEND="${RDEPEND}
 "
 
-CABAL_CORE_LIB_GHC_PV="9.6.2 9.6.3 9.6.4 9.6.5 9.6.6 9.6.7 9.8.2 9.8.3 9.8.4 9.10.1 9.10.2 9.12.1 9.12.2"
+CABAL_CORE_LIB_GHC_PV="9.6.2 9.6.3 9.6.4 9.6.5 9.6.6 9.6.7 9.8.2 9.8.3 9.8.4 9.10.1 9.10.2 9.12.1 9.12.2 9.12.2.20251209 9.14.1"
