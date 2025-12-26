@@ -34,3 +34,7 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/generic-deriving-1.11 <dev-haskell/generic-deriving-2
 		>=dev-haskell/hspec-2 <dev-haskell/hspec-3 )
 "
+
+CABAL_CHDEPS=(
+	'containers          >= 0.3     && < 0.8' 'containers          >= 0.3     && < 0.9'
+)
