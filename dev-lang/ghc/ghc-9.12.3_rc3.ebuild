@@ -14,7 +14,7 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 fi
 
 PYTHON_COMPAT=( python3_{9..14} )
-LLVM_COMPAT=( {15..20} )
+LLVM_COMPAT=( {15..21} )
 
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
@@ -26,8 +26,8 @@ HOMEPAGE="https://www.haskell.org/ghc/"
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
 GHC_BRANCH_COMMIT="daf659b6e3c8f2a84100fbee797cd9d457c00df5" # ghc-9.12.1-release
-GHC_PV=${PV}
-#GHC_PV="9.12.1.20250219" # uncomment only for -alpha, -beta, -rc ebuilds
+#GHC_PV=${PV}
+GHC_PV="9.12.2.20251209" # uncomment only for -alpha, -beta, -rc ebuilds
 GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 GHC_BINARY_PV="9.10.1"
 
@@ -112,10 +112,6 @@ S="${WORKDIR}"/${GHC_P}
 BUMP_DEP_LIBRARIES=(
 )
 
-BUMP_LIBRARIES=(
-	"Cabal" "3.14.1.1"
-)
-
 BOOTSTRAP_LIBRARIES=(
 	"alex" "3.5.1.0" "0"
 	"base16-bytestring" "1.0.2.0" "1"
@@ -145,7 +141,7 @@ BOOTSTRAP_LIBRARIES=(
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="big-endian doc elfutils ghcbootstrap ghcmakebinary +gmp llvm numa profile test unregisterised"
 RESTRICT="!test? ( test )"
 
@@ -664,9 +660,6 @@ src_prepare() {
 
 	cd "${S}" # otherwise eapply will break
 
-	# https://github.com/gentoo-haskell/gentoo-haskell/issues/1585
-	eapply "${FILESDIR}/${PN}-9.12.1-cpp-guard-fix.patch"
-
 	eapply "${FILESDIR}"/${PN}-9.12.1-allow-cross-bootstrap.patch
 
 	# https://gitlab.haskell.org/ghc/ghc/-/issues/22954
@@ -705,10 +698,6 @@ src_prepare() {
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-ipe-test.patch"
 		eapply "${FILESDIR}/${PN}-9.8.2-fix-buggy-tests.patch"
 	fi
-
-	# <https://github.com/gentoo-haskell/gentoo-haskell/issues/1775>
-	# <https://gitlab.haskell.org/ghc/ghc/-/issues/25662>
-	eapply "${FILESDIR}/${PN}-9.12.2-hp2ps-c23-compat.patch"
 
 	eapply_user
 
