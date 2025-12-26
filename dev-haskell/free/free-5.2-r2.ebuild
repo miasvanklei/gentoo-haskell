@@ -29,3 +29,8 @@ RDEPEND=">=dev-haskell/comonad-5.0.8:=[profile?] <dev-haskell/comonad-6:=[profil
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	'containers           >= 0.5.7.1 && < 0.8' 'containers           >= 0.5.7.1 && < 0.9'
+	'template-haskell     >= 2.11    && < 2.24' 'template-haskell     >= 2.11    && < 2.25'
+)
