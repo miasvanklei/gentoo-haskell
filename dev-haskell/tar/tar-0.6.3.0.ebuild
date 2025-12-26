@@ -28,3 +28,8 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.8 <dev-haskell/tasty-quickcheck-1
 		<dev-haskell/temporary-1.4 )
 "
+
+CABAL_CHDEPS=(
+	"containers >= 0.2  && < 0.8" "containers >= 0.2  && < 0.9"
+	"time                  < 1.15" "time                  < 1.16"
+)
