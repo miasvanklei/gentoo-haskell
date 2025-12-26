@@ -147,6 +147,9 @@ dev-haskell/country-codes
 >=dev-haskell/transformers-0.6.1.2
 >=dev-haskell/extensions-0.1.0.3
 >=dev-haskell/parsec-3.1.18.0
+>=dev-haskell/os-string-2.0.8
+>=dev-haskell/process-1.6.26.1
+>=dev-haskell/exceptions-0.10.10
 
 # hololeap <hololeap@protonmail.com> (2024-06-09)
 #
