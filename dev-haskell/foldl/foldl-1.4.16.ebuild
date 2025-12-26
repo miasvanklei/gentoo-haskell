@@ -39,6 +39,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+CABAL_CHDEPS=(
+	'containers   >= 0.5.0.0  && < 0.8' 'containers   >= 0.5.0.0  && < 0.9'
+)
+
 src_configure() {
 	use test && export GHC_BOOTSTRAP_PACKAGES+=( cabal-doctest )
 
