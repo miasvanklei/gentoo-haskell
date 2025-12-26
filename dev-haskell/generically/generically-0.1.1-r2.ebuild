@@ -28,3 +28,7 @@ RDEPEND+="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
+
+CABAL_CHDEPS=(
+	"base >=4.9 && <4.22" "base >=4.9 && <4.23"
+)
