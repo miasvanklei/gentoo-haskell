@@ -21,10 +21,6 @@ IUSE="executable test-exe"
 # Should be fixed in Cabal-3.10 (https://github.com/haskell/cabal/issues/1919)
 CABAL_HADDOCK_TARGETS="lib:${CABAL_PN}"
 
-CABAL_CHDEPS=(
-	'Diff                         ^>=0.5' 'Diff >=0.5'
-)
-
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/async:=[profile?]
@@ -45,11 +41,10 @@ RDEPEND="
 	dev-haskell/glob:=[profile?]
 	>=dev-haskell/haddock-library-1.8:=[profile?] <dev-haskell/haddock-library-1.12:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	>=dev-haskell/hie-bios-0.15.0:=[profile?] <dev-haskell/hie-bios-0.16:=[profile?]
-	>=dev-haskell/hie-compat-0.3.0.0:=[profile?] <dev-haskell/hie-compat-0.4:=[profile?]
-	>=dev-haskell/hiedb-0.6.0.2:=[profile?] <dev-haskell/hiedb-0.7:=[profile?]
-	~dev-haskell/hls-graph-2.11.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.11.0.0:=[profile?]
+	>=dev-haskell/hie-bios-0.17.0:=[profile?] <dev-haskell/hie-bios-0.18:=[profile?]
+	>=dev-haskell/hiedb-0.7.0.0:=[profile?] <dev-haskell/hiedb-0.8:=[profile?]
+	~dev-haskell/hls-graph-2.12.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.12.0.0:=[profile?]
 	>=dev-haskell/implicit-hie-0.1.4.0:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
