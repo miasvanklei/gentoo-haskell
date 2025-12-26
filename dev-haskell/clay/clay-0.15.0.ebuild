@@ -25,3 +25,7 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/hspec-2.2.0
 		>=dev-haskell/hspec-discover-2.2.0 )
 "
+
+CABAL_CHDEPS=(
+	"base  >= 4.11 && < 4.22" "base  >= 4.11 && < 4.23"
+)
