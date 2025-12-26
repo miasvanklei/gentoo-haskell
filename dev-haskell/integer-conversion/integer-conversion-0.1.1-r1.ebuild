@@ -17,10 +17,6 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-CABAL_CHDEPS=(
-	'primitive   ^>=0.9.0.0' 'primitive   >=0.9.0.0'
-	)
-
 RDEPEND=">=dev-haskell/primitive-0.9.0.0:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 	dev-haskell/text:=[profile?]
@@ -32,3 +28,8 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/quickcheck-2.14.3 <dev-haskell/quickcheck-2.16
 		>=dev-haskell/tasty-1.4.3 <dev-haskell/tasty-1.6 )
 "
+
+CABAL_CHDEPS=(
+	'base        >=4.12.0.0   && <4.22' 'base        >=4.12.0.0   && <4.23'
+	'primitive   ^>=0.9.0.0' 'primitive   >=0.9.0.0'
+)
