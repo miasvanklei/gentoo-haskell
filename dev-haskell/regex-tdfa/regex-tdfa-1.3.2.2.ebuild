@@ -28,6 +28,10 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/utf8-string-1.0.1 <dev-haskell/utf8-string-1.1 )
 "
 
+CABAL_CHDEPS=(
+	"containers         >= 0.4.2  && < 0.8" "containers         >= 0.4.2  && < 0.9"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=base4 \
