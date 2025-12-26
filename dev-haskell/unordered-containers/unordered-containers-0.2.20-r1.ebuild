@@ -33,6 +33,10 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.10.1.2 )
 "
 
+CABAL_CHDEPS=(
+	'template-haskell < 2.24' 'template-haskell < 2.25'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-debug
