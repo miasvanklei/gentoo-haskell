@@ -18,7 +18,7 @@ KEYWORDS="~amd64"
 RDEPEND=">=dev-haskell/filepattern-0.1.3:=[profile?] <dev-haskell/filepattern-0.2:=[profile?]
 	>=dev-haskell/parsec-3.1.16.1:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-lang/ghc-9.8.2:=
-	>=dev-haskell/cabal-syntax-3.10.1.0:=[profile?] <dev-haskell/cabal-syntax-3.15:=[profile?]
+	>=dev-haskell/cabal-syntax-3.10.1.0:=[profile?] <dev-haskell/cabal-syntax-3.17:=[profile?]
 	>=dev-haskell/text-2.0.2:=[profile?] <dev-haskell/text-2.2:=[profile?]
 "
 DEPEND="${RDEPEND}
@@ -26,6 +26,12 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/hspec-2.11.8 <dev-haskell/hspec-2.12
 		>=dev-haskell/temporary-1.3 <dev-haskell/temporary-1.4 )
 "
+
+CABAL_CHDEPS=(
+	"Cabal-syntax ^>=3.10.1.0 || ^>=3.12.0.0 || ^>=3.14.0.0" "Cabal-syntax"
+	"containers ^>=0.6.7 || ^>=0.7" "containers"
+	"base ^>=4.19.0.0 || ^>=4.20.0.0 || ^>=4.21.0.0" "base"
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
