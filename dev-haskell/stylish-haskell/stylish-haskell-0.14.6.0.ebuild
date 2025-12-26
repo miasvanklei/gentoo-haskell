@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/haskell/stylish-haskell"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="ghc-lib"
+IUSE="+ghc-lib"
 
 RDEPEND=">=dev-haskell/aeson-0.6:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/cabal-3.4:=[profile?] <dev-haskell/cabal-4.0:=[profile?]
@@ -29,12 +29,6 @@ RDEPEND=">=dev-haskell/aeson-0.6:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/syb-0.3:=[profile?] <dev-haskell/syb-0.8:=[profile?]
 	>=dev-haskell/text-1.2:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
-	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.8:=[profile?] <dev-haskell/ghc-lib-parser-9.9:=[profile?]
-	)
-	!ghc-lib? (
-		>=dev-lang/ghc-9.8:= <dev-lang/ghc-9.9:=
-	)
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
