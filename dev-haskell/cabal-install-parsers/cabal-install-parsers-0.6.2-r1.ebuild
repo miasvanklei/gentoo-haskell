@@ -19,6 +19,7 @@ RESTRICT="test" #files not in tarball
 CABAL_CHDEPS=(
 	'base          >=4.12      && <4.21' 'base >= 4.12'
 	'Cabal-syntax  ^>=3.12.0.0' 'Cabal-syntax >=3.12.0.0'
+	'containers    ^>=0.6.0.1  || ^>=0.7' 'containers    >= 0.6.0.1'
 	'time          ^>=1.8.0.2  || ^>=1.9.3    || ^>=1.11.1.1 || ^>=1.12.2' 'time >=1.8.0.2'
 )
 
