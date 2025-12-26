@@ -17,10 +17,6 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="+fingertree"
 
-CABAL_CHDEPS=(
-	'Diff                  ^>=0.5' 'Diff >=0.5'
-)
-
 RDEPEND="
 	dev-haskell/aeson:=[profile?]
 	dev-haskell/co-log-core:=[profile?]
@@ -31,7 +27,7 @@ RDEPEND="
 	dev-haskell/dlist:=[profile?]
 	dev-haskell/extra:=[profile?]
 	dev-haskell/hashable:=[profile?]
-	~dev-haskell/hls-graph-2.11.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.12.0.0:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
 	>=dev-haskell/lsp-2.7:=[profile?] <dev-haskell/lsp-2.8:=[profile?]
