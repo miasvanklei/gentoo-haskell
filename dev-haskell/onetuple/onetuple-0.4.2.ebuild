@@ -26,3 +26,7 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/foldable1-classes-compat-0.1 <dev-haskell/foldable1-classes-compat-0.2
 		dev-haskell/hashable )
 "
+
+CABAL_CHDEPS=(
+	"base              >=4.12 && <4.22" "base              >=4.12 && <4.23"
+)
