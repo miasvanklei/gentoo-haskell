@@ -31,6 +31,10 @@ DEPEND="${RDEPEND}
 	!bundled-c-zlib? ( virtual/pkgconfig )
 "
 
+CABAL_CHDEPS=(
+	"base >= 4.9 && < 4.22" "base >= 4.9 && < 4.23"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag bundled-c-zlib bundled-c-zlib) \
