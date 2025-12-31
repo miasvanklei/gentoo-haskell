@@ -26,9 +26,13 @@ RDEPEND=">=dev-haskell/cabal-syntax-3.14:=[profile?] <dev-haskell/cabal-syntax-3
 DEPEND="${RDEPEND}
 "
 
+CABAL_CHDEPS=(
+	'unix  >= 2.8.6.0 && < 2.9' 'unix  >= 2.8.5.0'
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-parsec-struct-diff
 }
 
-CABAL_CORE_LIB_GHC_PV="9.12.2.20251209"
+CABAL_CORE_LIB_GHC_PV="9.12.3"

@@ -7,7 +7,7 @@ EAPI=8
 
 CABAL_HACKAGE_REVISION=1
 
-CABAL_FEATURES="lib profile haddock hoogle hscolour test-suite"
+CABAL_FEATURES="lib profile haddock hoogle hscolour"
 inherit haskell-cabal
 
 DESCRIPTION="Extensible optionally-pure exceptions"
@@ -28,4 +28,4 @@ DEPEND="${RDEPEND}
 #		>=dev-haskell/test-framework-hunit-0.3 <dev-haskell/test-framework-hunit-0.4
 #		>=dev-haskell/test-framework-quickcheck2-0.3 <dev-haskell/test-framework-quickcheck2-0.4 )
 
-CABAL_CORE_LIB_GHC_PV="9.12.2.20251209"
+CABAL_CORE_LIB_GHC_PV="9.12.3"

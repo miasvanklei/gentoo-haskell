@@ -20,4 +20,8 @@ RDEPEND=">=dev-lang/ghc-9.0.2:=
 DEPEND="${RDEPEND}
 "
 
+<<<<<<< HEAD
 CABAL_CORE_LIB_GHC_PV="9.12.2.20251209 9.14.1"
+=======
+CABAL_CORE_LIB_GHC_PV="9.12.3"
+>>>>>>> 4738b6cb8e78b2cca57fcf5b969e7b9f5bf6031d
