@@ -24,7 +24,7 @@ RDEPEND=">=dev-haskell/comonad-4.0:=[profile?] <dev-haskell/comonad-6:=[profile?
 	<dev-haskell/hashable-1.5:=[profile?]
 	<dev-haskell/primitive-0.10:=[profile?]
 	>=dev-haskell/profunctors-4.3.2:=[profile?] <dev-haskell/profunctors-5.7:=[profile?]
-	>=dev-haskell/random-1.2:=[profile?] <dev-haskell/random-1.3:=[profile?]
+	>=dev-haskell/random-1.2:=[profile?] <dev-haskell/random-1.4:=[profile?]
 	>=dev-haskell/semigroupoids-1.0:=[profile?] <dev-haskell/semigroupoids-6.1:=[profile?]
 	>=dev-haskell/text-0.11.2.0:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	<dev-haskell/unordered-containers-0.3:=[profile?]
@@ -41,6 +41,7 @@ DEPEND="${RDEPEND}
 
 CABAL_CHDEPS=(
 	'containers   >= 0.5.0.0  && < 0.8' 'containers   >= 0.5.0.0  && < 0.9'
+	'random       >= 1.2      && < 1.3' 'random       >= 1.2      && < 1.4'
 )
 
 src_configure() {
