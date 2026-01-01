@@ -19,13 +19,17 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 IUSE="+template-haskell"
 
-RDEPEND=">=dev-haskell/random-1.2.0:=[profile?] <dev-haskell/random-1.3:=[profile?]
+RDEPEND=">=dev-haskell/random-1.2.0:=[profile?] <dev-haskell/random-1.4:=[profile?]
 	>=dev-haskell/splitmix-0.1:=[profile?] <dev-haskell/splitmix-0.2:=[profile?]
 	>=dev-lang/ghc-8.8.1:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.0.0.0
 "
+
+CABAL_CHDEPS=(
+	'random >= 1.2.0 && < 1.3' 'random >= 1.2.0 && < 1.4'
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
