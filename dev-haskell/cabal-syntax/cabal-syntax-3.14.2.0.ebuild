@@ -25,8 +25,4 @@ RDEPEND=">=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[pro
 DEPEND="${RDEPEND}
 "
 
-<<<<<<< HEAD
-CABAL_CORE_LIB_GHC_PV="9.12.2.20251209"
-=======
 CABAL_CORE_LIB_GHC_PV="9.12.3"
->>>>>>> 4738b6cb8e78b2cca57fcf5b969e7b9f5bf6031d

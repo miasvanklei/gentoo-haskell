@@ -25,9 +25,9 @@ HOMEPAGE="https://www.haskell.org/ghc/"
 
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
-GHC_BRANCH_COMMIT="daf659b6e3c8f2a84100fbee797cd9d457c00df5" # ghc-9.12.1-release
-#GHC_PV=${PV}
-GHC_PV="9.12.2.20251209" # uncomment only for -alpha, -beta, -rc ebuilds
+GHC_BRANCH_COMMIT="8b63dfe0a81d08fef5b4acba6e60d80067daa5d7" # ghc-9.12.3-release
+GHC_PV=${PV}
+#GHC_PV="9.12.2.20251209" # uncomment only for -alpha, -beta, -rc ebuilds
 GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 GHC_BINARY_PV="9.10.1"
 
