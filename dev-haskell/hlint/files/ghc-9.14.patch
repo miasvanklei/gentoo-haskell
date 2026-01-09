@@ -41,7 +41,7 @@ index 2857393a..58a52c9b 100644
 -          ghc-lib-parser == 9.12.*
 +          ghc-lib-parser == 9.14.*
      build-depends:
--        ghc-lib-parser-ex >= 9.12 && < 9.13
+-        ghc-lib-parser-ex >= 9.12.0.0 && < 9.13.0
 +        ghc-lib-parser-ex >= 9.14 && < 9.15
  
      if flag(gpl)
@@ -187,14 +187,14 @@ index 8727dba3..1211f664 100644
           -- 'z[(y)/x]'.
        | occNameStr x `notElem` vars y && length [() | Unqual a <- universeBi z, a == rdrNameOcc x] <= 1 ->
 @@ -251,12 +252,11 @@ niceLambdaR parent = go
-     -- Base case. Just a good old fashioned lambda.
-     go ss e =
-       let grhs = noLocA $ GRHS noAnn [] e :: LGRHS GhcPs (LHsExpr GhcPs)
--          grhss = GRHSs {grhssExt = emptyComments, grhssGRHSs=[grhs], grhssLocalBinds=EmptyLocalBinds noExtField}
-+          grhss = GRHSs {grhssExt = emptyComments, grhssGRHSs=fromList [grhs], grhssLocalBinds=EmptyLocalBinds noExtField}
-           match = noLocA $ Match {m_ext=noExtField, m_ctxt=LamAlt LamSingle, m_pats=noLocA $ map strToPat ss, m_grhss=grhss} :: LMatch GhcPs (LHsExpr GhcPs)
-           matchGroup = MG {mg_ext=Generated OtherExpansion SkipPmc, mg_alts=noLocA [match]}
-       in (noLocA $ HsLam noAnn LamSingle matchGroup, const [])
+ -- Base case. Just a good old fashioned lambda.
+ niceLambdaR ss e =
+   let grhs = noLocA $ GRHS noAnn [] e :: LGRHS GhcPs (LHsExpr GhcPs)
+-      grhss = GRHSs {grhssExt = emptyComments, grhssGRHSs=[grhs], grhssLocalBinds=EmptyLocalBinds noExtField}
++      grhss = GRHSs {grhssExt = emptyComments, grhssGRHSs=fromList [grhs], grhssLocalBinds=EmptyLocalBinds noExtField}
+       match = noLocA $ Match {m_ext=noExtField, m_ctxt=LamAlt LamSingle, m_pats=noLocA $ map strToPat ss, m_grhss=grhss} :: LMatch GhcPs (LHsExpr GhcPs)
+       matchGroup = MG {mg_ext=Generated OtherExpansion SkipPmc, mg_alts=noLocA [match]}
+   in (noLocA $ HsLam noAnn LamSingle matchGroup, const [])
  
 -
  -- 'case' and 'if' expressions have branches, nothing else does (this
