@@ -15,13 +15,12 @@ HOMEPAGE="https://github.com/shayne-fletcher/ghc-lib-parser-ex#readme"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="ghc-lib"
 
-RDEPEND="
+RDEPEND="dev-haskell/extra:=[profile?]
+	>=dev-haskell/ghc-lib-parser-9.12:=[profile?] <dev-haskell/ghc-lib-parser-9.13:=[profile?]
+	dev-haskell/optparse-applicative:=[profile?]
 	>=dev-haskell/uniplate-1.5:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
-	ghc-lib? ( >=dev-haskell/ghc-lib-parser-9.12:=[profile?] <dev-haskell/ghc-lib-parser-9.13:=[profile?] )
-	!ghc-lib? ( =dev-lang/ghc-9.12*:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
@@ -34,5 +33,5 @@ DEPEND="${RDEPEND}
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-auto \
-		$(cabal_flag !ghc-lib no-ghc-lib)
+		--flag=-no-ghc-lib
 }
