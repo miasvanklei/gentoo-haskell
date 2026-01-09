@@ -78,6 +78,10 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
 
+PATCHES=(
+	"${FILESDIR}/ghc-9.14.patch"
+)
+
 src_configure() {
 	local flags=(
 		$(cabal_flag executable executable)
