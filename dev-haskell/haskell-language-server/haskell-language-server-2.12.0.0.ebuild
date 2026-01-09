@@ -63,6 +63,7 @@ RESTRICT="test" # Depends on masked ghcide-test-utils
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.11.0.0-add-bench-flags.patch"
+	"${FILESDIR}/ghc-9.14.patch"
 )
 
 CABAL_TEST_REQUIRED_BINS=(
