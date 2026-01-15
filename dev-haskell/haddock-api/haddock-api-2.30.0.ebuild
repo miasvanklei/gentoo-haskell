@@ -1,4 +1,4 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -60,4 +60,4 @@ src_configure() {
 		--flag=-in-ghc-tree
 }
 
-CABAL_CORE_LIB_GHC_PV="9.12.1 9.12.2 9.12.3"
+CABAL_CORE_LIB_GHC_PV="9.12.1 9.12.2"

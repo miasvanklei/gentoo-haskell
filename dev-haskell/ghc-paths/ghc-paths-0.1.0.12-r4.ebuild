@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -25,10 +25,6 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	haskell-cabal_src_prepare
-
-	# ghc-patch it has awfully unportable (across cabal versions) ghc detection code
-	# but in gentoo we install it to fixed patch, so remove Setup.hs detection code
-	cabal-mksetup
 
 	# and use gentoo's hardcoded one:
 	# a few things we need to replace, and example values

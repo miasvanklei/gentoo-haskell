@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -23,9 +23,3 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-haskell/hspec-1.3.0.1
 		>=dev-haskell/mtl-2.1.2 )
 "
-
-src_prepare() {
-	default
-
-	cabal-mksetup
-}

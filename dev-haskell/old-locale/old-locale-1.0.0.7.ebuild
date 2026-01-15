@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -13,7 +13,7 @@ HOMEPAGE="https://hackage.haskell.org/package/old-locale"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND=">=dev-lang/ghc-7.4.1:=
 "
@@ -21,8 +21,6 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-1.10
 "
 
-src_prepare() {
-	default
-	cabal_chdeps \
-		'base >= 4.2 && < 4.9' 'base >= 4.2'
-}
+CABAL_CHDEPS=(
+	'base >= 4.2 && < 4.9' 'base >= 4.2'
+)
