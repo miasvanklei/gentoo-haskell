@@ -18,7 +18,7 @@ KEYWORDS="~amd64"
 IUSE="examples executable ghc-lib +internal-bundle-fixities"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.3.1.0-add-executable-flag.patch"
+	"${FILESDIR}/${PN}-0.8.0.2-add-executable-flag.patch"
 	"${FILESDIR}/ghc-9.14.patch"
 	"${FILESDIR}/0.8.0.2-use-system-ghc.patch"
 )
