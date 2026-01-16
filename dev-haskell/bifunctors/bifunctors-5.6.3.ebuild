@@ -29,11 +29,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/quickcheck-2 <dev-haskell/quickcheck-3 )
 "
 
-CABAL_CHDEPS=(
-	"containers               >= 0.5.7.1 && < 0.8" "containers               >= 0.5.7.1 && < 0.9"
-	"template-haskell         >= 2.11    && < 2.24" "template-haskell         >= 2.11    && < 2.25"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag tagged tagged)
