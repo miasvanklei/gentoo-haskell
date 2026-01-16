@@ -29,10 +29,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.10 <dev-haskell/tasty-quickcheck-0.12 )
 "
 
-CABAL_CHDEPS=(
-	"base >=4.9 && <4.22" "base >=4.9 && <4.23"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag tagged tagged)
