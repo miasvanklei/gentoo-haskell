@@ -23,10 +23,6 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
 
-CABAL_CHDEPS=(
-	"containers >= 0.4 && < 0.8" "containers >= 0.4 && < 0.9"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-_regex-posix-clib \
