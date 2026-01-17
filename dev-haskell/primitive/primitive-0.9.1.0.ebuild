@@ -30,7 +30,3 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-quickcheck
 		dev-haskell/transformers-compat )
 "
-
-CABAL_CHDEPS=(
-	"base >= 4.9 && < 4.22" "base >= 4.9 && < 4.23"
-)
