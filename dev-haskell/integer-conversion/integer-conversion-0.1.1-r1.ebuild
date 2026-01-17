@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/phadej/integer-conversion"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND=">=dev-haskell/primitive-0.9.0.0:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
