@@ -43,8 +43,8 @@ RDEPEND="
 	dev-haskell/hashable:=[profile?]
 	>=dev-haskell/hie-bios-0.17.0:=[profile?] <dev-haskell/hie-bios-0.18:=[profile?]
 	>=dev-haskell/hiedb-0.7.0.0:=[profile?] <dev-haskell/hiedb-0.8:=[profile?]
-	~dev-haskell/hls-graph-2.12.0.0:=[profile?]
-	~dev-haskell/hls-plugin-api-2.12.0.0:=[profile?]
+	~dev-haskell/hls-graph-2.13.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.13.0.0:=[profile?]
 	>=dev-haskell/implicit-hie-0.1.4.0:=[profile?] <dev-haskell/implicit-hie-0.1.5:=[profile?]
 	dev-haskell/lens:=[profile?]
 	dev-haskell/lens-aeson:=[profile?]
@@ -77,10 +77,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.6.3.0
 "
-
-PATCHES=(
-	"${FILESDIR}/ghc-9.14.patch"
-)
 
 src_configure() {
 	local flags=(
