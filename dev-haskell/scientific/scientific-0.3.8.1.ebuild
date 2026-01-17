@@ -33,12 +33,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/text )
 "
 
-CABAL_CHDEPS=(
-	"base                >=4.5      && <4.22" "base                >=4.5      && <4.23"
-	"containers          >=0.6.0.1  && <0.8" "containers          >=0.6.0.1  && <0.9"
-	"template-haskell    >=2.14.0.0 && <2.24" "template-haskell    >=2.14.0.0 && <2.25"
-)
-
 pkg_pretend() {
 	if use test; then
 		ewarn "The \"test\" USE flag for this package creates cycles within the"
