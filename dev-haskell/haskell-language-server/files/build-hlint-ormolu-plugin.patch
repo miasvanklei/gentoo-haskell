@@ -1,0 +1,60 @@
+--- a/haskell-language-server.cabal	2026-01-17 14:10:39.458075752 +0100
++++ b/haskell-language-server.cabal	2026-01-17 14:12:51.816706346 +0100
+@@ -711,8 +711,7 @@
+   -- Hlint isn't compatible with GHC 9.10, and crashes in subtle ways.
+   -- See https://github.com/haskell/haskell-language-server/issues/4674
+   -- for its wake of destruction.
+-  -- hlint depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if flag(hlint) && !impl(ghc ==9.10.*) && !impl(ghc >= 9.14)
++  if flag(hlint) && !impl(ghc ==9.10.*)
+     build-depends: haskell-language-server:hls-hlint-plugin
+     cpp-options: -Dhls_hlint
+ 
+@@ -721,8 +720,7 @@
+   -- Hlint isn't compatible with GHC 9.10, and crashes in subtle ways.
+   -- See https://github.com/haskell/haskell-language-server/issues/4674
+   -- for its wake of destruction.
+-  -- hlint depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if !flag(hlint) || impl(ghc ==9.10.*) || impl(ghc >= 9.14)
++  if !flag(hlint) || impl(ghc ==9.10.*)
+     buildable: False
+   exposed-modules:  Ide.Plugin.Hlint
+   hs-source-dirs:   plugins/hls-hlint-plugin/src
+@@ -772,8 +770,7 @@
+   -- Hlint isn't compatible with GHC 9.10, and crashes in subtle ways.
+   -- See https://github.com/haskell/haskell-language-server/issues/4674
+   -- for its wake of destruction.
+-  -- hlint depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if !flag(hlint) || impl(ghc ==9.10.*) || impl(ghc >= 9.14)
++  if !flag(hlint) || impl(ghc ==9.10.*)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-hlint-plugin/test
+@@ -1578,15 +1575,14 @@
+   manual:      True
+ 
+ common ormolu
+-  -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if flag(ormolu) && !impl(ghc >= 9.14)
++  if flag(ormolu)
+     build-depends: haskell-language-server:hls-ormolu-plugin
+     cpp-options: -Dhls_ormolu
+ 
+ library hls-ormolu-plugin
+   import:           defaults, pedantic, warnings
+   -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if !flag(ormolu) || impl(ghc >= 9.14)
++  if !flag(ormolu)
+     buildable: False
+   exposed-modules:  Ide.Plugin.Ormolu
+   hs-source-dirs:   plugins/hls-ormolu-plugin/src
+@@ -1606,8 +1602,7 @@
+ 
+ test-suite hls-ormolu-plugin-tests
+   import:           defaults, pedantic, test-defaults, warnings
+-  -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
+-  if !flag(ormolu) || impl(ghc >= 9.14)
++  if !flag(ormolu)
+     buildable: False
+   type:             exitcode-stdio-1.0
+   hs-source-dirs:   plugins/hls-ormolu-plugin/test
