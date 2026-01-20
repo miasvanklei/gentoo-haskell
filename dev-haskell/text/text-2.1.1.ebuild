@@ -17,7 +17,7 @@ HOMEPAGE="https://github.com/haskell/text"
 
 LICENSE="BSD-2"
 SLOT="0/${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="+simdutf"
 
 # break cyclic dependencies:
@@ -27,8 +27,8 @@ RDEPEND="
 	>=dev-lang/ghc-9.4.1:=
 	simdutf? (
 		|| (
-			llvm-core/clang
-			sys-devel/gcc[cxx]
+			llvm-core/clang:*
+			sys-devel/gcc:*[cxx]
 		)
 	)
 "
