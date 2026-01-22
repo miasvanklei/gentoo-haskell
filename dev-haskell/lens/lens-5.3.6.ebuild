@@ -50,11 +50,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/tasty-quickcheck-0.10 <dev-haskell/tasty-quickcheck-0.12 )
 "
 
-CABAL_CHDEPS=(
-	'containers                    >= 0.5.5.1  && < 0.8' 'containers                    >= 0.5.5.1  && < 0.9'
-	'template-haskell              >= 2.11.1.0 && < 2.24' 'template-haskell              >= 2.11.1.0 && < 2.25'
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-benchmark-uniplate \
