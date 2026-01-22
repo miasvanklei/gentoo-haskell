@@ -40,12 +40,6 @@ DEPEND="${RDEPEND}
 	examples? ( dev-haskell/markdown-unlit )
 "
 
-CABAL_CHDEPS=(
-	'base >= 4.11 && < 4.22' 'base >= 4.11 && < 4.23'
-	'containers >= 0.5.7 && < 0.8' 'containers >= 0.5.7 && < 0.9'
-	'time >= 1.8 && < 1.15' 'time >= 1.8 && < 1.16'
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag examples build-play-tomland) \
