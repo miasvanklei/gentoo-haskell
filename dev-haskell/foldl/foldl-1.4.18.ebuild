@@ -40,12 +40,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/doctest-0.16
 	)
 "
-
-CABAL_CHDEPS=(
-	'containers   >= 0.5.0.0  && < 0.8' 'containers   >= 0.5.0.0  && < 0.9'
-	'random       >= 1.2      && < 1.3' 'random       >= 1.2      && < 1.4'
-)
-
 src_configure() {
 	use test && export GHC_BOOTSTRAP_PACKAGES+=( cabal-doctest )
 
