@@ -29,11 +29,6 @@ DEPEND="${RDEPEND}
 		dev-haskell/text )
 "
 
-CABAL_CHDEPS=(
-	"base              >=4.12     && <4.22" "base              >=4.12     && <4.23"
-	"template-haskell  >=2.14.0.0 && <2.24" "template-haskell  >=2.14.0.0 && <2.25"
-)
-
 src_configure() {
 	haskell-cabal_src_configure \
 		$(cabal_flag debug asserts)
