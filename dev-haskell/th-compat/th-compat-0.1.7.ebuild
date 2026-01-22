@@ -21,7 +21,3 @@ DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? ( >=dev-haskell/hspec-2 <dev-haskell/hspec-3 )
 "
-
-CABAL_CHDEPS=(
-	"template-haskell >= 2.11 && < 2.24" "template-haskell >= 2.11 && < 2.25"
-)
