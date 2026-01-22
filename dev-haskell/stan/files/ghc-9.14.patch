@@ -79,3 +79,25 @@
      ( debugHieFile
      ) where
  
+--- a/stan.cabal	2026-01-20 23:03:35.103164857 +0100
++++ b/stan.cabal	2026-01-20 23:04:07.670866886 +0100
+@@ -38,7 +38,7 @@
+     Whether to use directory-ospath-streaming. Should be false with 9.6 > ghc.
+ 
+ common common-options
+-  build-depends:       base >= 4.13 && < 4.22 && (< 4.16.3.0 || >= 4.17)
++  build-depends:       base >= 4.13 && < 4.23 && (< 4.16.3.0 || >= 4.17)
+                        -- ^^ .hie files don't contain enough type
+                        -- information on ghc-9.2.[4-8] (base >=
+                        -- 4.16.3.0 && < 4.17)
+@@ -157,8 +157,8 @@
+                      , directory ^>= 1.3
+                      , extensions ^>= 0.0.0.1 || ^>= 0.1.0.0
+                      , filepath >= 1.4 && < 1.6
+-                     , ghc >= 8.8 && < 9.13
+-                     , ghc-boot-th >= 8.8 && < 9.13
++                     , ghc >= 8.8 && < 9.15
++                     , ghc-boot-th >= 8.8 && < 9.15
+                      , gitrev ^>= 1.3.1
+                      , microaeson ^>= 0.1.0.0
+                      , optparse-applicative >= 0.15 && < 0.19

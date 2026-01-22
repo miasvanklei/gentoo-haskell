@@ -41,7 +41,7 @@ RDEPEND=">=dev-haskell/base64-0.4.1:=[profile?] <dev-haskell/base64-1.1:=[profil
 	>=dev-haskell/trial-optparse-applicative-0.0.0.0:=[profile?] <dev-haskell/trial-optparse-applicative-0.1:=[profile?]
 	>=dev-haskell/trial-tomland-0.0.0.0:=[profile?] <dev-haskell/trial-tomland-0.1:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
-	>=dev-lang/ghc-8.8:=[profile?] <dev-lang/ghc-9.13:=[profile?]
+	>=dev-lang/ghc-8.8:=[profile?] <dev-lang/ghc-9.15:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 	>=dev-haskell/extensions-0.0.0.1:=[profile?] <dev-haskell/extensions-0.2:=[profile?]
 	directory-ospath-streaming? ( >=dev-haskell/directory-ospath-streaming-0.2:=[profile?] <dev-haskell/directory-ospath-streaming-0.4:=[profile?] )
@@ -55,6 +55,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/ghc-9.14.patch
+)
 
 src_configure() {
 	haskell-cabal_src_configure \
