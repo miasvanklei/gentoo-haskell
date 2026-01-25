@@ -13,10 +13,10 @@ HOMEPAGE="https://github.com/fpco/unliftio/tree/master/unliftio#readme"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND="
-	>dev-haskell/async-2.1.1:=[profile?]
+	>dev-haskell/async-2.1.1-r9999:=[profile?]
 	dev-haskell/safe-exceptions:=[profile?]
 	>=dev-haskell/unliftio-core-0.1.1.0:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
