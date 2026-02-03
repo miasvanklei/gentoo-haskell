@@ -13,14 +13,14 @@ HOMEPAGE="https://github.com/commercialhaskell/rio-prettyprint#readme"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND="dev-haskell/aeson:=[profile?]
 	dev-haskell/annotated-wl-pprint:=[profile?]
 	>=dev-haskell/ansi-terminal-0.9:=[profile?]
 	dev-haskell/cabal:=[profile?]
 	dev-haskell/colour:=[profile?]
-	>dev-haskell/path-0.9.1:=[profile?]
+	>dev-haskell/path-0.9.1-r9999:=[profile?]
 	dev-haskell/rio:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
