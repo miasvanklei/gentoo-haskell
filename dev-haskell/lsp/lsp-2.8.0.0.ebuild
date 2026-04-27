@@ -26,7 +26,7 @@ RDEPEND=">=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/hashable-1.4:=[profile?] <dev-haskell/hashable-1.6:=[profile?]
 	>=dev-haskell/lens-5.1:=[profile?] <dev-haskell/lens-5.4:=[profile?]
 	>=dev-haskell/lens-aeson-1.2:=[profile?] <dev-haskell/lens-aeson-1.3:=[profile?]
-	>=dev-haskell/lsp-types-2.3:=[profile?] <dev-haskell/lsp-types-2.4:=[profile?]
+	>=dev-haskell/lsp-types-2.4:=[profile?] <dev-haskell/lsp-types-2.5:=[profile?]
 	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 	>=dev-haskell/sorted-list-0.2.1:=[profile?] <dev-haskell/sorted-list-0.3:=[profile?]
 	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2:=[profile?]
@@ -34,16 +34,13 @@ RDEPEND=">=dev-haskell/aeson-2:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/unliftio-0.2:=[profile?] <dev-haskell/unliftio-0.3:=[profile?]
 	>=dev-haskell/unliftio-core-0.2:=[profile?] <dev-haskell/unliftio-core-0.3:=[profile?]
 	>=dev-haskell/unordered-containers-0.2:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]
+	>=dev-haskell/websockets-0.13:=[profile?] <dev-haskell/websockets-0.14:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? ( dev-haskell/hspec )
 "
-
-CABAL_CHDEPS=(
-	'containers            >=0.6 && < 0.8' 'containers            >=0.6 && < 0.9'
-)
 
 src_configure() {
 	haskell-cabal_src_configure \
