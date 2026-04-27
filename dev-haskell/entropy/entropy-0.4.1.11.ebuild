@@ -19,7 +19,7 @@ IUSE="donotgetentropy"
 RDEPEND=">=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
-	>=dev-haskell/cabal-3.4.1.0 <dev-haskell/cabal-3.15
+	>=dev-haskell/cabal-3.4.1.0 <dev-haskell/cabal-3.17
 "
 
 src_configure() {
