@@ -48,11 +48,6 @@ DEPEND="${RDEPEND}
 	)
 "
 
-CABAL_CHDEPS=(
-	'base >= 4.12 && < 4.22' 'base >= 4.12 && < 4.23'
-	'ghc >= 8.6 && < 9.13' 'ghc >= 8.6 && < 9.15'
-)
-
 src_configure() {
 	local flags=()
 	# Build the exe if the user wants it _or_ if the tests are enabled
