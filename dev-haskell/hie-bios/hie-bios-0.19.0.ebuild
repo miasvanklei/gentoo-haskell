@@ -44,9 +44,3 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-expected-failure
 		dev-haskell/tasty-hunit )
 "
-
-CABAL_CHDEPS=(
-	'ghc                  >= 9.2.1 && < 9.13' 'ghc                  >= 9.2.1 && < 9.15'
-	'time                 >= 1.8.0 && < 1.15' 'time                 >= 1.8.0 && < 1.16'
-	'template-haskell     >= 2.18 && <2.24' 'template-haskell     >= 2.18 && <2.25'
-)
