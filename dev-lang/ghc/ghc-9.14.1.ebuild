@@ -14,7 +14,8 @@ if [[ ${CTARGET} = ${CHOST} ]] ; then
 fi
 
 PYTHON_COMPAT=( python3_{9..14} )
-LLVM_COMPAT=( {15..21} )
+LLVM_COMPAT=( {15..22} )
+LLVM_OPTIONAL=1
 
 inherit python-any-r1
 inherit autotools bash-completion-r1 flag-o-matic ghc-package
