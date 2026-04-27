@@ -53,9 +53,3 @@ DEPEND="${RDEPEND}
 		dev-haskell/hspec-golden
 	)
 "
-
-CABAL_CHDEPS=(
-	'containers                     >=0.6 && < 0.8' 'containers                     >=0.6 && < 0.9'
-	'template-haskell               >=2.7   && <2.24' 'template-haskell               >=2.7   && <2.25'
-	'template-haskell  >=2.7     && <2.24' 'template-haskell  >=2.7     && <2.25'
-)
