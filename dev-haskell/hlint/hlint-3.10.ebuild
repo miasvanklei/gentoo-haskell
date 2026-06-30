@@ -15,7 +15,7 @@ HOMEPAGE="https://github.com/ndmitchell/hlint#readme"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
-IUSE="emacs ghc-lib +gpl hsyaml +threads test"
+IUSE="emacs +ghc-lib +gpl hsyaml +threads test"
 RESTRICT="!test? ( test )"
 
 PATCHES=(
@@ -32,6 +32,8 @@ RDEPEND="
 	>=dev-haskell/extra-1.7.3:=[profile?]
 	dev-haskell/file-embed:=[profile?]
 	>=dev-haskell/filepattern-0.1.1:=[profile?]
+	>=dev-haskell/ghc-lib-parser-9.12:=[profile?] <dev-haskell/ghc-lib-parser-9.13:=[profile?]
+	>=dev-haskell/ghc-lib-parser-ex-9.12.0.0:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.13.0:=[profile?]
 	>=dev-haskell/refact-0.3:=[profile?]
 	dev-haskell/text:=[profile?]
 	>=dev-haskell/uniplate-1.5:=[profile?]
@@ -39,13 +41,6 @@ RDEPEND="
 	dev-haskell/utf8-string:=[profile?]
 	dev-haskell/vector:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
-	ghc-lib? (
-		>=dev-haskell/ghc-lib-parser-9.12:=[profile?] <dev-haskell/ghc-lib-parser-9.13:=[profile?]
-	)
-	!ghc-lib? (
-		>=dev-lang/ghc-9.12:= <dev-lang/ghc-9.13:=
-		>=dev-haskell/ghc-lib-parser-ex-9.12:=[profile?] <dev-haskell/ghc-lib-parser-ex-9.13:=[profile?]
-	)
 	gpl? (
 		>=dev-haskell/hscolour-1.21:=[profile?]
 	)
