@@ -14,7 +14,7 @@ RESTRICT="test" # Requires deprecated/buggy haddock-test package
 DESCRIPTION="A documentation-generation tool for Haskell libraries"
 HOMEPAGE="https://www.haskell.org/haddock/"
 
-GHC_BRANCH_COMMIT="8b63dfe0a81d08fef5b4acba6e60d80067daa5d7" # ghc-9.12.3-release
+GHC_BRANCH_COMMIT="44c6796f535d60861fa2510025ec79f27696a15e" # ghc-9.12.4-release
 
 SRC_URI="https://gitlab.haskell.org/ghc/ghc/-/archive/${GHC_BRANCH_COMMIT}.tar.gz?path=utils/haddock -> ${P}.tar.gz"
 LICENSE="BSD"
