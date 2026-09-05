@@ -30,31 +30,3 @@
      buildable: False
    type:             exitcode-stdio-1.0
    hs-source-dirs:   plugins/hls-hlint-plugin/test
-@@ -1578,15 +1575,14 @@
-   manual:      True
- 
- common ormolu
--  -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
--  if flag(ormolu) && !impl(ghc >= 9.14)
-+  if flag(ormolu)
-     build-depends: haskell-language-server:hls-ormolu-plugin
-     cpp-options: -Dhls_ormolu
- 
- library hls-ormolu-plugin
-   import:           defaults, pedantic, warnings
-   -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
--  if !flag(ormolu) || impl(ghc >= 9.14)
-+  if !flag(ormolu)
-     buildable: False
-   exposed-modules:  Ide.Plugin.Ormolu
-   hs-source-dirs:   plugins/hls-ormolu-plugin/src
-@@ -1606,8 +1602,7 @@
- 
- test-suite hls-ormolu-plugin-tests
-   import:           defaults, pedantic, test-defaults, warnings
--  -- ormolu depends on ghc-lib-parser which doesn't support GHC 9.14
--  if !flag(ormolu) || impl(ghc >= 9.14)
-+  if !flag(ormolu)
-     buildable: False
-   type:             exitcode-stdio-1.0
-   hs-source-dirs:   plugins/hls-ormolu-plugin/test

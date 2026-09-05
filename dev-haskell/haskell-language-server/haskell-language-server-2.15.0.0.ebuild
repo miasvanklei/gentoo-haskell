@@ -3,7 +3,7 @@
 
 EAPI=8
 
-#hackport: flags: alternateNumberFormat:hls_plugins_alternate-number-format,cabal:hls_plugins_cabal,cabalfmt:hls_plugins_cabal-fmt,cabalgild:hls_plugins_cabal-gild,callHierarchy:hls_plugins_call-hierarchy,changeTypeSignature:hls_plugins_change-type-signature,class:hls_plugins_class,codeRange:hls_plugins_code-range,eval:hls_plugins_eval,explicitFields:hls_plugins_explicit-fields,explicitFixity:hls_plugins_explicit-fixity,fourmolu:hls_plugins_fourmolu,gadt:hls_plugins_gadt,hlint:hls_plugins_hlint,importLens:hls_plugins_import-lens,moduleName:hls_plugins_module-name,notes:hls_plugins_notes,ormolu:hls_plugins_ormolu,overloadedRecordDot:hls_plugins_overloaded-record-dot,pragmas:hls_plugins_pragmas,qualifyImportedNames:hls_plugins_qualify-imported-names,refactor:hls_plugins_refactor,rename:hls_plugins_rename,retrie:hls_plugins_retrie,semanticTokens:hls_plugins_semantic-tokens,splice:hls_plugins_splice,stan:hls_plugins_stan,stylishhaskell:hls_plugins_stylish-haskell,-dynamic,+ghc-lib,-pedantic,-isolateCabalfmtTests
+#hackport: flags: alternateNumberFormat:hls_plugins_alternate-number-format,cabal:hls_plugins_cabal,cabalfmt:hls_plugins_cabal-fmt,cabalgild:hls_plugins_cabal-gild,callHierarchy:hls_plugins_call-hierarchy,changeTypeSignature:hls_plugins_change-type-signature,class:hls_plugins_class,codeRange:hls_plugins_code-range,eval:hls_plugins_eval,explicitFields:hls_plugins_explicit-fields,explicitFixity:hls_plugins_explicit-fixity,fourmolu:hls_plugins_fourmolu,gadt:hls_plugins_gadt,hlint:hls_plugins_hlint,importLens:hls_plugins_import-lens,moduleName:hls_plugins_module-name,notes:hls_plugins_notes,ormolu:hls_plugins_ormolu,overloadedRecordDot:hls_plugins_overloaded-record-dot,pragmas:hls_plugins_pragmas,qualifyImportedNames:hls_plugins_qualify-imported-names,refactor:hls_plugins_refactor,rename:hls_plugins_rename,semanticTokens:hls_plugins_semantic-tokens,splice:hls_plugins_splice,stan:hls_plugins_stan,stylishhaskell:hls_plugins_stylish-haskell,-dynamic,+ghc-lib,-pedantic,-isolateCabalfmtTests
 
 CABAL_FEATURES="lib profile haddock hoogle hscolour" # test-suite
 inherit haskell-cabal
@@ -27,6 +27,7 @@ IUSE="
 	+hls_plugins_cabal-fmt
 	+hls_plugins_cabal-gild
 	+hls_plugins_call-hierarchy
+	+hls_plugins_case-split
 	+hls_plugins_change-type-signature
 	+hls_plugins_class
 	+hls_plugins_code-range
@@ -44,7 +45,6 @@ IUSE="
 	+hls_plugins_qualify-imported-names
 	+hls_plugins_refactor
 	+hls_plugins_rename
-	+hls_plugins_retrie
 	+hls_plugins_semantic-tokens
 	+hls_plugins_splice
 	+hls_plugins_stan
@@ -53,6 +53,7 @@ IUSE="
 
 REQUIRED_USE="
 	ghcide-bench? ( ghcide-bench-lib )
+	hls_plugins_case-split? ( hls_plugins_refactor )
 	hls_plugins_rename? ( hls_plugins_refactor )
 	hls_plugins_splice? ( hls_plugins_refactor )
 	hls_plugins_gadt? ( hls_plugins_refactor )
@@ -62,7 +63,7 @@ RESTRICT="test" # Depends on masked ghcide-test-utils
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.11.0.0-add-bench-flags.patch"
-	"${FILESDIR}/build-hlint-ormolu-plugin.patch"
+	"${FILESDIR}/build-hlint-plugin.patch"
 )
 
 CABAL_TEST_REQUIRED_BINS=(
@@ -77,10 +78,10 @@ RDEPEND="
 	dev-haskell/cabal-add:=[profile?]
 	dev-haskell/data-default:=[profile?]
 	>=dev-haskell/extra-1.7.4:=[profile?]
-	~dev-haskell/ghcide-2.14.0.0:=[profile?]
+	~dev-haskell/ghcide-2.15.0.0:=[profile?]
 	>=dev-haskell/githash-0.1.6.1:=[profile?]
 	dev-haskell/hie-bios:=[profile?]
-	~dev-haskell/hls-plugin-api-2.14.0.0:=[profile?]
+	~dev-haskell/hls-plugin-api-2.15.0.0:=[profile?]
 	>=dev-haskell/lsp-2.8:=[profile?] <dev-haskell/lsp-2.9
 	>=dev-haskell/lsp-types-2.4:=[profile?] <dev-haskell/lsp-types-2.5
 	dev-haskell/optparse-applicative:=[profile?]
@@ -90,7 +91,7 @@ RDEPEND="
 	dev-haskell/text:=[profile?]
 	dev-haskell/text-rope:=[profile?]
 	dev-haskell/unliftio-core:=[profile?]
-	>=dev-lang/ghc-9.2:=
+	>=dev-lang/ghc-9.14:=
 	ghcide-bench? (
 		dev-haskell/aeson:=[profile?]
 		dev-haskell/hls-graph:=[profile?]
@@ -115,7 +116,7 @@ RDEPEND="
 		dev-util/shake:=[profile?]
 	)
 	hls_plugins_alternate-number-format? (
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/regex-tdfa:=[profile?]
 		dev-haskell/syb:=[profile?]
@@ -123,7 +124,7 @@ RDEPEND="
 	hls_plugins_cabal? (
 		>=dev-haskell/cabal-syntax-3.7:=[profile?]
 		dev-haskell/hashable:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		>=dev-haskell/regex-tdfa-1.3.1:=[profile?] <dev-haskell/regex-tdfa-1.4
 		dev-haskell/text-rope:=[profile?]
@@ -143,13 +144,20 @@ RDEPEND="
 		dev-haskell/lens:=[profile?]
 		dev-haskell/sqlite-simple:=[profile?]
 	)
+	hls_plugins_case-split? (
+		dev-haskell/aeson:=[profile?]
+		>=dev-haskell/ghc-exactprint-1.14.1.0:=[profile?] <dev-haskell/ghc-exactprint-1.15.0.0
+		dev-haskell/hashable:=[profile?]
+		dev-haskell/lens:=[profile?]
+		dev-haskell/syb:=[profile?]
+	)
 	hls_plugins_change-type-signature? (
 		dev-haskell/regex-tdfa:=[profile?]
 		dev-haskell/syb:=[profile?]
 	)
 	hls_plugins_class? (
 		dev-haskell/aeson:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		>=dev-haskell/ghc-exactprint-1.5:=[profile?] <dev-haskell/ghc-exactprint-1.15.0.0
 		dev-haskell/lens:=[profile?]
 	)
@@ -163,7 +171,7 @@ RDEPEND="
 		dev-haskell/aeson:=[profile?]
 		>=dev-haskell/diff-0.5:=[profile?]
 		dev-haskell/dlist:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		>=dev-haskell/megaparsec-9:=[profile?]
 		>=dev-haskell/parser-combinators-1.2:=[profile?]
@@ -173,7 +181,7 @@ RDEPEND="
 	hls_plugins_explicit-fields? (
 		dev-haskell/aeson:=[profile?]
 		dev-haskell/lens:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/syb:=[profile?]
 	)
 	hls_plugins_explicit-fixity? (
@@ -200,14 +208,14 @@ RDEPEND="
 	)
 	hls_plugins_import-lens? (
 		dev-haskell/aeson:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 	)
 	hls_plugins_module-name? (
 		dev-haskell/aeson:=[profile?]
 	)
 	hls_plugins_notes? (
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		>=dev-haskell/regex-tdfa-1.3.1:=[profile?]
 		dev-haskell/text-rope:=[profile?]
@@ -219,7 +227,7 @@ RDEPEND="
 	)
 	hls_plugins_overloaded-record-dot? (
 		dev-haskell/aeson:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/syb:=[profile?]
 	)
@@ -235,7 +243,7 @@ RDEPEND="
 		dev-haskell/c2hs
 		dev-haskell/data-default:=[profile?]
 		dev-haskell/dlist:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/parser-combinators:=[profile?]
 		dev-haskell/regex-applicative:=[profile?]
@@ -257,18 +265,10 @@ RDEPEND="
 		dev-haskell/syb:=[profile?]
 		dev-haskell/unordered-containers:=[profile?]
 	)
-	hls_plugins_retrie? (
-		dev-haskell/aeson:=[profile?]
-		dev-haskell/hashable:=[profile?]
-		dev-haskell/lens:=[profile?]
-		>=dev-haskell/retrie-0.1.1:=[profile?]
-		dev-haskell/safe-exceptions:=[profile?]
-		dev-haskell/unordered-containers:=[profile?]
-	)
 	hls_plugins_semantic-tokens? (
 		dev-haskell/data-default:=[profile?]
 		dev-haskell/dlist:=[profile?]
-		~dev-haskell/hls-graph-2.14.0.0:=[profile?]
+		~dev-haskell/hls-graph-2.15.0.0:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/stm-containers:=[profile?]
 		dev-haskell/syb:=[profile?]
@@ -304,6 +304,7 @@ src_configure() {
 		$(cabal_flag hls_plugins_cabal-fmt cabalfmt)
 		$(cabal_flag hls_plugins_cabal-gild cabalgild)
 		$(cabal_flag hls_plugins_call-hierarchy callHierarchy)
+		$(cabal_flag hls_plugins_case-split caseSplit)
 		$(cabal_flag hls_plugins_change-type-signature changeTypeSignature)
 		$(cabal_flag hls_plugins_class class)
 		$(cabal_flag hls_plugins_code-range codeRange)
@@ -321,7 +322,6 @@ src_configure() {
 		$(cabal_flag hls_plugins_qualify-imported-names qualifyImportedNames)
 		$(cabal_flag hls_plugins_refactor refactor)
 		$(cabal_flag hls_plugins_rename rename)
-		$(cabal_flag hls_plugins_retrie retrie)
 		$(cabal_flag hls_plugins_semantic-tokens semanticTokens)
 		$(cabal_flag hls_plugins_splice splice)
 		$(cabal_flag hls_plugins_stan stan)
@@ -338,6 +338,6 @@ src_configure() {
 }
 
 src_compile() {
-	export LD_LIBRARY_PATH="${S}/dist/build/hls-refactor-plugin"
+	export LD_LIBRARY_PATH="${S}/dist/build/hls-refactor-plugin:${S}/dist/build/hls-exactprint-utils"
 	haskell-cabal_src_compile
 }
