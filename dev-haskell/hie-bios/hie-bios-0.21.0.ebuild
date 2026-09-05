@@ -15,10 +15,6 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-0.11.0-disable-network-tests.patch"
-)
-
 RDEPEND="
 	>=dev-haskell/aeson-1.4.4:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/base16-bytestring-0.1.1:=[profile?] <dev-haskell/base16-bytestring-1.1:=[profile?]
@@ -28,6 +24,7 @@ RDEPEND="
 	>=dev-haskell/cryptohash-sha1-0.11.100:=[profile?] <dev-haskell/cryptohash-sha1-0.12:=[profile?]
 	>=dev-haskell/extra-1.6.14:=[profile?] <dev-haskell/extra-1.9:=[profile?]
 	>=dev-haskell/file-embed-0.0.11:=[profile?] <dev-haskell/file-embed-1:=[profile?]
+	>=dev-haskell/filelock-0.1.1:=[profile?] <dev-haskell/filelock-0.2:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/prettyprinter:=[profile?]
 	>=dev-haskell/temporary-1.2:=[profile?] <dev-haskell/temporary-1.4:=[profile?]
