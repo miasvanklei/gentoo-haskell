@@ -21,6 +21,10 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.13.1-disable-network-tests.patch"
 )
 
+CABAL_CHDEPS=(
+	'persistent >=2.14.0.0 && <2.18,' 'persistent >=2.14.0.0,'
+)
+
 RDEPEND=">=dev-haskell/aeson-2.0.3.0:=[profile?]
 	>=dev-haskell/aeson-warning-parser-0.1.1:=[profile?]
 	>=dev-haskell/ansi-terminal-1.0.2:=[profile?]
@@ -58,7 +62,7 @@ RDEPEND=">=dev-haskell/aeson-2.0.3.0:=[profile?]
 	>=dev-haskell/pantry-0.10.1:=[profile?]
 	>=dev-haskell/path-0.9.5:=[profile?]
 	>=dev-haskell/path-io-1.8.2:=[profile?]
-	>=dev-haskell/persistent-2.14.0.0:=[profile?] <dev-haskell/persistent-2.18:=[profile?]
+	>=dev-haskell/persistent-2.14.0.0:=[profile?]
 	>=dev-haskell/persistent-sqlite-2.13.3.0:=[profile?]
 	>=dev-haskell/project-template-0.2.1.0:=[profile?]
 	>=dev-haskell/random-1.2.1.3:=[profile?]

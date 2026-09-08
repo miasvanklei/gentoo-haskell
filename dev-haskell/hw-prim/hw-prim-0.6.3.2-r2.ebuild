@@ -23,6 +23,7 @@ CABAL_CHDEPS=(
 	'hedgehog                   >= 1.0        && < 1.4' 'hedgehog >= 1.0'
 	'doctest                    >= 0.16.2     && < 0.22' 'doctest >= 0.16.2'
 	'ghc-prim                   >= 0.5        && < 0.11' 'ghc-prim                   >= 0.5'
+	'QuickCheck                 >= 2.10       && < 2.15   }' 'QuickCheck >= 2.10 }'
 )
 
 RDEPEND="
@@ -39,7 +40,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hedgehog-1.0
 		>=dev-haskell/hspec-2.4 <dev-haskell/hspec-3
 		>=dev-haskell/hw-hspec-hedgehog-0.1 <dev-haskell/hw-hspec-hedgehog-0.2
-		>=dev-haskell/quickcheck-2.10 <dev-haskell/quickcheck-2.15
+		>=dev-haskell/quickcheck-2.10
 	)
 "
 

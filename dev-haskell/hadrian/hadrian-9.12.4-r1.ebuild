@@ -27,6 +27,7 @@ CABAL_CHDEPS=(
 	'Cabal                >= 3.13    && < 3.15' 'Cabal >= 3.13'
 	'containers           >= 0.5     && < 0.8' 'containers           >= 0.5'
 	'directory            >= 1.3.9.0 && < 1.4' 'directory            >= 1.3.8.5 && < 1.4'
+	'QuickCheck           >= 2.6     && < 2.15' 'QuickCheck >= 2.6 && < 2.16'
 )
 
 PATCHES=(
@@ -51,7 +52,7 @@ RDEPEND="
 		dev-libs/gmp[static-libs]
 	)
 	test? (
-		>=dev-haskell/quickcheck-2.6:= <dev-haskell/quickcheck-2.15:=
+		>=dev-haskell/quickcheck-2.6:= <dev-haskell/quickcheck-2.16:=
 	)
 "
 

@@ -18,6 +18,10 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
+CABAL_CHDEPS=(
+	'QuickCheck                      >= 2.8 && < 2.15' 'QuickCheck >= 2.8 && < 2.16'
+)
+
 RDEPEND="
 	>=dev-haskell/prettyprinter-1.7:=[profile?] <dev-haskell/prettyprinter-1.8:=[profile?]
 	>=dev-haskell/prettyprinter-ansi-terminal-1.1.2:=[profile?] <dev-haskell/prettyprinter-ansi-terminal-1.2:=[profile?]
@@ -28,7 +32,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? (
-		>=dev-haskell/quickcheck-2.8 <dev-haskell/quickcheck-2.15
+		>=dev-haskell/quickcheck-2.8 <dev-haskell/quickcheck-2.16
 	)
 "
 
