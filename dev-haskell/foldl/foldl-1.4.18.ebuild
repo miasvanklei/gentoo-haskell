@@ -40,6 +40,7 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/doctest-0.16
 	)
 "
+
 src_configure() {
 	use test && export GHC_BOOTSTRAP_PACKAGES+=( cabal-doctest )
 
