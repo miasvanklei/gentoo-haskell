@@ -16,7 +16,7 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND=">=dev-haskell/boring-0.2:=[profile?] <dev-haskell/boring-0.3:=[profile?]
-	>=dev-haskell/hashable-1.2:=[profile?] <dev-haskell/hashable-1.5:=[profile?]
+	>=dev-haskell/hashable-1.2:=[profile?] <dev-haskell/hashable-1.6:=[profile?]
 	>=dev-haskell/type-equality-1:=[profile?] <dev-haskell/type-equality-2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
