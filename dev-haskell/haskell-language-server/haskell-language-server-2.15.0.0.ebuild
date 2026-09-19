@@ -259,7 +259,6 @@ RDEPEND="
 	hls_plugins_rename? (
 		dev-haskell/hashable:=[profile?]
 		>=dev-haskell/hiedb-0.8:=[profile?] <dev-haskell/hiedb-0.9
-		dev-haskell/hie-compat:=[profile?]
 		dev-haskell/lens:=[profile?]
 		dev-haskell/mod:=[profile?]
 		dev-haskell/syb:=[profile?]
