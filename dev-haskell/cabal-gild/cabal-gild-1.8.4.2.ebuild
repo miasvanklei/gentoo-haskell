@@ -18,7 +18,7 @@ KEYWORDS="~amd64"
 RDEPEND=">=dev-haskell/filepattern-0.1.3:=[profile?] <dev-haskell/filepattern-0.2:=[profile?]
 	>=dev-haskell/parsec-3.1.16.1:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-lang/ghc-9.8.2:=
-	>=dev-haskell/cabal-syntax-3.10.1.0:=[profile?] <dev-haskell/cabal-syntax-3.15:=[profile?]
+	>=dev-haskell/cabal-syntax-3.10.1.0:=[profile?] <dev-haskell/cabal-syntax-3.17:=[profile?]
 	>=dev-haskell/text-2.0.2:=[profile?] <dev-haskell/text-2.2:=[profile?]
 "
 DEPEND="${RDEPEND}
