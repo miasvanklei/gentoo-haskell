@@ -18,6 +18,7 @@ IUSE="executable"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-0.6.0.0-add-executable-flag.patch"
+	"${FILESDIR}/${P}-drop-hie-compat.patch"
 )
 
 CABAL_TEST_REQUIRED_BINS=(

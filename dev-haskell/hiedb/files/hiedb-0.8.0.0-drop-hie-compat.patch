@@ -1,0 +1,141 @@
+diff --git a/hiedb.cabal b/hiedb.cabal
+index 82d0c77..7ddd947 100644
+--- a/hiedb.cabal
++++ b/hiedb.cabal
+@@ -69,7 +69,6 @@ library
+                      , directory
+                      , mtl
+                      , sqlite-simple
+-                     , hie-compat ^>= 0.3
+                      , text
+                      , bytestring
+                      , algebraic-graphs >= 0.3
+diff --git a/src/HieDb/Compat.hs b/src/HieDb/Compat.hs
+index 4710eec..2c17ee3 100644
+--- a/src/HieDb/Compat.hs
++++ b/src/HieDb/Compat.hs
+@@ -90,7 +90,6 @@ module HieDb.Compat (
+     , mkFastStringByteString
+ ) where
+ 
+-import Compat.HieTypes
+ 
+ import GHC.Data.FastString as FS
+ import GHC.Driver.Session
+@@ -122,7 +121,8 @@ import qualified Algebra.Graph.AdjacencyMap           as Graph
+ import qualified Algebra.Graph.AdjacencyMap.Algorithm as Graph
+ 
+ import GHC.Types.SrcLoc
+-import Compat.HieUtils
++import GHC.Iface.Ext.Types
++import GHC.Iface.Ext.Utils
+ 
+ import qualified Data.Map as M
+ import qualified Data.Set as S
+diff --git a/src/HieDb/Create.hs b/src/HieDb/Create.hs
+index e86cceb..5c3c154 100644
+--- a/src/HieDb/Create.hs
++++ b/src/HieDb/Create.hs
+@@ -10,10 +10,9 @@ module HieDb.Create where
+ 
+ import Prelude hiding (mod)
+ 
+-import Compat.HieTypes
+-import Compat.HieUtils
+-
+ import GHC
++import GHC.Iface.Ext.Types
++import GHC.Iface.Ext.Utils
+ 
+ import Control.Exception
+ import Control.Monad
+diff --git a/src/HieDb/Dump.hs b/src/HieDb/Dump.hs
+index 2dc0332..4ec88c8 100644
+--- a/src/HieDb/Dump.hs
++++ b/src/HieDb/Dump.hs
+@@ -2,18 +2,17 @@
+ 
+ module HieDb.Dump where
+ 
+-import qualified Compat.HieDebug as HieDebug
+-import qualified Compat.HieTypes as HieTypes
+ import qualified Data.Map.Strict as Map
+ import qualified Data.Text as T
+ import qualified Data.Text.Encoding as T
+ 
+-import           Compat.HieTypes (HieFile (..))
+ import           Control.Monad.IO.Class (MonadIO, liftIO)
+ import           Data.Text (Text)
+ import           HieDb.Compat
+ import           HieDb.Types (NameCacheMonad)
+ import           HieDb.Utils (withHieFile)
++import GHC.Iface.Ext.Types
++import qualified GHC.Iface.Ext.Types as HieTypes
+ 
+ {-| Pretty print Hie AST stored in given .hie file -}
+ dump ::
+@@ -24,7 +23,7 @@ dump ::
+ dump dynFlags hieFilePath = do
+   withHieFile hieFilePath $ \HieFile{ hie_asts } -> do
+     let (_, astRoot) = Map.findMin $ HieTypes.getAsts hie_asts
+-    liftIO $ putStrLn $ showSDoc dynFlags $ HieDebug.ppHie astRoot
++    liftIO $ putStrLn $ showSDoc dynFlags $ ppr astRoot
+ 
+ {-| Get lines of original source code from given .hie file -}
+ sourceCode :: (NameCacheMonad m, MonadIO m) => FilePath -> m [Text]
+diff --git a/src/HieDb/Query.hs b/src/HieDb/Query.hs
+index 9370627..86dc478 100644
+--- a/src/HieDb/Query.hs
++++ b/src/HieDb/Query.hs
+@@ -11,7 +11,7 @@ import           Algebra.Graph.Export.Dot hiding ((:=))
+ import qualified Algebra.Graph.Export.Dot as G
+ 
+ import           GHC
+-import           Compat.HieTypes
++import GHC.Iface.Ext.Types
+ 
+ import           System.Directory
+ import           System.FilePath
+diff --git a/src/HieDb/Run.hs b/src/HieDb/Run.hs
+index 2f4eb7f..6d6a61c 100644
+--- a/src/HieDb/Run.hs
++++ b/src/HieDb/Run.hs
+@@ -11,8 +11,8 @@ module HieDb.Run where
+ import Prelude hiding (mod)
+ 
+ import GHC
+-import Compat.HieTypes
+-import Compat.HieUtils
++import GHC.Iface.Ext.Types
++import GHC.Iface.Ext.Utils
+ 
+ import qualified Data.Map as M
+ 
+diff --git a/src/HieDb/Utils.hs b/src/HieDb/Utils.hs
+index d5661c3..f011cf0 100644
+--- a/src/HieDb/Utils.hs
++++ b/src/HieDb/Utils.hs
+@@ -5,7 +5,6 @@
+ {-# LANGUAGE FlexibleContexts #-}
+ {-# LANGUAGE NamedFieldPuns #-}
+ {-# LANGUAGE OverloadedStrings #-}
+-{-# LANGUAGE ViewPatterns #-}
+ {-# LANGUAGE CPP #-}
+ module HieDb.Utils where
+ 
+@@ -13,10 +12,11 @@ import qualified Data.Tree
+ 
+ import Prelude hiding (mod)
+ 
+-import Compat.HieBin
+-import Compat.HieTypes
+-import qualified Compat.HieTypes as HieTypes
+-import Compat.HieUtils
++import GHC.Iface.Ext.Types
++import GHC.Iface.Ext.Binary
++import GHC.Iface.Ext.Utils
++import qualified GHC.Iface.Ext.Types as HieTypes
++
+ import qualified Data.Map as M
+ import qualified Data.Set as S
+ 
