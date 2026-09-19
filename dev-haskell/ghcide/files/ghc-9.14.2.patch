@@ -1,0 +1,181 @@
+--- a/src/Development/IDE/GHC/Compat/Core.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Development/IDE/GHC/Compat/Core.hs	2026-09-18 15:00:10.862530004 +0200
+@@ -744,7 +744,11 @@
+ 
+ mkIfaceTc :: HscEnv -> GHC.SafeHaskellMode -> ModDetails -> ModSummary -> Maybe CoreProgram -> TcGblEnv -> IO ModIface
+ mkIfaceTc hscEnv shm md _ms _mcp =
++#if MIN_VERSION_ghc(9,14,1)
++  GHC.mkIfaceTc hscEnv shm md _ms _mcp Nothing -- mcp::Maybe CoreProgram is only used in GHC >= 9.6
++#else
+   GHC.mkIfaceTc hscEnv shm md _ms _mcp -- mcp::Maybe CoreProgram is only used in GHC >= 9.6
++#endif
+ 
+ mkBootModDetailsTc :: HscEnv -> TcGblEnv -> IO ModDetails
+ mkBootModDetailsTc session = GHC.mkBootModDetailsTc
+--- a/src/Development/IDE/GHC/Compat/Units.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Development/IDE/GHC/Compat/Units.hs	2026-09-18 15:00:54.058709802 +0200
+@@ -8,7 +8,9 @@
+     unitState,
+     getUnitName,
+     explicitUnits,
++#if !MIN_VERSION_ghc(9,14,1)
+     preloadClosureUs,
++#endif
+     listVisibleModuleNames,
+     LookupResult(..),
+     lookupModuleWithSuggestions,
+@@ -94,7 +96,11 @@
+   let mkEntry dflags = do
+         hpt <- emptyHomePackageTable
+         let us = State.emptyUnitState -- placeholder UnitState
++#if MIN_VERSION_ghc(9,14,1)
++        pure (homeUnitId_ dflags, mkHomeUnitEnv us dflags hpt Nothing)
++#else
+         pure (homeUnitId_ dflags, mkHomeUnitEnv us Nothing dflags hpt Nothing)
++#endif
+   unitEnvList <- mapM mkEntry (NE.toList unitDflags)
+   pure $ unitEnv_new (Map.fromList unitEnvList)
+ #else
+@@ -110,16 +116,24 @@
+   initial_home_graph <- createUnitEnvFromFlags (dflags0 NE.:| unitDflags)
+   let home_units = unitEnv_keys initial_home_graph
+   home_unit_graph <- forM initial_home_graph $ \homeUnitEnv -> do
+-    let cached_unit_dbs = homeUnitEnv_unit_dbs homeUnitEnv
+-        dflags = homeUnitEnv_dflags homeUnitEnv
++    let dflags = homeUnitEnv_dflags homeUnitEnv
+         old_hpt = homeUnitEnv_hpt homeUnitEnv
++#if !MIN_VERSION_ghc(9,14,1)
++        cached_unit_dbs = homeUnitEnv_unit_dbs homeUnitEnv
++#endif
+ 
++#if MIN_VERSION_ghc(9,14,1)
++    (unit_state,home_unit,mconstants) <- State.initUnits (hsc_logger env) dflags (ue_uic (hsc_unit_env env)) home_units
++#else
+     (dbs,unit_state,home_unit,mconstants) <- State.initUnits (hsc_logger env) dflags cached_unit_dbs home_units
++#endif
+ 
+     updated_dflags <- DynFlags.updatePlatformConstants dflags mconstants
+     pure HomeUnitEnv
+       { homeUnitEnv_units = unit_state
++#if !MIN_VERSION_ghc(9,14,1)
+       , homeUnitEnv_unit_dbs = Just dbs
++#endif
+       , homeUnitEnv_dflags = updated_dflags
+       , homeUnitEnv_hpt = old_hpt
+       , homeUnitEnv_home_unit = Just home_unit
+@@ -132,6 +146,9 @@
+         , ue_home_unit_graph = home_unit_graph
+         , ue_current_unit    = homeUnitId_ dflags0
+         , ue_eps             = ue_eps (hsc_unit_env env)
++#if MIN_VERSION_ghc(9,14,1)
++        , ue_uic             = ue_uic (hsc_unit_env env)
++#endif
+ #if MIN_VERSION_ghc(9,13,0)
+         , ue_module_graph    = emptyMG
+ #endif
+@@ -166,8 +183,10 @@
+ lookupUnit :: HscEnv -> Unit -> Maybe UnitInfo
+ lookupUnit env pid = State.lookupUnit (unitState env) pid
+ 
++#if !MIN_VERSION_ghc(9,14,1)
+ preloadClosureUs :: HscEnv -> PreloadUnitClosure
+ preloadClosureUs = State.preloadClosure . unitState
++#endif
+ 
+ unitHaddockInterfaces :: UnitInfo -> [FilePath]
+ unitHaddockInterfaces =
+--- a/src/Development/IDE/GHC/Orphans.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Development/IDE/GHC/Orphans.hs	2026-09-18 14:50:51.404220553 +0200
+@@ -73,7 +73,9 @@
+ #endif
+ 
+ instance NFData WholeCoreBindings where
+-#if MIN_VERSION_ghc(9,11,0)
++#if MIN_VERSION_ghc(9,14,1)
++  rnf (WholeCoreBindings bs m ml f x) = rnf bs `seq` rnf m `seq` rnf ml `seq` rnf f `seq` rnf x
++#elif MIN_VERSION_ghc(9,11,0)
+   rnf (WholeCoreBindings bs m ml f) = rnf bs `seq` rnf m `seq` rnf ml `seq` rnf f
+ #else
+   rnf (WholeCoreBindings bs m ml) = rnf bs `seq` rnf m `seq` rnf ml
+--- a/src/Development/IDE/GHC/Util.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Development/IDE/GHC/Util.hs	2026-09-18 14:53:21.380835014 +0200
+@@ -87,11 +87,16 @@
+ -- | Given a 'Unit' try and find the associated 'PackageConfig' in the environment.
+ lookupPackageConfig :: Unit -> HscEnv -> Maybe GHC.UnitInfo
+ lookupPackageConfig unit env =
++#if MIN_VERSION_ghc(9,14,1)
++    Compat.lookupUnit' False unitState unit
++    where
++        unitState = Compat.getUnitInfoMap env
++#else
+     Compat.lookupUnit' False unitState prClsre unit
+     where
+         unitState = Compat.getUnitInfoMap env
+         prClsre = preloadClosureUs env
+-
++#endif
+ 
+ -- | Convert from the @text@ package to the @GHC@ 'StringBuffer'.
+ --   Currently implemented somewhat inefficiently (if it ever comes up in a profile).
+--- a/src/Development/IDE/Import/FindImports.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/Development/IDE/Import/FindImports.hs	2026-09-18 14:52:04.828520806 +0200
+@@ -36,6 +36,10 @@
+ import           GHC.Types.PkgQual
+ import           GHC.Unit
+ 
++#if MIN_VERSION_ghc(9,14,1)
++import qualified GHC.Types.Unique.Set              as UniqSet
++#endif
++
+ 
+ #if MIN_VERSION_ghc(9,11,0)
+ import           GHC.Driver.DynFlags               (ReexportedModule (..),
+@@ -129,7 +133,11 @@
+   { uvReexports :: Map ModuleName ModuleName
+     -- ^ The name we import it under, and the name it has in the unit it is
+     -- reexported from
++#if MIN_VERSION_ghc(9,14,1)
++  , uvHidden    :: UniqSet.UniqSet ModuleName
++#else
+   , uvHidden    :: S.Set ModuleName
++#endif
+   }
+ 
+ -- | What a home unit exposes, from its flags.
+@@ -167,7 +175,7 @@
+       , Just realName <- Map.lookup modName (uvReexports vis)
+       = LocateFoundReexport uid realName
+       | Just vis <- mbVisibility
+-      , modName `S.member` uvHidden vis
++      , modName `UniqSet.elementOfUniqSet` uvHidden vis
+       = go units
+       | Just file <- lookup uid providers
+       = LocateFoundFile uid file
+@@ -229,12 +237,16 @@
+     -- several provide the module.
+     -- The current unit's own reexports and hidden modules do not apply to it,
+     -- which also stops the reexport search from looping.
++
++    -- TODO: here we convert a set into a list and then do n lookup (in
++    -- log(k), hence nlog(k).). However we may be able to do something smarter with
++    -- "restrictKeys" which runs in nlog(n/k + 1).
+     searchUnits = (homeUnitId_ dflags, Nothing) :
+-      [ (uid, Map.lookup uid unit_visibility) | uid <- hpt_deps ]
++      [ (uid, Map.lookup uid unit_visibility) | uid <- S.toList hpt_deps ]
+ 
+     ue = hsc_unit_env env
+     units = homeUnitEnv_units $ ue_findHomeUnitEnv (homeUnitId_ dflags) ue
+-    hpt_deps :: [UnitId]
++    hpt_deps :: S.Set UnitId
+     hpt_deps = homeUnitDepends units
+ 
+     toModLocation uid file = liftIO $ do
+@@ -265,7 +277,7 @@
+         LookupMultiple rs -> FoundMultiple rs
+         LookupHidden pkg_hiddens mod_hiddens ->
+           notFound
+-             { fr_pkgs_hidden = map (moduleUnit . fst) pkg_hiddens
++             { fr_pkgs_hidden = pkg_hiddens
+              , fr_mods_hidden = map (moduleUnit . fst) mod_hiddens
+              }
+         LookupUnusable unusable ->
