@@ -33,6 +33,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}/ghc-9.14.2.patch"
+)
+
 src_configure() {
 	haskell-cabal_src_configure \
 		--flag=-dev \
