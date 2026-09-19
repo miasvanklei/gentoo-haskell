@@ -1,0 +1,16 @@
+--- a/src/Ormolu/Printer/Meat/Declaration/Signature.hs	2026-09-18 13:22:27.600712861 +0200
++++ b/src/Ormolu/Printer/Meat/Declaration/Signature.hs	2026-09-18 13:23:09.984877584 +0200
+@@ -205,11 +205,11 @@
+ p_activation = \case
+   NeverActive -> txt "[~]"
+   AlwaysActive -> return ()
+-  ActiveBefore _ n -> do
++  ActiveBefore n -> do
+     txt "[~"
+     atom n
+     txt "]"
+-  ActiveAfter _ n -> do
++  ActiveAfter n -> do
+     txt "["
+     atom n
+     txt "]"
