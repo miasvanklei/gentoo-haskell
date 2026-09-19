@@ -1,0 +1,11 @@
+--- a/src/HIE/Bios/Ghc/Gap.hs	2001-09-09 03:46:40.000000000 +0200
++++ b/src/HIE/Bios/Ghc/Gap.hs	2026-09-18 13:57:22.270860700 +0200
+@@ -173,7 +173,7 @@
+ overPkgDbRef :: (OsPath -> OsPath) -> G.PackageDBFlag -> G.PackageDBFlag
+ overPkgDbRef f (G.PackageDB pkgConfRef) = G.PackageDB $ case pkgConfRef of
+     G.PkgDbPath fp ->
+-#if __GLASGOW_HASKELL__ >= 915
++#if __GLASGOW_HASKELL__ >= 914
+       G.PkgDbPath (f fp)
+ #else
+       G.PkgDbPath (unsafeDecodeUtf $ f $ unsafeEncodeUtf fp)

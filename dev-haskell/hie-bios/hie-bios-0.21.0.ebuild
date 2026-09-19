@@ -41,3 +41,7 @@ DEPEND="${RDEPEND}
 		dev-haskell/tasty-expected-failure
 		dev-haskell/tasty-hunit )
 "
+
+PATCHES=(
+	"${FILESDIR}/ghc-9.14.2.patch"
+)
