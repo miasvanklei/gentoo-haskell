@@ -27,19 +27,19 @@ HOMEPAGE="https://www.haskell.org/ghc/"
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
 GHC_BRANCH_COMMIT="daf659b6e3c8f2a84100fbee797cd9d457c00df5" # ghc-9.12.1-release
-GHC_PV=${PV}
-#GHC_PV="9.12.1.20250219" # uncomment only for -alpha, -beta, -rc ebuilds
+#GHC_PV=${PV}
+GHC_PV="9.14.1.20260916" # uncomment only for -alpha, -beta, -rc ebuilds
 GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 GHC_BINARY_PV="9.10.1"
 
 SRC_URI="
-	https://downloads.haskell.org/~ghc/${GHC_PV}/${GHC_P}-src.tar.xz -> ${P}-src.tar.xz
+	https://downloads.haskell.org/ghc/${GHC_PV}/${GHC_P}-src.tar.xz -> ${P}-src.tar.xz
 	verify-sig? ( https://downloads.haskell.org/~ghc/${GHC_PV}/${GHC_P}-src.tar.xz.sig )
 	!ghcbootstrap? (
-		amd64? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
+		amd64? ( https://downloads.haskell.org/ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-x86_64-alpine3_12-linux-static-int_native.tar.xz )
 		arm64? (
-			elibc_glibc? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-deb11-linux.tar.xz )
-			elibc_musl? ( https://downloads.haskell.org/~ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-alpine3_18-linux.tar.xz )
+			elibc_glibc? ( https://downloads.haskell.org/ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-deb11-linux.tar.xz )
+			elibc_musl? ( https://downloads.haskell.org/ghc/${GHC_BINARY_PV}/ghc-${GHC_BINARY_PV}-aarch64-alpine3_18-linux.tar.xz )
 		)
 	)
 	test? (
@@ -119,22 +119,22 @@ BOOTSTRAP_LIBRARIES=(
 	"clock" "0.8.4" "0"
 	"cryptohash-sha256" "0.11.102.1" "6"
 	"directory" "1.3.9.0" "1"
-	"extra" "1.8" "0"
+	"extra" "1.8.1" "0"
 	"file-io" "0.1.4" "0"
 	"filepattern" "0.1.3" "0"
-	"hashable" "1.5.0.0" "1"
-	"heaps" "0.4" "0"
+	"hashable" "1.5.1.0" "0"
+	"heaps" "0.4.1" "0"
 	"js-dgtable" "0.5.2" "0"
 	"js-flot" "0.8.3" "0"
-	"js-jquery" "3.3.1" "0"
+	"js-jquery" "3.7.1" "0"
 	"process" "1.6.25.0" "1"
-	"primitive" "0.9.0.0" "2"
-	"splitmix" "0.1.1" "0"
-	"random" "1.2.1.2" "0"
-	"unix" "2.8.6.0" "1"
-	"unordered-containers" "0.2.20" "4"
+	"primitive" "0.9.1.0" "1"
+	"splitmix" "0.1.3.2" "0"
+	"random" "1.3.1" "0"
+	"unix" "2.8.8.0" "1"
+	"unordered-containers" "0.2.21" "2"
 	"utf8-string" "1.0.2" "0"
-	"shake" "0.19.8" "0"
+	"shake" "0.19.9" "0"
 	"Cabal" "3.14.1.1" "0"
 	"Cabal-syntax" "3.14.1.0" "0"
 	"QuickCheck" "2.14.3" "0"
@@ -673,7 +673,7 @@ src_prepare() {
 	# build ghc and libraries only the dynamic way
 	eapply "${FILESDIR}"/${PN}-9.10.1-ghc-toolchain-dynamic.patch
 	eapply "${FILESDIR}"/${PN}-9.10.1-cabal-dynamic-by-default.patch
-	eapply "${FILESDIR}"/hadrian-9.12.1-build-dynamic-only.patch
+	eapply "${FILESDIR}"/hadrian-9.14.2-build-dynamic-only.patch
 
 	# don't check versions + bump versions
 	eapply "${FILESDIR}"/hadrian-9.8.4-dont-check-builtin-versions.patch
