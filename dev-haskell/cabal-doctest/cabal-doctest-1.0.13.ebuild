@@ -21,7 +21,3 @@ RDEPEND=">=dev-haskell/cabal-1.24:=[profile?] <dev-haskell/cabal-3.17:=[profile?
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 "
-
-CABAL_CHDEPS=(
-	"Cabal      >=1.24 && <3.16" "Cabal      >=1.24 && <3.17"
-)
