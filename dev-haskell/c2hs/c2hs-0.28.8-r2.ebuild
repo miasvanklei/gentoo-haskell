@@ -22,7 +22,7 @@ RESTRICT=test # needs unprefixed 'cpp'
 
 RDEPEND="
 	dev-haskell/dlist:=
-	>=dev-haskell/language-c-0.7.1:= <dev-haskell/language-c-0.10:=
+	>=dev-haskell/language-c-0.7.1:= <dev-haskell/language-c-0.11:=
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="
@@ -36,6 +36,10 @@ DEPEND="
 		dev-haskell/text
 	)
 "
+
+CABAL_CHDEPS=(
+	'language-c >= 0.7.1 && < 0.10' 'language-c >= 0.7.1 && < 0.11'
+)
 
 src_configure() {
 	haskell-cabal_src_configure --flag=-regression
