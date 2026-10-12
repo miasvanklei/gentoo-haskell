@@ -29,7 +29,6 @@ RDEPEND="
 	>=dev-haskell/algebraic-graphs-0.3:=[profile?]
 	>=dev-haskell/ansi-terminal-0.9:=[profile?]
 	dev-haskell/extra:=[profile?]
-	>=dev-haskell/hie-compat-0.3:=[profile?] <dev-haskell/hie-compat-0.4:=[profile?]
 	dev-haskell/lucid:=[profile?]
 	dev-haskell/optparse-applicative:=[profile?]
 	dev-haskell/sqlite-simple:=[profile?]
