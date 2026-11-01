@@ -17,6 +17,14 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
+CABAL_CHDEPS=(
+	'base                   >=4.7      && <4.20' 'base                   >=4.7      && <4.23'
+	'template-haskell       >=2.8      && <2.22' 'template-haskell       >=2.8      && <2.25'
+	'quickcheck-instances   >=0.3  && <0.4' 'quickcheck-instances   >=0.3  && <0.5'
+	'tasty                  >=0.10 && <1.5' 'tasty                  >=0.10'
+	'tasty-quickcheck       >=0.8  && <0.11' 'tasty-quickcheck       >=0.8'
+)
+
 RDEPEND=">=dev-haskell/attoparsec-0.11.3.4:=[profile?] <dev-haskell/attoparsec-0.15:=[profile?]
 	>=dev-haskell/attoparsec-aeson-2.1.0.0:=[profile?] <dev-haskell/attoparsec-aeson-2.3:=[profile?]
 	>=dev-haskell/base-compat-batteries-0.11.2:=[profile?] <dev-haskell/base-compat-batteries-0.14:=[profile?]
@@ -33,8 +41,8 @@ RDEPEND=">=dev-haskell/attoparsec-0.11.3.4:=[profile?] <dev-haskell/attoparsec-0
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
 	test? ( dev-haskell/aeson
-		>=dev-haskell/quickcheck-instances-0.3 <dev-haskell/quickcheck-instances-0.4
-		>=dev-haskell/tasty-0.10 <dev-haskell/tasty-1.5
+		>=dev-haskell/quickcheck-instances-0.3 <dev-haskell/quickcheck-instances-0.5
+		>=dev-haskell/tasty-0.10
 		>=dev-haskell/tasty-hunit-0.9 <dev-haskell/tasty-hunit-0.11
-		>=dev-haskell/tasty-quickcheck-0.8 <dev-haskell/tasty-quickcheck-0.11 )
+		>=dev-haskell/tasty-quickcheck-0.8 )
 "
