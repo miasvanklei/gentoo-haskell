@@ -32,7 +32,7 @@ RDEPEND=">=dev-haskell/base16-bytestring-1.0.0.0:=[profile?] <dev-haskell/base16
 	>=dev-haskell/parsec-3.1.13.0:=[profile?] <dev-haskell/parsec-3.2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 	>=dev-haskell/aeson-2.1.0.0:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
-	>=dev-haskell/tar-0.5.1.1:=[profile?] <dev-haskell/tar-0.7:=[profile?]
+	>=dev-haskell/tar-0.5.1.1:=[profile?] <dev-haskell/tar-0.8:=[profile?]
 	>=dev-haskell/text-1.2.3.0:=[profile?] <dev-haskell/text-2.2:=[profile?]
 "
 DEPEND="${RDEPEND}

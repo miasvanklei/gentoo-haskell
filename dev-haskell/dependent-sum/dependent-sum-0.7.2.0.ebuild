@@ -18,7 +18,7 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 
 RDEPEND=">=dev-haskell/constraints-extras-0.2:=[profile?] <dev-haskell/constraints-extras-0.5:=[profile?]
-	>=dev-haskell/some-1.0.4:=[profile?] <dev-haskell/some-1.0.7:=[profile?]
+	>=dev-haskell/some-1.0.4:=[profile?] <dev-haskell/some-1.2:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
