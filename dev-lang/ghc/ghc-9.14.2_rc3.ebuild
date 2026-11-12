@@ -28,7 +28,7 @@ VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ghc.asc
 
 GHC_BRANCH_COMMIT="daf659b6e3c8f2a84100fbee797cd9d457c00df5" # ghc-9.12.1-release
 #GHC_PV=${PV}
-GHC_PV="9.14.1.20260916" # uncomment only for -alpha, -beta, -rc ebuilds
+GHC_PV="9.14.1.20261110" # uncomment only for -alpha, -beta, -rc ebuilds
 GHC_P=${PN}-${GHC_PV} # using ${P} is almost never correct
 GHC_BINARY_PV="9.10.1"
 
