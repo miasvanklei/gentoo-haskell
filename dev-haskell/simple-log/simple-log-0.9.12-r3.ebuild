@@ -20,14 +20,17 @@ PATCHES=(
 	)
 
 CABAL_CHDEPS=(
+	'containers >= 0.5 && < 0.7,' 'containers >= 0.5,'
 	'data-default >= 0.5 && < 0.8' 'data-default >= 0.5 && < 0.9'
+	'filepath >= 1.4 && < 1.5,' 'filepath >= 1.4,'
+	'microlens >= 0.4 && < 0.5,' 'microlens >= 0.4,'
 )
 
 RDEPEND=">=dev-haskell/async-2.0:=[profile?] <dev-haskell/async-3.0:=[profile?]
 	>=dev-haskell/base-unicode-symbols-0.2:=[profile?] <dev-haskell/base-unicode-symbols-0.3:=[profile?]
 	>=dev-haskell/data-default-0.5:=[profile?] <dev-haskell/data-default-0.9:=[profile?]
 	>=dev-haskell/hformat-0.3:=[profile?] <dev-haskell/hformat-0.4:=[profile?]
-	>=dev-haskell/microlens-0.4:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
+	>=dev-haskell/microlens-0.4:=[profile?]
 	>=dev-haskell/microlens-platform-0.3:=[profile?] <dev-haskell/microlens-platform-0.5:=[profile?]
 	>=dev-haskell/mmorph-1.0:=[profile?] <dev-haskell/mmorph-1.3:=[profile?]
 	>=dev-haskell/safesemaphore-0.9.0:=[profile?] <dev-haskell/safesemaphore-1.0.0:=[profile?]

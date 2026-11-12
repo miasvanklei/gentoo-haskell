@@ -1,0 +1,112 @@
+From af4fc3cc5561693373bf14437cdc63debf6fa086 Mon Sep 17 00:00:00 2001
+From: GuillaumedeVolpiano <xavier@wheredoibegin.fr>
+Date: Thu, 5 Nov 2026 18:24:39 +0100
+Subject: [PATCH] b
+
+---
+ certificate.pem    | 30 +++++++++++++++++-------------
+ http-conduit.cabal |  2 +-
+ key.pem            | 43 ++++++++++++++++++++++++++++---------------
+ 3 files changed, 46 insertions(+), 29 deletions(-)
+
+diff --git a/certificate.pem b/certificate.pem
+index 65c91e3..69a7069 100644
+--- a/certificate.pem
++++ b/certificate.pem
+@@ -1,15 +1,19 @@
+ -----BEGIN CERTIFICATE-----
+-MIICWDCCAcGgAwIBAgIJAJG1ZMlcMDW6MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
+-BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
+-aWRnaXRzIFB0eSBMdGQwHhcNMTExMDIyMTk0MjU3WhcNMTExMTIxMTk0MjU3WjBF
+-MQswCQYDVQQGEwJBVTETMBEGA1UECAwKU29tZS1TdGF0ZTEhMB8GA1UECgwYSW50
+-ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB
+-gQCfYZx7kV6ybogMyAf9MINm7Rwin5LKh+TpD1ZkbLgmqFVotQCdthgTK66SPXkx
+-EXGI27biNzacJhX7Ml7/4o8sp2GslYKUO46DYvgi/nnNX/bzA5cDJSSGK11eQEVs
+-+p0GEZ/6Juhpx/oQwMDMgo0UHkiH8QtKI8ojXnFF2MsLNwIDAQABo1AwTjAdBgNV
+-HQ4EFgQUaA6FbOj/0VJMb4egNyIDZ/ZNV/YwHwYDVR0jBBgwFoAUaA6FbOj/0VJM
+-b4egNyIDZ/ZNV/YwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCTQyOk
+-D86Z+yzedXjTLI6FT8QugmQne1YQ8P0w37P76z2reagSvNee2e9B1oTHoPeKZMs0
+-k99oS9yJ/NOQ1Ms90P+q0yBVGxAs/gF65qKgE27YGXzNtNobj/D4OoxcFG+BsORw
+-VvYSBV4FiVy9RwJsr7AMqkUBcOEPCuJHgTx58w==
++MIIDCzCCAfOgAwIBAgIUSRsytX8pxASS8Xqv4ABTpfoBbK8wDQYJKoZIhvcNAQEL
++BQAwFDESMBAGA1UEAwwJMTI3LjAuMC4xMCAXDTI2MTEwNTE3MjM0NloYDzIxMjYx
++MDEyMTcyMzQ2WjAUMRIwEAYDVQQDDAkxMjcuMC4wLjEwggEiMA0GCSqGSIb3DQEB
++AQUAA4IBDwAwggEKAoIBAQDIiMAy5moyrC6/lnaZ2ScTBZHg9ac2tkYL3sZlyVUP
++vgCLDmZVJmApYlD28TD56E1I+2StwwX0Ki8cCaohvnbpfuAwOOlU2550BR0p1diq
++XYIGHNCLeDDe81TKChieYw9aBXjj7fAezc7SPTSNIoA8GHMiqVLP7S1i+l7lC5SD
++IP+ByFjBKaOJIZPbFJ6c4ztIXHctcjumVwQj49st/+Z4sFlTAalFzl7ggOXU4Bf1
++llGaIgroy7Dny+yj8yZl2qRMfkh2rWAE4iiC/xVBdI9+xUKrQ+2vj0U8JcddzN7r
++OUR5ZzndXGCKTGiV5j7AFSqM3bIhoAWm+8HY3Gkpe+M7AgMBAAGjUzBRMB0GA1Ud
++DgQWBBQs5TkGVdotfTvYvoo++QZ3CvDNpzAfBgNVHSMEGDAWgBQs5TkGVdotfTvY
++voo++QZ3CvDNpzAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAz
++2pG3HlqQp3HYoHpDlt86G1wU1VshzmQZmaeIWH3fPYtw9x8FfMurzYoYO0a0feBG
++OTfnqrZpml5EeSjxY/Wvj1XzMzzPN/eylovCo9o1oRof8+agll1S1mU68HCdQZz9
++QSff0Fihr+zWrsZ9bEgRwv9nzkQCgHbyMqfuXQgt7OrPa4rZYxMfWy/fV5g7QWAC
++iwibOqO3nhOmgVyUqmo5qq+9uaVBifJ2QFRfU/N57gFgP+Vvcvh4LUNfGzJ+apQX
++JDIq9vCBhvrdiCU9ru0D9fAKb391rpDi0aKz2NpPADap1/IFEQbmZkLxNU5MMGAc
++8AM3rnZ0Gg/tuMxNrwDd
+ -----END CERTIFICATE-----
+diff --git a/http-conduit.cabal b/http-conduit.cabal
+index de4f5af..2121f15 100644
+--- a/http-conduit.cabal
++++ b/http-conduit.cabal
+@@ -58,7 +58,7 @@ test-suite test
+     type: exitcode-stdio-1.0
+     hs-source-dirs: test
+ 
+-    ghc-options:   -Wall
++    ghc-options:   -Wall -threaded
+     cpp-options:   -DDEBUG
+     build-depends: base >= 4 && < 5
+                  , HUnit
+diff --git a/key.pem b/key.pem
+index 57465e9..2daefea 100644
+--- a/key.pem
++++ b/key.pem
+@@ -1,15 +1,28 @@
+------BEGIN RSA PRIVATE KEY-----
+-MIICXAIBAAKBgQCfYZx7kV6ybogMyAf9MINm7Rwin5LKh+TpD1ZkbLgmqFVotQCd
+-thgTK66SPXkxEXGI27biNzacJhX7Ml7/4o8sp2GslYKUO46DYvgi/nnNX/bzA5cD
+-JSSGK11eQEVs+p0GEZ/6Juhpx/oQwMDMgo0UHkiH8QtKI8ojXnFF2MsLNwIDAQAB
+-AoGAR8pgAgjo7tZ60ccIUjOX/LSxB6d5J2Eu6wvNjk6qZD9OuWtOa7up/HigmZ63
+-CDMjQNI2/o6AOrWtEQkPYZNbibuifzg5V517nHGSqkqjoIgesAiwEsoKpeOgGTtM
+-MM08oHbJ9uOnDnEEnDBiE0iE3jCTDfmwjqDMpUhu9dZ1EAECQQDKVpzSSV3pzMOp
+-ixNxMpYxzcE+4K9jgM+MlxPBJSQhVrg/cRQWb26cKBi8LdSxF23hQTsFr+8qLwid
+-Ah2AgUOBAkEAyaaCjrNRCiHRpd6YzWZ6GKkxbUvxSuOKX3N7hDaE2OFzQTv2Li8B
+-5mrCsXnSZtOG+MBFdHU66UYie1OzDSDKtwJAKMsvkOID0ihbZmpIwDC/wUjHZkLs
+-eXY14hVvgShY0XPnb7r/nspWlZsr6Xyf/hhIKfr5yFrBMFMNPIJ5qjflgQJAWsyV
+-YTgxN4S+6BdxapvIQq58ySA3CGeo+Q4BAimibB4oTal4UpdsHZrZDB00toRs9Dlv
+-jN70pfGkuS+ZIkIvxQJBAKSf5qpXWp4oZcThkieAiMeAhG96xqRPXhPUxq6QF+YG
+-T4PF1sjlpZwqy7C+2oF3BqLP09mCW7YkH9Jgnl1zDF8=
+------END RSA PRIVATE KEY-----
++-----BEGIN PRIVATE KEY-----
++MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIiMAy5moyrC6/
++lnaZ2ScTBZHg9ac2tkYL3sZlyVUPvgCLDmZVJmApYlD28TD56E1I+2StwwX0Ki8c
++CaohvnbpfuAwOOlU2550BR0p1diqXYIGHNCLeDDe81TKChieYw9aBXjj7fAezc7S
++PTSNIoA8GHMiqVLP7S1i+l7lC5SDIP+ByFjBKaOJIZPbFJ6c4ztIXHctcjumVwQj
++49st/+Z4sFlTAalFzl7ggOXU4Bf1llGaIgroy7Dny+yj8yZl2qRMfkh2rWAE4iiC
++/xVBdI9+xUKrQ+2vj0U8JcddzN7rOUR5ZzndXGCKTGiV5j7AFSqM3bIhoAWm+8HY
++3Gkpe+M7AgMBAAECggEAW9WIUycC1j7Uz8c7fBwekU75LdDBqUQS0ufL6pwnWKS2
++Afhvs6n12q3cDyKIP8H69qOtyQdpSBYzab8hSv+63BZO27aMYGCM8WvQHbMBXI+i
++9mKmvGAn3UoI99dky8/onVypLpRt5OVyRARkdweoOx0lSOfK9U6T/OJUp8bEVcHs
++sUcC5x7yxr0zj/tNxb9hlOmKdlpRaxXF9RlYmlGkRogceZMqdUbBObBFjGpYvTGA
++n14SYVkNXMXANCE5qFdjVVJGiG6RZQ8LX1rqpyY8FJ6PYjaBQ3ulKf/XqaJISKUZ
++36GrbTsMPWmIMVIDSwCQIuUKTkuSMwcf7C+AAqCCqQKBgQDpt8tHXtMzRPCNqX5q
++OIt7ETybT+c+m6xjlvaec2pX6QPtU+BU8Em/+XU29zYpruZ8GeJPJ8rAhz2/qw5H
++GtiApysipFrQ5obJqMyakMWEkCPOChMnkKl47mbNdDGBPBuT1AepsNaBjJ+UHDrC
++sJlvhU05CWJVii1VUzuGpX6fgwKBgQDbpw/GxM1r2tlSnEUTZOITUYb/bDWpqfVg
++pGgXBGymyeCfwgsAoKex9WJcVIOterQicwAkTMKqX/C1JrQtc2euNdTEe3M5ruhH
++XuapiP/61Vwp9SeD2ULlJCRWpgNcmfRfIijJ6JikHmSdsJQcr0OuIxwZe0XTTSEJ
++BhMl6IVn6QKBgQCe8gnjHdAQfAAEt5Jrds0VAyHuliaz43cXu6E5HVDjPGsZSgO0
++gD4HuwVGPlWtf27sU0YfgvZWfSM3aIOrQ8ydohKp2pCQpVZhatTLAU3y23weMafZ
++Ln6y6Z8sdqr8Mv6mSHp1ovge3p3gQlqL8UJIH6Xm9kTT28b80kAXUBGPNQKBgQDC
++VNXSZ7/Oknr/aZ57gB+8M78aMCRyDRo4/HvTEWkHT0haT5ToYzq6aX0ybttpGkxQ
++xinz862uit8thiaWp6mtKZcqloXlHOgIbN/qUnkW9LlrrafeMNPMYuN7fbkvrk3T
++9SbdK9oQKYufL+B6WF2qrQlpSfUG8xAtKaC7QzL0MQKBgGcEKuNaXtF4SDnaftcf
++PCzA1niytm3005II5WJx6bwZXJ1Xr3ESIuUsd2nAqgWWRixuCqxZ0InsfF6Adn08
++Wyu3SUcNVmfs7D2Pre/C13bN9gbivqrc8mC46Xb/CLXwUv/ucXheLjlRu2UVBqFs
++DYH9N8E9vcaSZlUMD/SV0JzP
++-----END PRIVATE KEY-----
+-- 
+2.56.0
+

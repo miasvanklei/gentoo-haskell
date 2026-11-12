@@ -14,6 +14,9 @@ HOMEPAGE="https://github.com/hpdeifel/hledger-iadd#readme"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
+CABAL_CHDEPS=(
+	'vty >= 6.1 && < 6.7' 'vty >= 6.1'
+)
 
 RDEPEND=">=dev-haskell/brick-3.0:=[profile?] <dev-haskell/brick-4:=[profile?]
 	>=dev-haskell/free-4.12.4:=[profile?]
@@ -27,7 +30,7 @@ RDEPEND=">=dev-haskell/brick-3.0:=[profile?] <dev-haskell/brick-4:=[profile?]
 	>=dev-haskell/text-zipper-0.10:=[profile?]
 	dev-haskell/unordered-containers:=[profile?]
 	dev-haskell/vector:=[profile?]
-	>=dev-haskell/vty-6.1:=[profile?] <dev-haskell/vty-6.7:=[profile?]
+	>=dev-haskell/vty-6.1:=[profile?]
 	dev-haskell/xdg-basedir:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 "

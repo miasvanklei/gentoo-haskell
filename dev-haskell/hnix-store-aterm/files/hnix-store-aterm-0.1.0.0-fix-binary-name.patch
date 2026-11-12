@@ -1,0 +1,25 @@
+From a1f490586d086c309cc5ee77ff5061d84e924553 Mon Sep 17 00:00:00 2001
+From: GuillaumedeVolpiano <xavier@wheredoibegin.fr>
+Date: Sun, 8 Nov 2026 18:27:59 +0100
+Subject: [PATCH] b
+
+---
+ hnix-store-aterm.cabal | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hnix-store-aterm.cabal b/hnix-store-aterm.cabal
+index 06baec3..6588c87 100644
+--- a/hnix-store-aterm.cabal
++++ b/hnix-store-aterm.cabal
+@@ -61,7 +61,7 @@ Library
+         System.Nix.Derivation.ATerm.Parser
+     GHC-Options: -Wall
+ 
+-Executable pretty-derivation
++Executable hnix-store-pretty-derivation
+     Import: commons
+     Hs-Source-Dirs: pretty-derivation
+     Build-Depends:
+-- 
+2.56.0
+

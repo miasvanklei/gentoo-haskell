@@ -9,6 +9,8 @@
 		<flag name="check-alignment">extra check on alignment in C layers, which cause lowlevel assert errors. for debugging only.</flag>
 		<flag name="integer-gmp">Whether or not to use GMP for some functions</flag>
 		<flag name="old-toolchain-inliner">use -fgnu89-inline to workaround an old compiler / linker / glibc issue.</flag>
+		<flag name="support-s2n-bignum">Use the vendored s2n-bignum assembly for the NIST prime curves on
+x86-64 and AArch64. See cbits/s2n/README.md.</flag>
 		<flag name="target-attributes">use GCC / clang function attributes instead of global target options.</flag>
 	</use>
 	<upstream>

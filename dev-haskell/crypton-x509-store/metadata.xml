@@ -7,6 +7,6 @@
 	</maintainer>
 	<upstream>
 		<remote-id type="hackage">crypton-x509-store</remote-id>
-		<remote-id type="github">vincenthz/hs-certificate</remote-id>
+		<remote-id type="github">kazu-yamamoto/crypton-certificate</remote-id>
 	</upstream>
 </pkgmetadata>

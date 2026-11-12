@@ -25,6 +25,7 @@ CABAL_CHDEPS=(
 	'mtl <2.3' 'mtl'
 	'transformers <0.6' 'transformers'
 	'extra <1.8' 'extra'
+	'microlens <0.5' 'microlens'
 )
 
 RDEPEND="
@@ -32,7 +33,7 @@ RDEPEND="
 	>=dev-haskell/deque-0.3:=[profile?] <dev-haskell/deque-0.5
 	dev-haskell/extra:=[profile?]
 	dev-haskell/free:=[profile?]
-	<dev-haskell/microlens-0.5:=[profile?]
+	dev-haskell/microlens:=[profile?]
 	<dev-haskell/microlens-th-0.5:=[profile?]
 	>=dev-haskell/multistate-0.7:=[profile?] <dev-haskell/multistate-0.9
 	<dev-haskell/unsafe-0.1:=[profile?]

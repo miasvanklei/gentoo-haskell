@@ -16,9 +16,12 @@ HOMEPAGE="https://wiki.haskell.org/Reactive-banana"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
+CABAL_CHDEPS=(
+	'pqueue >= 1.0 && < 1.6,' 'pqueue >= 1.0,'
+	)
 
 RDEPEND=">=dev-haskell/hashable-1.1:=[profile?] <dev-haskell/hashable-1.6:=[profile?]
-	>=dev-haskell/pqueue-1.0:=[profile?] <dev-haskell/pqueue-1.6:=[profile?]
+	>=dev-haskell/pqueue-1.0:=[profile?]
 	>=dev-haskell/semigroups-0.13:=[profile?] <dev-haskell/semigroups-0.21:=[profile?]
 	>=dev-haskell/these-0.2:=[profile?] <dev-haskell/these-1.3:=[profile?]
 	>=dev-haskell/unordered-containers-0.2.1.0:=[profile?] <dev-haskell/unordered-containers-0.3:=[profile?]

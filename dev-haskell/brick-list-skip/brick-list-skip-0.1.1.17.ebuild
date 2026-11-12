@@ -16,9 +16,13 @@ LICENSE="0BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="examples"
+CABAL_CHDEPS=(
+	'microlens >=0.4.13 && <0.5' 'microlens >=0.4.13'
+	'brick >=1.5 && <3' 'brick >=1.5'
+)
 
-RDEPEND=">=dev-haskell/brick-1.5:=[profile?] <dev-haskell/brick-3:=[profile?]
-	>=dev-haskell/microlens-0.4.13:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
+RDEPEND=">=dev-haskell/brick-1.5:=[profile?]
+	>=dev-haskell/microlens-0.4.13:=[profile?]
 	>=dev-haskell/vector-0.12.3:=[profile?] <dev-haskell/vector-0.14:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
 	examples? ( >=dev-haskell/vty-5.36:=[profile?] <dev-haskell/vty-7:=[profile?] )

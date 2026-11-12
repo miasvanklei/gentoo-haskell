@@ -5,13 +5,11 @@
 		<email>haskell@gentoo.org</email>
 		<name>Gentoo Haskell</name>
 	</maintainer>
-	<longdescription>
-		For more information
-		
-		- &quot;Generic.Random.Tutorial&quot;
-		
-		- http://blog.poisson.chat/posts/2018-01-05-generic-random-tour.html
-		
-		- https://byorgey.wordpress.com/2016/09/20/the-generic-random-library-part-1-simple-generic-arbitrary-instances/
-	</longdescription>
+	<use>
+		<flag name="enable-inspect">Enable inspection tests</flag>
+	</use>
+	<upstream>
+		<remote-id type="hackage">generic-random</remote-id>
+		<remote-id type="github">lysxia/generic-random</remote-id>
+	</upstream>
 </pkgmetadata>

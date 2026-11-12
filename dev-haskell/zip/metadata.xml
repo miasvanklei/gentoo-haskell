@@ -6,8 +6,8 @@
 		<name>Gentoo Haskell</name>
 	</maintainer>
 	<use>
-		<flag name="dev">Turn on development settings.</flag>
 		<flag name="bzip2">Depend on bzip2 C library and hence support BZip2 entries.</flag>
+		<flag name="dev">Turn on development settings.</flag>
 		<flag name="zstd">Depend on zstd C library and hence support Zstandard entries.</flag>
 	</use>
 	<upstream>

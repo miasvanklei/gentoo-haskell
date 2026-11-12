@@ -24,6 +24,8 @@ CABAL_CHDEPS=(
 	'text >=0.11.3.1 && <1.3' 'text >=0.11.3.1'
 	'bytestring >=0.10.8.2 && <0.11' 'bytestring >=0.10.8.2'
 	'mtl >=2.1.2 && <2.3' 'mtl >=2.1.2'
+	'microlens ==0.4.*,' 'microlens >=0.4,'
+	'filepath >=1.3.0.1 && <1.5,' 'filepath >=1.3.0.1,'
 )
 
 RDEPEND="
@@ -32,7 +34,7 @@ RDEPEND="
 	>=dev-haskell/dyre-0.8:=[profile?]
 	>=dev-haskell/haskell-src-exts-1.18.0:=[profile?] <dev-haskell/haskell-src-exts-1.24:=[profile?]
 	>=dev-haskell/ilist-0.1:=[profile?] <dev-haskell/ilist-0.5:=[profile?]
-	>=dev-haskell/microlens-0.4:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
+	>=dev-haskell/microlens-0.4:=[profile?]
 	>=dev-haskell/split-0.2.2:=[profile?] <dev-haskell/split-0.3:=[profile?]
 	>=dev-haskell/text-0.11.3.1:=[profile?]
 	>=dev-lang/ghc-8.8.1:=

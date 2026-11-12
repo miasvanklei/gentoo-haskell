@@ -1,0 +1,61 @@
+From https://github.com/haskell-nix/hnix/pull/1119 
+From: GuillaumedeVolpiano <xavier@wheredoibegin.fr>
+Date: Mon, 9 Nov 2026 11:39:10 +0100
+Subject: [PATCH] porting to recent hnix-store-core and hnix-store-remote
+
+--- a/hnix.cabal
++++ b/hnix.cabal
+@@ -358,8 +358,8 @@ common shared
+     , optparse-applicative >= 0.14.3 && < 0.19
+     , relude >= 1.0.0 && < 1.3
+     , serialise >= 0.2.1 && < 0.3
+-    , template-haskell >= 2.13 && < 2.23
+-    , time >= 1.8.0 && < 1.9 || >= 1.9.3 && < 1.13
++    , template-haskell >= 2.13 && < 2.26
++    , time >= 1.8.0 && < 1.9 || >= 1.9.3 && < 1.17
+   ghc-options:
+     -Wall
+     -Wno-incomplete-uni-patterns
+@@ -455,11 +455,11 @@ library
+     , gitrev >= 1.1.0 && < 1.4
+     , hashable >= 1.2.5 && < 1.5
+     , hashing >= 0.1.0 && < 0.2
+-    , hnix-store-core >= 0.6.0 && < 0.9
++    , hnix-store-core >= 0.9.0 && < 0.10
+     , hnix-store-nar >= 0.1.0 && < 0.2
+     , hnix-store-remote >= 0.6.0 && < 0.9
+     , http-client >= 0.5.14 && < 0.6 || >= 0.6.4 && < 0.8
+-    , http-client-tls >= 0.3.5 && < 0.4
++    , http-client-tls >= 0.4.0 && < 0.5
+     , http-types >= 0.12.2 && < 0.14
+     , lens-family >= 1.2.2 && < 2.2
+     , lens-family-core >= 1.2.2 && < 2.2
+--- a/src/Nix/Effects.hs
++++ b/src/Nix/Effects.hs
+@@ -34,6 +34,7 @@ import System.Process
+ 
+ import Data.Default.Class (def)
+ import Data.Some.Newtype (Some (..))
++import qualified System.Nix.ContentAddress as Store.ContentAddress
+ import qualified System.Nix.Hash as Store.Hash
+ import qualified System.Nix.Nar as Store.Nar
+ import qualified System.Nix.Store.Remote as Store.Remote
+@@ -391,8 +392,8 @@ instance MonadStore IO where
+             Right pathName -> do
+                 let ingestionMethod =
+                         if recursive
+-                            then Store.Remote.FileIngestionMethod_FileRecursive
+-                            else Store.Remote.FileIngestionMethod_Flat
++                            then Store.ContentAddress.ContentAddressMethod_NixArchive
++                            else Store.ContentAddress.ContentAddressMethod_Flat
+                     repairMode =
+                         if repair
+                             then Store.Remote.RepairMode_DoRepair
+@@ -406,6 +407,7 @@ instance MonadStore IO where
+                             (toNarSource content)
+                             ingestionMethod
+                             hashAlgo
++                            mempty
+                             repairMode
+                 either
+                     Left -- err

@@ -17,6 +17,9 @@ HOMEPAGE="https://hackage.haskell.org/package/HStringTemplate"
 LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
+CABAL_CHDEPS=(
+	'template-haskell >= 2.3 && < 2.23,' 'template-haskell >= 2.3,'	
+)
 
 RDEPEND="<dev-haskell/blaze-builder-0.5:=[profile?]
 	<dev-haskell/old-locale-1.1:=[profile?]

@@ -17,11 +17,15 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="examples"
 
-CABAL_CHDEPS=('generic-lens >=2.2.1 && <2.3' 'generic-lens >=2.2.1 && <2.4')
+CABAL_CHDEPS=(
+	'generic-lens >=2.2.1 && <2.3' 'generic-lens >=2.2.1 && <2.4'
+	'microlens >=0.4.13 && <0.5' 'microlens >=0.4.13'
+	'brick >=1.5 && <3' 'brick >=1.5'
+)
 
-RDEPEND=">=dev-haskell/brick-1.5:=[profile?] <dev-haskell/brick-3:=[profile?]
+RDEPEND=">=dev-haskell/brick-1.5:=[profile?]
 	>=dev-haskell/generic-lens-2.2.1:=[profile?] <dev-haskell/generic-lens-2.4:=[profile?]
-	>=dev-haskell/microlens-0.4.13:=[profile?] <dev-haskell/microlens-0.5:=[profile?]
+	>=dev-haskell/microlens-0.4.13:=[profile?]
 	>=dev-haskell/optics-core-0.4.1:=[profile?] <dev-haskell/optics-core-0.5:=[profile?]
 	>=dev-haskell/vty-5.38:=[profile?] <dev-haskell/vty-7:=[profile?]
 	>=dev-lang/ghc-9.2.4:=

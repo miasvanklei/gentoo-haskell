@@ -18,6 +18,9 @@ LICENSE="BSD"
 SLOT="0/${PV}"
 KEYWORDS="~amd64"
 IUSE="examples"
+CABAL_CHDEPS=(
+	'base         >= 4.11  && <4.20,' 'base         >= 4.11,'
+)
 
 RDEPEND=">=dev-haskell/monad-control-1.0:=[profile?] <dev-haskell/monad-control-1.1:=[profile?]
 	>=dev-haskell/tagged-0.7:=[profile?] <dev-haskell/tagged-0.9:=[profile?]

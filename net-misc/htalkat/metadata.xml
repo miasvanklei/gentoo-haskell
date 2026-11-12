@@ -6,6 +6,7 @@
 		<name>Gentoo Haskell</name>
 	</maintainer>
 	<use>
+		<flag name="curses">Enable Curses UI</flag>
 		<flag name="ncurses">Enable Curses UI</flag>
 	</use>
 	<upstream>

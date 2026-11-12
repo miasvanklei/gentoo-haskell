@@ -19,6 +19,8 @@ CABAL_CHDEPS=(
 	'data-default-class    >=0.1     && <0.2' 'data-default-class    >=0.1     && <0.3'
 	'random                >=1.2     && <1.3' 'random >= 1.2'
 	'typerep-map           >=0.5     && <0.7' 'typerep-map >=0.5'
+	'crypton-x509-system   >=1.6.6   && <1.7' 'crypton-x509-system   >=1.6.6'
+	'http-api-data         >=0.4.3   && <0.7' 'http-api-data         >=0.4.3'
 )
 
 RDEPEND=">=dev-haskell/aeson-2.1:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
@@ -28,7 +30,7 @@ RDEPEND=">=dev-haskell/aeson-2.1:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/colour-2.3.5:=[profile?] <dev-haskell/colour-2.4:=[profile?]
 	>=dev-haskell/concurrent-extra-0.7:=[profile?] <dev-haskell/concurrent-extra-0.8:=[profile?]
 	>=dev-haskell/crypton-connection-0.2.6:=[profile?] <dev-haskell/crypton-connection-0.5:=[profile?]
-	>=dev-haskell/crypton-x509-system-1.6.6:=[profile?] <dev-haskell/crypton-x509-system-1.7:=[profile?]
+	>=dev-haskell/crypton-x509-system-1.6.6:=[profile?]
 	>=dev-haskell/data-default-class-0.1:=[profile?] <dev-haskell/data-default-class-0.3:=[profile?]
 	>=dev-haskell/data-flags-0.0.3:=[profile?] <dev-haskell/data-flags-0.1:=[profile?]
 	>=dev-haskell/deque-0.4:=[profile?] <dev-haskell/deque-0.5:=[profile?]
@@ -37,7 +39,7 @@ RDEPEND=">=dev-haskell/aeson-2.1:=[profile?] <dev-haskell/aeson-2.3:=[profile?]
 	>=dev-haskell/di-polysemy-0.2:=[profile?] <dev-haskell/di-polysemy-0.3:=[profile?]
 	>=dev-haskell/focus-1.0:=[profile?] <dev-haskell/focus-2:=[profile?]
 	>=dev-haskell/hashable-1.2:=[profile?] <dev-haskell/hashable-2:=[profile?]
-	>=dev-haskell/http-api-data-0.4.3:=[profile?] <dev-haskell/http-api-data-0.7:=[profile?]
+	>=dev-haskell/http-api-data-0.4.3:=[profile?]
 	>=dev-haskell/http-client-0.5:=[profile?] <dev-haskell/http-client-0.8:=[profile?]
 	>=dev-haskell/http-date-0.0.8:=[profile?] <dev-haskell/http-date-0.1:=[profile?]
 	>=dev-haskell/http-types-0.12:=[profile?] <dev-haskell/http-types-0.13:=[profile?]

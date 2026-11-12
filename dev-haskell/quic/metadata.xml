@@ -8,6 +8,7 @@
 	<use>
 		<flag name="devel">Development commands</flag>
 		<flag name="fusion">Use fusion AES-GCM engine from picotls</flag>
+		<flag name="qlog">Write qlog from the test suite</flag>
 	</use>
 	<upstream>
 		<remote-id type="hackage">quic</remote-id>
