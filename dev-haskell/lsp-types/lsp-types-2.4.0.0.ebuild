@@ -41,7 +41,7 @@ RDEPEND="
 	dev-haskell/quickcheck-instances:=[profile?]
 	>=dev-haskell/row-types-1.0:=[profile?] <dev-haskell/row-types-1.1:=[profile?]
 	>=dev-haskell/safe-0.3:=[profile?] <dev-haskell/safe-0.4:=[profile?]
-	>=dev-haskell/some-1.0:=[profile?] <dev-haskell/some-1.2:=[profile?]
+	>=dev-haskell/some-1.0:=[profile?] <dev-haskell/some-1.1:=[profile?]
 	>=dev-haskell/text-1:=[profile?] <dev-haskell/text-2.2:=[profile?]
 	dev-haskell/witherable:=[profile?]
 	>=dev-lang/ghc-9.0.2:=
