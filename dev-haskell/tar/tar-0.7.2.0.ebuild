@@ -16,6 +16,7 @@ SLOT="0/${PV}"
 KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 
 RDEPEND=">=dev-haskell/os-string-2.0:=[profile?] <dev-haskell/os-string-2.1:=[profile?]
+	dev-haskell/directory-ospath-streaming:=
 	>=dev-lang/ghc-9.0.2:=
 "
 DEPEND="${RDEPEND}
