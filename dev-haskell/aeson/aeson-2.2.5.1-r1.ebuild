@@ -22,7 +22,6 @@ CABAL_CHDEPS=(
 	'primitive             ^>=0.8.0.0  || ^>=0.9.0.0' 'primitive >=0.8.0.0'
 	'text-iso8601          ^>=0.1.1' 'text-iso8601          >=0.1.1'
 	'QuickCheck            ^>=2.14.3   || ^>=2.15    || ^>=2.16.0.0 || ^>=2.17.1.0 || ^>=2.18.0.0' 'QuickCheck            ^>=2.14.3   || ^>=2.15    || ^>=2.16.0.0 || ^>=2.17.1.0 || ^>=2.18.0.0 || ^>=2.19.0.0'
-	'text-iso8601          ^>=0.1.1' 'text-iso8601          >=0.1.1'
 )
 
 RDEPEND=">=dev-haskell/character-ps-0.1:=[profile?] <dev-haskell/character-ps-0.2:=[profile?]
