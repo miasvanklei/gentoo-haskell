@@ -29,7 +29,7 @@ RDEPEND=">=dev-haskell/hashable-1.3.1.0:=[profile?] <dev-haskell/hashable-1.6:=[
 "
 DEPEND="${RDEPEND}
 	>=dev-haskell/cabal-3.4.1.0
-	test? ( >=dev-haskell/hedgehog-1.0.1
+	test? ( >=dev-haskell/hedgehog-1.0.1 <dev-haskell/hedgehog-1.8
 		>=dev-haskell/hspec-2.7.1 <dev-haskell/hspec-2.12
 		>=dev-haskell/hspec-hedgehog-0.0.1.1 <dev-haskell/hspec-hedgehog-0.4
 		>=dev-haskell/hspec-megaparsec-2.0.0 <dev-haskell/hspec-megaparsec-2.3.0 )
